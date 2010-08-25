@@ -31,6 +31,7 @@ SOURCES = qpb_init\
 	qpb_spinor_axpy\
 	qpb_spinor_xmy\
 	qpb_spinor_xeqy\
+	qpb_stop_watch\
 	qpb_finalize
 
 libqpb.a: ${addsuffix .o, $(SOURCES)}

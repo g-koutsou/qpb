@@ -7,7 +7,7 @@
 #include <qpb_alloc.h>
 
 void
-qpb_comm_halo_gauge_field(qpb_comm_handle *handle, qpb_gauge_field gauge_field)
+qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
 {
   qpb_link (*sendb)[ND];
   qpb_link (*recvb)[ND];

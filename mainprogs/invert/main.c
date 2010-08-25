@@ -118,35 +118,35 @@ main(int argc, char *argv[])
   if(sscanf(qpb_parse("kappa"), "%lf", &kappa)!=1)
     {
       error("error parsing for %s\n",
-	      "kappa");
+	    "kappa");
       exit(QPB_PARSER_ERROR);
     }
   qpb_double c_sw;
   if(sscanf(qpb_parse("c_sw"), "%lf", &c_sw)!=1)
     {
       error("error parsing for %s\n",
-	      "c_sw");
+	    "c_sw");
       exit(QPB_PARSER_ERROR);
     }
   qpb_double epsilon;
   if(sscanf(qpb_parse("Solver epsilon"), "%lf", &epsilon)!=1)
     {
       error("error parsing for %s\n",
-	      "Solver epsilon");
+	    "Solver epsilon");
       exit(QPB_PARSER_ERROR);
     }
   int max_iters;
   if(sscanf(qpb_parse("Solver max iters"), "%d", &max_iters)!=1)
     {
       error("error parsing for %s\n",
-	      "Solver max iters");
+	    "Solver max iters");
       exit(QPB_PARSER_ERROR);
     }
   char sol_file[QPB_MAX_STRING];
   if(sscanf(qpb_parse("Solution file"), "%s", sol_file)!=1)
     {
       error("error parsing for %s\n",
-	      "Solution file");
+	    "Solution file");
       exit(QPB_PARSER_ERROR);
     }
   
@@ -154,9 +154,19 @@ main(int argc, char *argv[])
 
   /* initialize cartesian grid and index tables */
   qpb_init(g_dim, procs);
+
+  print(" (Lt, Lz, Ly, Lx) = (%2d,%2d,%2d,%2d)\n", 
+	problem_params.g_dim[0], 
+	problem_params.g_dim[1], 
+	problem_params.g_dim[2], 
+	problem_params.g_dim[3]);
+  print(" Processes = (1,%2d,%2d,%2d)\n", procs[0], procs[1], procs[2]);
+  print(" kappa = %g\n", kappa);
+  print(" Clover param = %g\n", c_sw);
+  print(" Solver epsilon = %e\n", epsilon);
+  print(" Max solver iters = %d\n", max_iters);
   
   qpb_rng_init(seed);
-
   /* allocate gauge field */
   qpb_gauge_field gauge = qpb_gauge_field_init();
 

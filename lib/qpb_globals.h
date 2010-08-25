@@ -23,4 +23,10 @@ unsigned short int clover_idx[ND][ND];
 
 qpb_random_state rng_state;
 
+#define DEBUG_HERE()							\
+  int pid = getpid();							\
+  printf("[id = %3d] pid = %6d\n", problem_params.proc_id, pid);	\
+  volatile int DebugWait = 1;						\
+  while (DebugWait);
+
 #endif /* _QPB_GLOBALS_H */

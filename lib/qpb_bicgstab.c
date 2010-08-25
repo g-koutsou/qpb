@@ -6,6 +6,7 @@
 #include <qpb_apply_dirac.h>
 #include <qpb_apply_laplace.h>
 #include <qpb_apply_clover_term.h>
+#include <qpb_stop_watch.h>
 
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 5
 
@@ -65,6 +66,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, qpb_gauge_field gauge,
   gamma.im = 0;
   res_norm = gamma.re;
   rho = gamma;
+  qpb_double t = qpb_stop_watch(0);
   for(iters=1; iters<max_iter; iters++)
     {
       if(res_norm / b_norm <= epsilon)
@@ -104,7 +106,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, qpb_gauge_field gauge,
       if((iters % n_echo == 0))
 	print(" iters = %8d, res = %e\n", iters, res_norm / b_norm);
     }
-  
+  t = qpb_stop_watch(t);
   qpb_dslash(r, x);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xdotx(&res_norm, r);
@@ -119,7 +121,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, qpb_gauge_field gauge,
     }
 
   print(" After %d iterrations BiCGStab converged\n", iters);
-  print(" residual = %e, relative = %e\n", res_norm, res_norm / b_norm);
+  print(" residual = %e, relative = %e, t = %g\n", res_norm, res_norm / b_norm, t);
   
   return iters;
 }
