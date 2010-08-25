@@ -7,9 +7,9 @@
 void
 qpb_spinor_xeqy(qpb_spinor_field x, qpb_spinor_field y)
 {
-  int evol = problem_params.ext_vol;
-  for(int v=0; v<evol; v++)
-    memcpy(x.index[v], y.index[v], sizeof(qpb_spinor));
+  int lvol = problem_params.l_vol;
+  for(int v=0; v<lvol; v++)
+    memcpy(x.bulk[v], y.bulk[v], sizeof(qpb_spinor));
 
   return;
 }
