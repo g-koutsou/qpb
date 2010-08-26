@@ -1,6 +1,6 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O3 -Wno-unused-result -std=c99 -Wall -I./ -I$(HOME)/install/include
+CFLAGS=-O3 -Winline -Wno-unused-result -std=c99 -Wall -I./ -I$(HOME)/install/include
 LDFLAGS=-L$(HOME)/install/lib
 LIBS=-lgsl -lgslcblas -lm

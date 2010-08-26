@@ -6,12 +6,14 @@
 #include <qpb_globals.h>
 #include <qpb_alloc.h>
 
-void
-qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
-{
-  qpb_spinor *sendb;
-  qpb_spinor *recvb;
+qpb_spinor *sendb[2*ND];
+qpb_spinor *recvb[2*ND];
 
+MPI_Request recv_req[2*ND], send_req[2*ND];
+
+void
+qpb_comm_halo_spinor_field_start(qpb_spinor_field spinor_field)
+{
   int ext_dim[ND] = 
     {
       problem_params.ext_dim[0],
@@ -24,8 +26,6 @@ qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
     {
       if(problem_params.par_dir[dir])
 	{
-	  MPI_Request rcv_req, snd_req;
-	  MPI_Status stat;
 	  int nn;
 	  int b_vol = 1;
 	  int b_dim[ND], shifts[ND];
@@ -44,8 +44,8 @@ qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
 	  for(int d=0; d<ND; d++)
 	    b_vol *= b_dim[d];
 	  
-	  recvb = qpb_alloc(sizeof(qpb_spinor) * b_vol);
-	  sendb = qpb_alloc(sizeof(qpb_spinor) * b_vol);
+	  recvb[dir] = qpb_alloc(sizeof(qpb_spinor) * b_vol);
+	  sendb[dir] = qpb_alloc(sizeof(qpb_spinor) * b_vol);
 
 	  for(int i=0; i<b_vol; i++)
 	    {
@@ -60,35 +60,19 @@ qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
 		x[d] += shifts[d];
 
 	      int v = LEXICO(x, ext_dim);	      
-	      memcpy(sendb[i], (void *)spinor_field.index[v], sizeof(qpb_spinor));
+	      memcpy(sendb[dir][i], (void *)spinor_field.index[v], sizeof(qpb_spinor));
 	    }
 
 	  nn = problem_params.proc_neigh[dir];
-	  MPI_Irecv(recvb, sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn, 
-		    problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
+	  MPI_Irecv(recvb[dir], sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn, 
+		    problem_params.proc_id, MPI_COMM_WORLD, &recv_req[dir]);
 
 	  nn = problem_params.proc_neigh[dir+ND];
-	  MPI_Isend(sendb, sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn,
-		    nn, MPI_COMM_WORLD, &snd_req);
+	  MPI_Isend(sendb[dir], sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn,
+		    nn, MPI_COMM_WORLD, &send_req[dir]);
 
-	  MPI_Wait(&rcv_req, &stat);
-	  MPI_Wait(&snd_req, &stat);
-
-	  for(int i=0; i<b_vol; i++)
-	    {
-	      int x[ND];
-	      x[3] = X_INDEX(i, b_dim);
-	      x[2] = Y_INDEX(i, b_dim);
-	      x[1] = Z_INDEX(i, b_dim);
-	      x[0] = T_INDEX(i, b_dim);
-	      
-	      x[dir] = ext_dim[dir] - 1;
-	      for(int d=0; d<ND; d++)
-                x[d] += shifts[d];
-
-              int v = LEXICO(x, ext_dim);
-	      memcpy((void *)spinor_field.index[v], recvb[i], sizeof(qpb_spinor));
-	    }
+	  recvb[dir+ND] = qpb_alloc(sizeof(qpb_spinor) * b_vol);
+	  sendb[dir+ND] = qpb_alloc(sizeof(qpb_spinor) * b_vol);
 
 	  for(int i=0; i<b_vol; i++)
 	    {
@@ -103,19 +87,76 @@ qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
                 x[d] += shifts[d];
 
               int v = LEXICO(x, ext_dim);	      
-	      memcpy(sendb[i], (void *)spinor_field.index[v], sizeof(qpb_spinor));
+	      memcpy(sendb[dir+ND][i], (void *)spinor_field.index[v], 
+		     sizeof(qpb_spinor));
 	    }
 
 	  nn = problem_params.proc_neigh[dir+ND];
-	  MPI_Irecv(recvb, sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn, 
-		    problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
+	  MPI_Irecv(recvb[dir+ND], sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn, 
+		    problem_params.proc_id, MPI_COMM_WORLD, &recv_req[dir+ND]);
 
 	  nn = problem_params.proc_neigh[dir];
-	  MPI_Isend(sendb, sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn,
-		    nn, MPI_COMM_WORLD, &snd_req);
+	  MPI_Isend(sendb[dir+ND], sizeof(qpb_spinor)*b_vol, MPI_BYTE, nn,
+		    nn, MPI_COMM_WORLD, &send_req[dir+ND]);
+	}
+    }
+  return;
+}
 
-	  MPI_Wait(&rcv_req, &stat);
-	  MPI_Wait(&snd_req, &stat);
+void
+qpb_comm_halo_spinor_field_wait(qpb_spinor_field spinor_field)
+{
+  int ext_dim[ND] = 
+    {
+      problem_params.ext_dim[0],
+      problem_params.ext_dim[1],
+      problem_params.ext_dim[2],
+      problem_params.ext_dim[3]
+    };
+
+  for(int dir=1; dir<ND; dir++)
+    {
+      if(problem_params.par_dir[dir])
+	{
+	  int b_vol = 1;
+	  int b_dim[ND], shifts[ND];
+	  for(int d=0; d<dir; d++)
+	    {
+	      b_dim[d] = problem_params.ext_dim[d];
+	      shifts[d] = 0;
+	    }
+	  for(int d=dir+1; d<ND; d++)
+	    {
+	      b_dim[d] = problem_params.l_dim[d];
+	      shifts[d] = problem_params.par_dir[d];
+	    }
+	  b_dim[dir] = 1;
+	  shifts[dir] = 0;
+	  for(int d=0; d<ND; d++)
+	    b_vol *= b_dim[d];
+
+	  MPI_Status stat;
+	  MPI_Wait(&recv_req[dir], &stat);
+	  MPI_Wait(&send_req[dir], &stat);
+
+	  for(int i=0; i<b_vol; i++)
+	    {
+	      int x[ND];
+	      x[3] = X_INDEX(i, b_dim);
+	      x[2] = Y_INDEX(i, b_dim);
+	      x[1] = Z_INDEX(i, b_dim);
+	      x[0] = T_INDEX(i, b_dim);
+	      
+	      x[dir] = ext_dim[dir] - 1;
+	      for(int d=0; d<ND; d++)
+                x[d] += shifts[d];
+
+              int v = LEXICO(x, ext_dim);
+	      memcpy((void *)spinor_field.index[v], recvb[dir][i], sizeof(qpb_spinor));
+	    }
+
+	  MPI_Wait(&recv_req[dir+ND], &stat);
+	  MPI_Wait(&send_req[dir+ND], &stat);
 
 	  for(int i=0; i<b_vol; i++)
 	    {
@@ -130,12 +171,15 @@ qpb_comm_halo_spinor_field(qpb_spinor_field spinor_field)
                 x[d] += shifts[d];
 
               int v = LEXICO(x, ext_dim);
-	      memcpy((void *)spinor_field.index[v], recvb[i], sizeof(qpb_spinor));
+	      memcpy((void *)spinor_field.index[v], recvb[dir+ND][i], 
+		     sizeof(qpb_spinor));
 	    }	  
 
-	  free(sendb);
-	  free(recvb);
+	  free(sendb[dir]);
+	  free(recvb[dir]);
+	  free(sendb[dir+ND]);
+	  free(recvb[dir+ND]);
 	}
     }
   return;
-}
+};

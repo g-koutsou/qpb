@@ -30,25 +30,33 @@ typedef qpb_complex_double qpb_spinor_double[NC*NS];
 
 typedef struct{
   qpb_link_float (*bulk)[ND];
-  qpb_link_float (*boundaries)[ND];
+  qpb_link_float (*boundaries)[ND];  
+  qpb_complex_float *zero_field;  
+  void **index0;
   void **index;
 } qpb_gauge_field_float;
 
 typedef struct{
   qpb_link_double (*bulk)[ND];
   qpb_link_double (*boundaries)[ND];
+  qpb_complex_double *zero_field;  
+  void **index0;
   void **index;
 } qpb_gauge_field_double;
 
 typedef struct{
   qpb_spinor_float *bulk;
   qpb_spinor_float *boundaries;
+  qpb_complex_float *zero_field;
+  void **index0;
   void **index;
 } qpb_spinor_field_float;
 
 typedef struct{
   qpb_spinor_double *bulk;
   qpb_spinor_double *boundaries;
+  qpb_complex_double *zero_field;
+  void **index0;
   void **index;
 } qpb_spinor_field_double;
 
@@ -73,10 +81,6 @@ typedef struct{
   unsigned int g_vol, l_vol, ext_vol, nprocs, proc_id;
   MPI_Comm mpi_comm_cart;
 } qpb_problem_params;
-
-typedef struct{
-  MPI_Request *mpi_req;
-} qpb_comm_handle;
 
 #include <gsl/gsl_rng.h>
 typedef struct{

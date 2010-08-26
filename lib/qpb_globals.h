@@ -19,7 +19,7 @@ unsigned short int clover_idx[ND][ND];
   x[3]						\
   + x[2] * L[3]					\
   + x[1] * L[3] * L[2]				\
-  + x[0] * L[3] * L[2] * L[1];
+  + x[0] * L[3] * L[2] * L[1]
 
 qpb_random_state rng_state;
 

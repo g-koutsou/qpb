@@ -14,6 +14,7 @@ SOURCES = qpb_init\
 	qpb_spinor_field_set_delta\
 	qpb_spinor_field_set_zero\
 	qpb_spinor_field_set_random\
+	qpb_gauge_field_set_unit\
 	qpb_gauge_field\
 	qpb_comm_halo_spinor_field\
 	qpb_read_gauge\
@@ -24,6 +25,7 @@ SOURCES = qpb_init\
 	qpb_clover_term_get\
 	qpb_apply_dirac\
 	qpb_apply_laplace\
+	qpb_apply_dirac_laplace\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
 	qpb_spinor_xdotx\
@@ -34,15 +36,19 @@ SOURCES = qpb_init\
 	qpb_stop_watch\
 	qpb_finalize
 
+# pull in dependency info for *existing* .o files
+include $(wildcard *.d)
+
 libqpb.a: ${addsuffix .o, $(SOURCES)}
 	$(AR) cr $@  ${addsuffix .o, $(SOURCES)} &&\
 	$(RANLIB) $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -MM $*.o $(CFLAGS) $< > $*.d
 
 clean:
-	$(RM) *.o
+	$(RM) *.o *.d
 
 cleanall: clean
 	$(RM) libqpb.a

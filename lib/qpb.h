@@ -21,6 +21,7 @@
 #include <qpb_spinor_field_set_delta.h>
 #include <qpb_spinor_field_set_zero.h>
 #include <qpb_spinor_field_set_random.h>
+#include <qpb_gauge_field_set_unit.h>
 #include <qpb_read_gauge.h>
 #include <qpb_read_spinor.h>
 #include <qpb_write_spinor.h>

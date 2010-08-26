@@ -1,6 +1,7 @@
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_sun_linalg.h>
+#include <qpb_comm_halo_gauge_field.h>
 
 qpb_double 
 qpb_plaquette(qpb_gauge_field gauge)
@@ -8,6 +9,9 @@ qpb_plaquette(qpb_gauge_field gauge)
   qpb_double plaquette = 0.;
   int lvol = problem_params.l_vol;
   int nprocs = problem_params.nprocs;
+
+  qpb_comm_halo_gauge_field(gauge);
+
   for(int lv=0; lv<lvol; lv++)
     {
       int v = blk_to_ext[lv];

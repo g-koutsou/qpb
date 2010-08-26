@@ -20,14 +20,22 @@ qpb_gauge_field_init()
   /* allocate index map */
   gauge_field.index = qpb_alloc(problem_params.ext_vol
 				* sizeof(void *));
+  gauge_field.index0 = qpb_alloc(problem_params.ext_vol
+				 * sizeof(void *));
 
+  gauge_field.zero_field = qpb_alloc(sizeof(qpb_link)*ND);
+  for(int d=0; d<ND; d++)
+    for(int col=0; col<NC*NC; col++)
+      gauge_field.zero_field[d + ND*col] = (qpb_complex){0., 0.};
+  
   /* map extended volume index to bulk or boundary buffer 
      
      "Extended volume" is the hypercube: (local volume) + boundaries
      "Bulk volume" is just the local volume. Member .index[] maps the 
      site index over the extended volume to the memory address that holds 
      the data of that site. The data of the site could be either in the 
-     bulk or the boundary buffer.
+     bulk or the boundary buffer. Member .index0[] is the same, but points
+     to the zero field when the argument-index is on a boundary.
    */
   int edim[ND], ldim[ND];
   for(int d=0; d<ND; d++)
@@ -58,6 +66,7 @@ qpb_gauge_field_init()
 	  if(ex[d] == ldim[d] || ex[d] == -1)
 	    {
 	      gauge_field.index[i] = (void *) gauge_field.boundaries[bnd_idx][0];
+	      gauge_field.index0[i] = (void *) gauge_field.zero_field;
 	      bnd_idx++;
 	      break;
 	    }
@@ -67,6 +76,7 @@ qpb_gauge_field_init()
 	{
 	  int v = LEXICO(ex, ldim);
 	  gauge_field.index[i] = (void *) gauge_field.bulk[v][0];
+	  gauge_field.index0[i] = (void *) gauge_field.bulk[v][0];
 	}
     }
   return gauge_field;
@@ -79,5 +89,7 @@ qpb_gauge_field_finalize(qpb_gauge_field gauge_field)
   free(gauge_field.bulk);
   free(gauge_field.boundaries);
   free(gauge_field.index);
+  free(gauge_field.index0);
+  free(gauge_field.zero_field);
   return;
 };

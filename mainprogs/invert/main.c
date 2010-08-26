@@ -42,26 +42,56 @@ main(int argc, char *argv[])
 	      "Dimensions");
       exit(QPB_PARSER_ERROR);
     }
-  char conf_file[QPB_MAX_STRING];
-  if(sscanf(qpb_parse("Conf file"), "%s",
-	    conf_file)!=1)
+  char aux_string[QPB_MAX_STRING];
+  if(sscanf(qpb_parse("Conf"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
-	      "Conf file");
+	    "Conf");
       exit(QPB_PARSER_ERROR);
-    }  
+    }
+  enum qpb_field_init_opts conf_opt;
+  if(strcmp(aux_string, "file") == 0)
+    conf_opt = QPB_FILE;
+  else if(strcmp(aux_string, "unit") == 0)
+    conf_opt = QPB_UNIT;
+  else
+    {
+      error("%s: option should be one of: ", "Conf");
+      error("%s, ", "unit"); 
+      error("%s\n", "file"); 
+      exit(QPB_PARSER_ERROR);
+    };
+  char conf_file[QPB_MAX_STRING];
+  switch(conf_opt)
+    {
+    case QPB_ZERO:
+      break;
+    case QPB_UNIT:
+      break;
+    case QPB_FILE:
+      if(sscanf(qpb_parse("Conf file"), "%s",
+		conf_file)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Conf file");
+	  exit(QPB_PARSER_ERROR);
+	}  
+      break;
+    case QPB_RAND:
+      break;
+    }
+  
   unsigned int seed;
   if(sscanf(qpb_parse("Random seed"), "%u", &seed)!=1)
     {
       error("error parsing for %s\n", 
-	      "Random seed");
+	    "Random seed");
       exit(QPB_PARSER_ERROR);
     }  
-  char aux_string[QPB_MAX_STRING];
   if(sscanf(qpb_parse("Source"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
-	      "Source");
+	    "Source");
       exit(QPB_PARSER_ERROR);
     }
   enum qpb_field_init_opts source_opt;
@@ -171,11 +201,21 @@ main(int argc, char *argv[])
   qpb_gauge_field gauge = qpb_gauge_field_init();
 
   /* read in configuration */
-  qpb_read_gauge(gauge, conf_file);
+  switch(conf_opt)
+    {
+    case QPB_ZERO:
+      break;
+    case QPB_UNIT:
+      qpb_gauge_field_set_unit(gauge);
+      break;
+    case QPB_FILE:
+      qpb_read_gauge(gauge, conf_file);
+      break;
+    case QPB_RAND:
+      break;
+    }
 
-  /* communicate halo */
-  qpb_comm_halo_gauge_field(gauge);
-
+  /* Calculate plaquette */
   qpb_double plaquette = qpb_plaquette(gauge);
   print(" Plaquette = %12.8f\n", plaquette);
 
@@ -185,7 +225,7 @@ main(int argc, char *argv[])
   /* Allocate source and solution spinor */
   qpb_spinor_field source = qpb_spinor_field_init();
   qpb_spinor_field sol = qpb_spinor_field_init();
-
+  
   switch(source_opt)
     {
     case QPB_ZERO:
@@ -199,17 +239,13 @@ main(int argc, char *argv[])
       break;
     case QPB_FILE:
       qpb_read_spinor(source, source_file);
-      qpb_comm_halo_spinor_field(source);
       break;
     case QPB_RAND:
       qpb_spinor_field_set_random(source);
-      qpb_comm_halo_spinor_field(source);
       break;
     }
-
-  /* zero initial solution */
   qpb_spinor_field_set_zero(sol);
-
+  
   qpb_bicgstab_init();
   int iters = qpb_bicgstab(sol, source, gauge, clover_term, kappa, c_sw,
 			   epsilon, max_iters);

@@ -2,20 +2,15 @@
 #include <qpb_globals.h>
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_linalg.h>
-#include <qpb_comm_halo_spinor_field.h>
-#include <qpb_apply_dirac.h>
-#include <qpb_apply_laplace.h>
+#include <qpb_apply_dirac_laplace.h>
 #include <qpb_apply_clover_term.h>
 #include <qpb_stop_watch.h>
 
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 5
 
 #define qpb_dslash(y, x)				\
-  qpb_comm_halo_spinor_field(x);			\
-  qpb_apply_dirac(y, x, gauge, mass);			\
-  qpb_apply_laplace(y, x, gauge);			\
-  qpb_apply_clover_term(y, x, clover, c_sw);
-  
+  qpb_apply_dirac_laplace(y, x, gauge, mass);		\
+ qpb_apply_clover_term(y, x, clover, c_sw);
 
 qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 
@@ -54,8 +49,8 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, qpb_gauge_field gauge,
   int iters = 0;
   const int n_echo = 1, n_reeval = 10;
   qpb_double res_norm, b_norm;
-  qpb_complex alpha = {1, 0}, omega = {1, 0};
-  qpb_complex beta, gamma, rho, zeta;
+  qpb_complex_double alpha = {1, 0}, omega = {1, 0};
+  qpb_complex_double beta, gamma, rho, zeta;
   qpb_double mass = 1./(2.*kappa) - 4.;
 
   qpb_spinor_xdotx(&b_norm, b);

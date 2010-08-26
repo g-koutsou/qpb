@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <qpb_types.h>
 #include <qpb_globals.h>
@@ -21,13 +22,22 @@ qpb_spinor_field_init()
   spinor_field.index = qpb_alloc(problem_params.ext_vol
 				* sizeof(void *));
 
+  spinor_field.index0 = qpb_alloc(problem_params.ext_vol
+				  * sizeof(void *));
+
+  spinor_field.zero_field = qpb_alloc(sizeof(qpb_spinor));
+
+  for(int cs=0; cs<NC*NS; cs++)
+    spinor_field.zero_field[cs] = (qpb_complex){0., 0.};
+  
   /* map extended volume index to bulk or boundary buffer 
      
      "Extended volume" is the hypercube: (local volume) + boundaries
      "Bulk volume" is just the local volume. Member .index[] maps the 
      site index over the extended volume to the memory address that holds 
      the data of that site. The data of the site could be either in the 
-     bulk or the boundary buffer.
+     bulk or the boundary buffer. Member .index0[] is the same, but points
+     to the zero field when the argument-index is on a boundary.
    */
   int edim[ND], ldim[ND];
   for(int d=0; d<ND; d++)
@@ -58,6 +68,7 @@ qpb_spinor_field_init()
 	  if(ex[d] == ldim[d] || ex[d] == -1)
 	    {
 	      spinor_field.index[i] = (void *) spinor_field.boundaries[bnd_idx];
+	      spinor_field.index0[i] = (void *) spinor_field.zero_field;
 	      bnd_idx++;
 	      break;
 	    }
@@ -67,8 +78,10 @@ qpb_spinor_field_init()
 	{
 	  int v = LEXICO(ex, ldim);
 	  spinor_field.index[i] = (void *) spinor_field.bulk[v];
+	  spinor_field.index0[i] = (void *) spinor_field.bulk[v];
 	}
     }
+
   return spinor_field;
 };
 
@@ -79,14 +92,7 @@ qpb_spinor_field_finalize(qpb_spinor_field spinor_field)
   free(spinor_field.bulk);
   free(spinor_field.boundaries);
   free(spinor_field.index);
+  free(spinor_field.index0);
+  free(spinor_field.zero_field);
   return;
 };
-
-void
-qpb_spinor_field_shallow_copy(qpb_spinor_field *x, qpb_spinor_field *y)
-{
-  x->index = y->index;
-  x->bulk = y->bulk;
-  x->boundaries = y->boundaries;
-  return;
-}
