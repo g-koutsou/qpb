@@ -14,8 +14,8 @@ qpb_spinor_axpy(qpb_spinor_field z, qpb_complex alpha,
 	{
 	  qpb_complex xx = *((qpb_complex *)x.bulk[v]+cs);
 	  qpb_complex yy = *((qpb_complex *)y.bulk[v]+cs);
-	  
-	  *(z_ptr + cs) = CADD(CMUL(alpha, xx), yy);
+	  (z_ptr + cs)->re = (alpha.re*xx.re - alpha.im*xx.im) + yy.re;
+	  (z_ptr + cs)->im = (alpha.re*xx.im + alpha.im*xx.re) + yy.im;
 	}      
     }
   return;

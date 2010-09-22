@@ -3,13 +3,13 @@
 #include <qpb_types.h>
 
 
-extern inline void qpb_apply_dirac_t(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_dirac_z(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_dirac_y(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_dirac_x(qpb_complex *, void **, void **, int);
+/* extern inline void qpb_apply_dirac_t(qpb_complex *, void **, void **, int); */
+/* extern inline void qpb_apply_dirac_z(qpb_complex *, void **, void **, int); */
+/* extern inline void qpb_apply_dirac_y(qpb_complex *, void **, void **, int); */
+/* extern inline void qpb_apply_dirac_x(qpb_complex *, void **, void **, int); */
 
 
-inline void
+__inline__ void
 qpb_apply_dirac_t(qpb_complex *out, void **in, void **gauge, int v)
 {
   qpb_spinor aux_spinor0, aux_spinor1;
@@ -31,7 +31,7 @@ qpb_apply_dirac_t(qpb_complex *out, void **in, void **gauge, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_dirac_z(qpb_complex *out, void **in, void **gauge, int v)
 {
   qpb_spinor aux_spinor0, aux_spinor1;
@@ -53,7 +53,7 @@ qpb_apply_dirac_z(qpb_complex *out, void **in, void **gauge, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_dirac_y(qpb_complex *out, void **in, void **gauge, int v)
 {
   qpb_spinor aux_spinor0, aux_spinor1;
@@ -75,7 +75,7 @@ qpb_apply_dirac_y(qpb_complex *out, void **in, void **gauge, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_dirac_x(qpb_complex *out, void **in, void **gauge, int v)
 {
   qpb_spinor aux_spinor0, aux_spinor1;

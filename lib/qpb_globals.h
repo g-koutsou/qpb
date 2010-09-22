@@ -7,8 +7,8 @@ unsigned int *blk_to_ext;
 unsigned short int am_master;
 unsigned short int clover_idx[ND][ND];
 
-#define print(FMT, ...) if(am_master) printf(FMT, ##__VA_ARGS__)
-#define error(FMT, ...) if(am_master) fprintf(stderr, FMT, ##__VA_ARGS__)
+#define print(FMT, ...) if(am_master) printf(FMT, ##__VA_ARGS__); fflush(stdout)
+#define error(FMT, ...) if(am_master) fprintf(stderr, FMT, ##__VA_ARGS__); fflush(stderr)
 
 #define X_INDEX(i, L) (i % L[3])
 #define Y_INDEX(i, L) ((i - X_INDEX(i, L)) / L[3]) % L[2]

@@ -45,7 +45,7 @@ libqpb.a: ${addsuffix .o, $(SOURCES)}
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
-	$(CC) -MM $*.o $(CFLAGS) $< > $*.d
+	$(CC) -MM $(CFLAGS) $< > $*.d
 
 clean:
 	$(RM) *.o *.d
