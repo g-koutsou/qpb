@@ -1,7 +1,9 @@
 #ifndef _QPB_GLOBALS_H
 #define _QPB_GLOBALS_H 1
 
+
 qpb_problem_params problem_params;
+unsigned int *skin_to_ext[2*ND];
 unsigned int *nneigh[2*ND];
 unsigned int *blk_to_ext;
 unsigned short int am_master;

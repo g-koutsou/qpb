@@ -1,12 +1,7 @@
 #ifndef _QPB_APPLY_LAPLACE_TZYX_H
 #define _QPB_APPLY_LAPLACE_TZYX_H 1
-extern inline void qpb_apply_laplace_t(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_laplace_z(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_laplace_y(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_laplace_x(qpb_complex *, void **, void **, int);
 
-
-inline void
+__inline__ void
 qpb_apply_laplace_t(qpb_complex *out, void **in, void **gauge, int v)
 {
      qpb_spinor aux_spinor0, aux_spinor1;
@@ -28,7 +23,7 @@ qpb_apply_laplace_t(qpb_complex *out, void **in, void **gauge, int v)
      return;
 }
 
-inline void
+__inline__ void
 qpb_apply_laplace_z(qpb_complex *out, void **in, void **gauge, int v)
 {
      qpb_spinor aux_spinor0, aux_spinor1;
@@ -50,7 +45,7 @@ qpb_apply_laplace_z(qpb_complex *out, void **in, void **gauge, int v)
      return;
 }
 
-inline void
+__inline__ void
 qpb_apply_laplace_y(qpb_complex *out, void **in, void **gauge, int v)
 {
      qpb_spinor aux_spinor0, aux_spinor1;
@@ -72,7 +67,7 @@ qpb_apply_laplace_y(qpb_complex *out, void **in, void **gauge, int v)
      return;
 }
 
-inline void
+__inline__ void
 qpb_apply_laplace_x(qpb_complex *out, void **in, void **gauge, int v)
 {
      qpb_spinor aux_spinor0, aux_spinor1;

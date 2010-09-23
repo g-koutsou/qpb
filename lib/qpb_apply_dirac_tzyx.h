@@ -2,13 +2,6 @@
 #define _QPB_APPLY_DIRAC_TZYX_H 1
 #include <qpb_types.h>
 
-
-/* extern inline void qpb_apply_dirac_t(qpb_complex *, void **, void **, int); */
-/* extern inline void qpb_apply_dirac_z(qpb_complex *, void **, void **, int); */
-/* extern inline void qpb_apply_dirac_y(qpb_complex *, void **, void **, int); */
-/* extern inline void qpb_apply_dirac_x(qpb_complex *, void **, void **, int); */
-
-
 __inline__ void
 qpb_apply_dirac_t(qpb_complex *out, void **in, void **gauge, int v)
 {

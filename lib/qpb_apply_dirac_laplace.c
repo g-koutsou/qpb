@@ -48,8 +48,6 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
       dim[dir] = 1;
       for(int i=0; i<lvol/l_dim[dir]; i++)
 	{
-	  int v;
-	  int x[ND];
 	  qpb_complex *out;
 
 	  qpb_spinor aux_spinor0, aux_spinor1;
@@ -58,12 +56,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  qpb_complex *sp1 = (qpb_complex *)&aux_spinor1;
 	  qpb_complex *ptr;
 
-	  x[3] = X_INDEX(i, dim);
-	  x[2] = Y_INDEX(i, dim);
-	  x[1] = Z_INDEX(i, dim);
-	  x[0] = T_INDEX(i, dim);
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  int v = skin_to_ext[dir][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[nneigh[dir+ND][v]] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir+ND][v]];
@@ -72,9 +65,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  COLSPIN_SUB(out, out, sp0);
 	  COLSPIN_SUB(out, out, sp1);
 
-	  x[dir] = l_dim[dir]-1;
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  v = skin_to_ext[dir+ND][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[v] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir][v]];
@@ -91,8 +82,6 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
       dim[dir] = 1;
       for(int i=0; i<lvol/l_dim[dir]; i++)
 	{
-	  int v;
-	  int x[ND];
 	  qpb_complex *out;
 
 	  qpb_spinor aux_spinor0, aux_spinor1;
@@ -101,12 +90,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  qpb_complex *sp1 = (qpb_complex *)&aux_spinor1;
 	  qpb_complex *ptr;
 
-	  x[3] = X_INDEX(i, dim);
-	  x[2] = Y_INDEX(i, dim);
-	  x[1] = Z_INDEX(i, dim);
-	  x[0] = T_INDEX(i, dim);
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  int v = skin_to_ext[dir][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[nneigh[dir+ND][v]] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir+ND][v]];
@@ -115,9 +99,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  COLSPIN_SUB(out, out, sp0);
 	  COLSPIN_SUB(out, out, sp1);
 
-	  x[dir] = l_dim[dir]-1;
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  v = skin_to_ext[dir+ND][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[v] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir][v]];
@@ -134,8 +116,6 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
       dim[dir] = 1;
       for(int i=0; i<lvol/l_dim[dir]; i++)
 	{
-	  int v;
-	  int x[ND];
 	  qpb_complex *out;
 
 	  qpb_spinor aux_spinor0, aux_spinor1;
@@ -144,12 +124,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  qpb_complex *sp1 = (qpb_complex *)&aux_spinor1;
 	  qpb_complex *ptr;
 
-	  x[3] = X_INDEX(i, dim);
-	  x[2] = Y_INDEX(i, dim);
-	  x[1] = Z_INDEX(i, dim);
-	  x[0] = T_INDEX(i, dim);
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  int v = skin_to_ext[dir][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[nneigh[dir+ND][v]] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir+ND][v]];
@@ -158,9 +133,7 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  COLSPIN_SUB(out, out, sp0);
 	  COLSPIN_SUB(out, out, sp1);
 
-	  x[dir] = l_dim[dir]-1;
-	  v = blk_to_ext[LEXICO(x, l_dim)];
-
+	  v = skin_to_ext[dir+ND][i];
 	  out = (qpb_complex *) spinor_out.index[v];	  
 	  link = (qpb_complex *)((qpb_link *) gauge.index[v] + dir);
 	  ptr = (qpb_complex *) spinor_in.index[nneigh[dir][v]];

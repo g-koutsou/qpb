@@ -1,8 +1,15 @@
 include ../../Makefile.in
 
 TARGET = invert
-all: $(TARGET)\
-	lib
+all: $(TARGET) lib
+
+debug: CC += $(DEBUGFLAGS)
+debug: MAKE += debug
+debug: all
+
+prof: CC += $(PROFFLAGS)
+prof: MAKE += prof
+prof: all
 
 LIBDIR = ../../lib
 

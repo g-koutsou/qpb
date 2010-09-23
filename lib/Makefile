@@ -2,6 +2,12 @@ include ../Makefile.in
 
 all: libqpb.a
 
+debug: CC += $(DEBUGFLAGS)
+debug: all
+
+prof: CC += $(PROFFLAGS)
+prof: all
+
 SOURCES = qpb_init\
 	qpb_rng\
 	qpb_byte_order\

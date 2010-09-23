@@ -1,6 +1,9 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
+DEBUGFLAGS=-ggdb
+PROFFLAGS=-pg
 CFLAGS=-O3 -Winline -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall -I./ -I$(HOME)/install/include
 LDFLAGS=-L$(HOME)/install/lib
 LIBS=-lgsl -lgslcblas -lm
+

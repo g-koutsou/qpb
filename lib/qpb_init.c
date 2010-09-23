@@ -124,9 +124,12 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
     }
   problem_params.ext_vol = ext_vol;  
 
-  /* Allocate nneigh and blk_to_ext */
+  /* Allocate nneigh, skin_to_ext and blk_to_ext */
   for(int i=0; i<2*ND; i++)
-    nneigh[i] = qpb_alloc(ext_vol*sizeof(unsigned int));
+    {
+      nneigh[i] = qpb_alloc(ext_vol*sizeof(unsigned int));
+      skin_to_ext[i] = qpb_alloc(problem_params.l_vol*sizeof(unsigned int));
+    }
 
   blk_to_ext = qpb_alloc(problem_params.l_vol*sizeof(unsigned int));
 
@@ -210,6 +213,30 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
       int v = LEXICO(x, le);
       blk_to_ext[i] = v;
     }
+
+  /*
+    skin_to_ext: map boundary index to ext index
+  */
+  for(int dir=0; dir<ND; dir++)
+    for(int skin_v=0; 
+	skin_v<problem_params.l_vol/problem_params.l_dim[dir]; 
+	skin_v++)
+      {
+	int dim[ND];
+	int x[ND];
+	for(int d=0; d<ND; d++)
+	  dim[d] = problem_params.l_dim[d];
+	dim[dir] = 1;
+	
+	x[3] = X_INDEX(skin_v, dim);
+	x[2] = Y_INDEX(skin_v, dim);
+	x[1] = Z_INDEX(skin_v, dim);
+	x[0] = T_INDEX(skin_v, dim);
+	skin_to_ext[dir][skin_v] = blk_to_ext[LEXICO(x, problem_params.l_dim)];
+
+	x[dir] = problem_params.l_dim[dir] - 1;
+	skin_to_ext[dir+ND][skin_v] = blk_to_ext[LEXICO(x, problem_params.l_dim)];
+      }
 
   if(problem_params.proc_id == QPB_MASTER_PROC)
     am_master = 1;
