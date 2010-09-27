@@ -238,6 +238,8 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
 	skin_to_ext[dir+ND][skin_v] = blk_to_ext[LEXICO(x, problem_params.l_dim)];
       }
 
+  problem_params.b_vol = problem_params.ext_vol - problem_params.l_vol;
+
   if(problem_params.proc_id == QPB_MASTER_PROC)
     am_master = 1;
   else

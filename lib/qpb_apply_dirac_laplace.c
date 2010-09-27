@@ -64,6 +64,8 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	  }
 
   qpb_comm_halo_spinor_field_wait(spinor_in);
+
+
   if(problem_params.par_dir[1])
     {
       int dir = 1;

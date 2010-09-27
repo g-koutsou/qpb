@@ -47,6 +47,7 @@ typedef struct{
 typedef struct{
   qpb_spinor_float *bulk;
   qpb_spinor_float *boundaries;
+  void *boundary_start[2*ND];
   qpb_complex_float *zero_field;
   void **index0;
   void **index;
@@ -55,6 +56,7 @@ typedef struct{
 typedef struct{
   qpb_spinor_double *bulk;
   qpb_spinor_double *boundaries;
+  void *boundary_start[2*ND];
   qpb_complex_double *zero_field;
   void **index0;
   void **index;
@@ -78,7 +80,7 @@ typedef struct{
   unsigned short int coords[ND];
   unsigned short int par_dir[ND];
   unsigned int proc_neigh[2*ND];
-  unsigned int g_vol, l_vol, ext_vol, nprocs, proc_id;
+  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs, proc_id;
   MPI_Comm mpi_comm_cart;
 } qpb_problem_params;
 

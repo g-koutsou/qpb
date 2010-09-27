@@ -16,9 +16,9 @@ lib/qpb_gauge_field.c,62
 qpb_gauge_field_init(9,157
 qpb_gauge_field_finalize(87,2414
 
-lib/qpb_spinor_field.c,65
+lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
-qpb_spinor_field_finalize(90,2414
+qpb_spinor_field_finalize(105,2899
 
 lib/qpb_errors.h,172
 #define _QPB_ERRORS_H 2,22
@@ -124,7 +124,7 @@ MPI_Request recv_req[2*ND], send_req[send_req12,183
 qpb_comm_halo_spinor_field_init(15,233
 qpb_comm_halo_spinor_field_finalize(67,1662
 qpb_comm_halo_spinor_field_start(87,2034
-qpb_comm_halo_spinor_field_wait(162,3737
+qpb_comm_halo_spinor_field_wait(140,3171
 
 lib/qpb_clover_term.c,63
 qpb_clover_term_init(11,210
@@ -142,7 +142,7 @@ lib/qpb_msg_passing_init.h,38
 lib/qpb_spinor_field.h,34
 #define _QPB_SPINOR_FIELD_H 2,28
 
-lib/qpb_types.h,3716
+lib/qpb_types.h,3877
 #define _QPB_TYPES_H 2,21
 #define qpb_float 4,61
 #define qpb_double 5,85
@@ -176,76 +176,79 @@ typedef qpb_complex_double qpb_spinor_double[qpb_spinor_double29,564
 } qpb_gauge_field_double;45,949
   qpb_spinor_float *bulk;bulk48,992
   qpb_spinor_float *boundaries;boundaries49,1018
-  qpb_complex_float *zero_field;zero_field50,1050
-  void **index0;index051,1083
-  void **index;index52,1100
-} qpb_spinor_field_float;53,1116
-  qpb_spinor_double *bulk;bulk56,1159
-  qpb_spinor_double *boundaries;boundaries57,1186
-  qpb_complex_double *zero_field;zero_field58,1219
-  void **index0;index059,1253
-  void **index;index60,1270
-} qpb_spinor_field_double;61,1286
-  qpb_link_float (*bulk)bulk64,1330
-  void **index;index65,1371
-} qpb_clover_term_float;66,1387
-  qpb_link_double (*bulk)bulk69,1429
-  void **index;index70,1471
-} qpb_clover_term_double;71,1487
-  unsigned short int g_dim[g_dim74,1530
-  unsigned short int l_dim[l_dim75,1562
-  unsigned short int ext_dim[ext_dim76,1594
-  unsigned short int procs[procs77,1628
-  unsigned short int coords[coords78,1660
-  unsigned short int par_dir[par_dir79,1693
-  unsigned int proc_neigh[proc_neigh80,1727
-  unsigned int g_vol,81,1760
-  unsigned int g_vol, l_vol,81,1760
-  unsigned int g_vol, l_vol, ext_vol,81,1760
-  unsigned int g_vol, l_vol, ext_vol, nprocs,81,1760
-  unsigned int g_vol, l_vol, ext_vol, nprocs, proc_id;81,1760
-  MPI_Comm mpi_comm_cart;82,1815
-} qpb_problem_params;83,1841
-  gsl_rng *gsl_rng_state[gsl_rng_state87,1905
-} qpb_random_state;88,1948
-enum qpb_field_init_opts{qpb_field_init_opts90,1969
-  QPB_ZERO 91,1995
-  QPB_UNIT 92,2011
-  QPB_FILE 93,2027
-  QPB_RAND 94,2043
-	typedef qpb_complex_float qpb_complex;98,2086
-	typedef qpb_link_float qpb_link;99,2126
-	typedef qpb_gauge_field_float qpb_gauge_field;100,2160
-	typedef qpb_clover_term_float qpb_clover_term;101,2208
-	typedef qpb_spinor_float qpb_spinor;102,2256
-	typedef qpb_spinor_field_float qpb_spinor_field;103,2294
-	typedef qpb_complex_double qpb_complex;105,2350
-	typedef qpb_link_double qpb_link;106,2391
-	typedef qpb_gauge_field_double qpb_gauge_field;107,2426
-	typedef qpb_clover_term_double qpb_clover_term;108,2475
-	typedef qpb_spinor_double qpb_spinor;109,2524
-	typedef qpb_spinor_field_double qpb_spinor_field;110,2563
-#define CNORM2(113,2645
-#define CNORM(114,2696
-#define CMULR(115,2752
-#define CMULI(116,2804
-#define CMUL(117,2856
-#define CSCALE(118,2926
-#define CADD(119,2992
-#define CSUB(120,3062
-#define CNEGATE(121,3132
-#define CCONJ(122,3186
-#define CDEV(123,3237
-#define CDEVR(124,3302
-#define CDEVI(125,3359
-#define CSQRTR(126,3416
-#define CSQRTI(127,3480
-#define CSQRT(128,3544
-#define CARG(129,3601
-#define CPOWR(130,3641
-#define CPOWI(131,3695
-#define MIN(132,3749
-#define MAX(133,3785
+  void *boundary_start[boundary_start50,1050
+  qpb_complex_float *zero_field;zero_field51,1080
+  void **index0;index052,1113
+  void **index;index53,1130
+} qpb_spinor_field_float;54,1146
+  qpb_spinor_double *bulk;bulk57,1189
+  qpb_spinor_double *boundaries;boundaries58,1216
+  void *boundary_start[boundary_start59,1249
+  qpb_complex_double *zero_field;zero_field60,1279
+  void **index0;index061,1313
+  void **index;index62,1330
+} qpb_spinor_field_double;63,1346
+  qpb_link_float (*bulk)bulk66,1390
+  void **index;index67,1431
+} qpb_clover_term_float;68,1447
+  qpb_link_double (*bulk)bulk71,1489
+  void **index;index72,1531
+} qpb_clover_term_double;73,1547
+  unsigned short int g_dim[g_dim76,1590
+  unsigned short int l_dim[l_dim77,1622
+  unsigned short int ext_dim[ext_dim78,1654
+  unsigned short int procs[procs79,1688
+  unsigned short int coords[coords80,1720
+  unsigned short int par_dir[par_dir81,1753
+  unsigned int proc_neigh[proc_neigh82,1787
+  unsigned int b_vol,83,1820
+  unsigned int b_vol, g_vol,83,1820
+  unsigned int b_vol, g_vol, l_vol,83,1820
+  unsigned int b_vol, g_vol, l_vol, ext_vol,83,1820
+  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs,83,1820
+  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs, proc_id;83,1820
+  MPI_Comm mpi_comm_cart;84,1882
+} qpb_problem_params;85,1908
+  gsl_rng *gsl_rng_state[gsl_rng_state89,1972
+} qpb_random_state;90,2015
+enum qpb_field_init_opts{qpb_field_init_opts92,2036
+  QPB_ZERO 93,2062
+  QPB_UNIT 94,2078
+  QPB_FILE 95,2094
+  QPB_RAND 96,2110
+	typedef qpb_complex_float qpb_complex;100,2153
+	typedef qpb_link_float qpb_link;101,2193
+	typedef qpb_gauge_field_float qpb_gauge_field;102,2227
+	typedef qpb_clover_term_float qpb_clover_term;103,2275
+	typedef qpb_spinor_float qpb_spinor;104,2323
+	typedef qpb_spinor_field_float qpb_spinor_field;105,2361
+	typedef qpb_complex_double qpb_complex;107,2417
+	typedef qpb_link_double qpb_link;108,2458
+	typedef qpb_gauge_field_double qpb_gauge_field;109,2493
+	typedef qpb_clover_term_double qpb_clover_term;110,2542
+	typedef qpb_spinor_double qpb_spinor;111,2591
+	typedef qpb_spinor_field_double qpb_spinor_field;112,2630
+#define CNORM2(115,2712
+#define CNORM(116,2763
+#define CMULR(117,2819
+#define CMULI(118,2871
+#define CMUL(119,2923
+#define CSCALE(120,2993
+#define CADD(121,3059
+#define CSUB(122,3129
+#define CNEGATE(123,3199
+#define CCONJ(124,3253
+#define CDEV(125,3304
+#define CDEVR(126,3369
+#define CDEVI(127,3426
+#define CSQRTR(128,3483
+#define CSQRTI(129,3547
+#define CSQRT(130,3611
+#define CARG(131,3668
+#define CPOWR(132,3708
+#define CPOWI(133,3762
+#define MIN(134,3816
+#define MAX(135,3852
 
 lib/qpb_stop_watch.h,32
 #define _QPB_STOP_WATCH_H 2,26
