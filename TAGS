@@ -45,56 +45,64 @@ qpb_byte_swap_double(34,488
 lib/qpb_spinor_field_set_zero.h,43
 #define _QPB_SPINOR_FIELD_SET_ZERO_H 2,37
 
-lib/qpb_spinor_linalg.h,1416
+lib/qpb_spinor_linalg.h,1658
 #define _QPB_SPINOR_LINALG_H 2,29
 #define GAMMAX(48,1780
 #define GAMMAX_PEQ(58,2059
-#define GAMMAY(68,2349
-#define GAMMAY_PEQ(78,2628
-#define GAMMAZ(88,2918
-#define GAMMAZ_PEQ(98,3197
-#define GAMMAT(108,3487
-#define GAMMAT_PEQ(118,3766
-#define COLSPIN_SCALE(128,4056
-#define COLSPIN_AXPY(141,4360
-#define COLSPIN_AXPBY(154,4754
-#define COLSPIN_ADD(167,5161
-#define COLSPIN_ZERO(180,5536
-#define COLSPIN_SUB(193,5775
-#define COL_MPLY(206,6150
-#define COL_MPLY_DAG(227,6698
-#define COL_MPLY_PEQ(248,7250
-#define COL_MPLY_MEQ(269,7867
-#define SIGMAXY(292,8505
-#define SIGMAXZ(305,8793
-#define SIGMAXT(318,9081
-#define SIGMAYZ(331,9369
-#define SIGMAYT(344,9655
-#define SIGMAZT(357,9933
-#define GAMMAX(368,10211
-#define GAMMAX_PEQ(394,11002
-#define GAMMAY(420,11820
-#define GAMMAY_PEQ(446,12611
-#define GAMMAZ(472,13429
-#define GAMMAZ_PEQ(498,14220
-#define GAMMAT(524,15038
-#define GAMMAT_PEQ(550,15829
-#define COLSPIN_SCALE(576,16647
-#define COLSPIN_AXPY(605,17495
-#define COLSPIN_AXPBY(634,18610
-#define COLSPIN_ADD(663,19777
-#define COLSPIN_ZERO(692,20864
-#define COLSPIN_SUB(721,21495
-#define COL_MPLY(750,22582
-#define COL_MPLY_DAG(865,27033
-#define COL_MPLY_PEQ(979,31487
-#define COL_MPLY_MEQ(1093,36187
-#define SIGMAXY(1210,40909
-#define SIGMAXZ(1243,41936
-#define SIGMAXT(1276,42965
-#define SIGMAYZ(1309,43994
-#define SIGMAYT(1342,45021
-#define SIGMAZT(1375,46024
+#define GAMMAX_MEQ(68,2349
+#define GAMMAY(78,2639
+#define GAMMAY_PEQ(88,2918
+#define GAMMAY_MEQ(98,3208
+#define GAMMAZ(108,3498
+#define GAMMAZ_PEQ(118,3777
+#define GAMMAZ_MEQ(128,4067
+#define GAMMAT(138,4357
+#define GAMMAT_PEQ(148,4636
+#define GAMMAT_MEQ(158,4926
+#define COLSPIN_SCALE(168,5216
+#define COLSPIN_AXPY(181,5520
+#define COLSPIN_AXPBY(194,5914
+#define COLSPIN_ADD(207,6321
+#define COLSPIN_ZERO(220,6696
+#define COLSPIN_SUB(233,6935
+#define COL_MPLY(246,7310
+#define COL_MPLY_DAG(267,7858
+#define COL_MPLY_PEQ(288,8410
+#define COL_MPLY_MEQ(309,9027
+#define SIGMAXY(332,9665
+#define SIGMAXZ(345,9953
+#define SIGMAXT(358,10241
+#define SIGMAYZ(371,10529
+#define SIGMAYT(384,10815
+#define SIGMAZT(397,11093
+#define GAMMAX(408,11371
+#define GAMMAX_PEQ(434,12162
+#define GAMMAX_MEQ(460,12980
+#define GAMMAY(486,13798
+#define GAMMAY_PEQ(512,14589
+#define GAMMAY_MEQ(538,15407
+#define GAMMAZ(564,16225
+#define GAMMAZ_PEQ(590,17016
+#define GAMMAZ_MEQ(616,17834
+#define GAMMAT(642,18652
+#define GAMMAT_PEQ(668,19443
+#define GAMMAT_MEQ(694,20261
+#define COLSPIN_SCALE(720,21079
+#define COLSPIN_AXPY(749,21927
+#define COLSPIN_AXPBY(778,23042
+#define COLSPIN_ADD(807,24209
+#define COLSPIN_ZERO(836,25296
+#define COLSPIN_SUB(865,25927
+#define COL_MPLY(894,27014
+#define COL_MPLY_DAG(1009,31465
+#define COL_MPLY_PEQ(1123,35919
+#define COL_MPLY_MEQ(1237,40619
+#define SIGMAXY(1354,45341
+#define SIGMAXZ(1387,46368
+#define SIGMAXT(1420,47397
+#define SIGMAYZ(1453,48426
+#define SIGMAYT(1486,49453
+#define SIGMAZT(1519,50456
 
 lib/qpb_finalize.c,20
 qpb_finalize(9,134
@@ -108,16 +116,15 @@ qpb_apply_clover_term_yz(64,1822
 qpb_apply_clover_term_yt(81,2225
 qpb_apply_clover_term_zt(98,2628
 
-lib/qpb_apply_dirac.h,33
-#define _QPB_APPLY_DIRAC_H 2,27
-
-lib/qpb_comm_halo_spinor_field.c,238
+lib/qpb_comm_halo_spinor_field.c,324
 qpb_spinor *sendb[sendb9,132
 qpb_spinor *recvb[recvb10,157
 MPI_Request recv_req[recv_req12,183
 MPI_Request recv_req[2*ND], send_req[send_req12,183
-qpb_comm_halo_spinor_field_start(15,233
-qpb_comm_halo_spinor_field_wait(107,2700
+qpb_comm_halo_spinor_field_init(15,233
+qpb_comm_halo_spinor_field_finalize(67,1662
+qpb_comm_halo_spinor_field_start(87,2034
+qpb_comm_halo_spinor_field_wait(162,3737
 
 lib/qpb_clover_term.c,63
 qpb_clover_term_init(11,210
@@ -126,17 +133,11 @@ qpb_clover_term_finalize(91,2146
 lib/qpb_spinor_field_set_random.c,34
 qpb_spinor_field_set_random(8,96
 
-lib/qpb_apply_laplace.c,25
-qpb_apply_laplace(7,122
-
 lib/qpb_spinor_xmy.h,34
 #define _QPB_SPINOR_XMEQY_H 2,28
 
 lib/qpb_msg_passing_init.h,38
 #define _QPB_MSG_PASSING_INIT_H 2,32
-
-lib/qpb_apply_laplace.h,35
-#define _QPB_APPLY_LAPLACE_H 2,29
 
 lib/qpb_spinor_field.h,34
 #define _QPB_SPINOR_FIELD_H 2,28
@@ -286,12 +287,18 @@ lib/qpb_parser.h,28
 lib/qpb_spinor_field_set_delta.c,33
 qpb_spinor_field_set_delta(8,98
 
-lib/qpb_apply_dirac_tzyx.h,145
+lib/qpb_apply_dirac_tzyx.h,322
 #define _QPB_APPLY_DIRAC_TZYX_H 2,32
-qpb_apply_dirac_t(13,437
-qpb_apply_dirac_z(35,1064
-qpb_apply_dirac_y(57,1691
-qpb_apply_dirac_x(79,2318
+qpb_apply_dirac_t(6,106
+qpb_apply_dirac_p_z(28,729
+qpb_apply_dirac_m_z(45,1115
+qpb_apply_dirac_z(62,1524
+qpb_apply_dirac_p_y(84,2151
+qpb_apply_dirac_m_y(101,2537
+qpb_apply_dirac_y(118,2946
+qpb_apply_dirac_p_x(140,3573
+qpb_apply_dirac_m_x(157,3959
+qpb_apply_dirac_x(174,4368
 
 lib/qpb_finalize.h,30
 #define _QPB_FINALIZE_H 2,24
@@ -311,12 +318,18 @@ lib/qpb_gauge_field_set_unit.h,43
 lib/qpb_read_spinor.c,24
 qpb_read_spinor(12,186
 
-lib/qpb_apply_laplace_tzyx.h,155
+lib/qpb_apply_laplace_tzyx.h,342
 #define _QPB_APPLY_LAPLACE_TZYX_H 2,34
-qpb_apply_laplace_t(10,396
-qpb_apply_laplace_z(32,1072
-qpb_apply_laplace_y(54,1748
-qpb_apply_laplace_x(76,2424
+qpb_apply_laplace_t(5,87
+qpb_apply_laplace_p_z(26,721
+qpb_apply_laplace_m_z(43,1119
+qpb_apply_laplace_z(60,1536
+qpb_apply_laplace_p_y(82,2171
+qpb_apply_laplace_m_y(99,2565
+qpb_apply_laplace_y(116,2982
+qpb_apply_laplace_p_x(137,3616
+qpb_apply_laplace_m_x(155,4011
+qpb_apply_laplace_x(172,4428
 
 lib/qpb_apply_dirac_laplace.c,31
 qpb_apply_dirac_laplace(9,196
@@ -395,22 +408,23 @@ qpb_rng_init(7,80
 qpb_rng_finalize(21,373
 qpb_get_rand(28,463
 
-lib/qpb_globals.h,455
+lib/qpb_globals.h,501
 #define _QPB_GLOBALS_H 2,23
-qpb_problem_params problem_params;4,49
-unsigned int *nneigh[nneigh5,84
-unsigned int *blk_to_ext;blk_to_ext6,112
-unsigned short int am_master;7,138
-unsigned short int clover_idx[clover_idx8,168
-#define print(10,208
-#define error(11,289
-#define X_INDEX(13,380
-#define Y_INDEX(14,413
-#define Z_INDEX(15,471
-#define T_INDEX(16,554
-#define LEXICO(18,654
-qpb_random_state rng_state;24,775
-#define DEBUG_HERE(26,804
+qpb_problem_params problem_params;5,50
+unsigned int *skin_to_ext[skin_to_ext6,85
+unsigned int *nneigh[nneigh7,118
+unsigned int *blk_to_ext;blk_to_ext8,146
+unsigned short int am_master;9,172
+unsigned short int clover_idx[clover_idx10,202
+#define print(12,242
+#define error(13,323
+#define X_INDEX(15,414
+#define Y_INDEX(16,447
+#define Z_INDEX(17,505
+#define T_INDEX(18,588
+#define LEXICO(20,688
+qpb_random_state rng_state;26,809
+#define DEBUG_HERE(28,838
 
 lib/qpb_clover_term_get.h,37
 #define _QPB_CLOVER_TERM_GET_H 2,31
@@ -418,22 +432,19 @@ lib/qpb_clover_term_get.h,37
 lib/qpb_byte_order.h,32
 #define _QPB_BYTE_ORDER_H 2,26
 
-lib/qpb_apply_dirac.c,23
-qpb_apply_dirac(7,120
-
 lib/qpb_comm_halo_gauge_field.c,34
 qpb_comm_halo_gauge_field(10,137
 
 lib/qpb_spinor_field_set_random.h,45
 #define _QPB_SPINOR_FIELD_SET_RANDOM_H 2,39
 
-lib/qpb_bicgstab.c,210
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 9,210
-#define qpb_dslash(11,249
-qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs15,374
-qpb_bicgstab_init(18,446
-qpb_bicgstab_finalize(29,660
-qpb_bicgstab(39,822
+lib/qpb_bicgstab.c,211
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 10,250
+#define qpb_dslash(12,289
+qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,414
+qpb_bicgstab_init(19,486
+qpb_bicgstab_finalize(31,737
+qpb_bicgstab(42,940
 
 lib/qpb_spinor_xdoty.c,24
 qpb_spinor_xdoty(8,103

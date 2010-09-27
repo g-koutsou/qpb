@@ -2,6 +2,7 @@
 #include <qpb_globals.h>
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_linalg.h>
+#include <qpb_comm_halo_spinor_field.h>
 #include <qpb_apply_dirac_laplace.h>
 #include <qpb_apply_clover_term.h>
 #include <qpb_stop_watch.h>
@@ -10,7 +11,7 @@
 
 #define qpb_dslash(y, x)				\
   qpb_apply_dirac_laplace(y, x, gauge, mass);		\
- qpb_apply_clover_term(y, x, clover, c_sw);
+  qpb_apply_clover_term(y, x, clover, c_sw);
 
 qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 
@@ -22,6 +23,7 @@ qpb_bicgstab_init()
       bicgstab_temp_vecs[i] = qpb_spinor_field_init();
       qpb_spinor_field_set_zero(bicgstab_temp_vecs[i]);
     }
+  qpb_comm_halo_spinor_field_init();
   return;
 }
 
@@ -32,6 +34,7 @@ qpb_bicgstab_finalize()
     {
       qpb_spinor_field_finalize(bicgstab_temp_vecs[i]);
     }
+  qpb_comm_halo_spinor_field_finalize();
   return;
 }
 

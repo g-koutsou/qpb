@@ -29,8 +29,6 @@ SOURCES = qpb_init\
 	qpb_plaquette\
 	qpb_clover_term\
 	qpb_clover_term_get\
-	qpb_apply_dirac\
-	qpb_apply_laplace\
 	qpb_apply_dirac_laplace\
 	qpb_apply_clover_term\
 	qpb_bicgstab\

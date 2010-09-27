@@ -27,8 +27,6 @@
 #include <qpb_write_spinor.h>
 #include <qpb_clover_term.h>
 #include <qpb_plaquette.h>
-#include <qpb_apply_dirac.h>
-#include <qpb_apply_laplace.h>
 #include <qpb_bicgstab.h>
 #include <qpb_finalize.h>
 
