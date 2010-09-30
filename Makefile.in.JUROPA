@@ -1,6 +1,6 @@
 AR=xiar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O3 -fp-model strict -m64 -std=c99 -I./ -I${HOME}/install/include
+CFLAGS=-O3 -fp-model strict -m64 -std=c99 -I./ -I${HOME}/install/include -openmp -DOPENMP
 LDFLAGS=-L${HOME}/install/lib
 LIBS=-lgsl -lgslcblas -lm
