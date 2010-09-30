@@ -7,6 +7,9 @@ qpb_spinor_axpy(qpb_spinor_field z, qpb_complex alpha,
 		qpb_spinor_field x, qpb_spinor_field y)
 {
   int lvol = problem_params.l_vol;
+#ifdef OPENMP
+#pragma omp parallel for
+#endif
   for(int v=0; v<lvol; v++)
     {
       qpb_complex *z_ptr = (qpb_complex *)z.bulk[v];

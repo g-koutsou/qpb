@@ -9,6 +9,9 @@ qpb_spinor_xdotx(qpb_double *dot_prod, qpb_spinor_field x)
 {
   long double accum = 0;
   int lvol = problem_params.l_vol;
+#ifdef OPENMP
+#pragma omp parallel for reduction(+: accum)
+#endif
   for(int v=0; v<lvol; v++)
     for(int cs=0; cs<NS*NC; cs++)
       {

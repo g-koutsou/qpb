@@ -37,48 +37,63 @@ qpb_gauge_field_init()
      bulk or the boundary buffer. Member .index0[] is the same, but points
      to the zero field when the argument-index is on a boundary.
    */
-  int edim[ND], ldim[ND];
+  int edim[ND], ldim[ND], par_dir[ND];
   for(int d=0; d<ND; d++)
     {
       edim[d] = problem_params.ext_dim[d];
       ldim[d] = problem_params.l_dim[d];
+      par_dir[d] = problem_params.par_dir[d];
     }
 
-  int evol = problem_params.ext_vol;
-  unsigned short int *par_dir = problem_params.par_dir;
-  int bnd_idx = 0;
-  for(int i=0; i<evol; i++)
-    {						
-      int ex[ND] = 
-	{
-	  T_INDEX(i, edim),
-	  Z_INDEX(i, edim),
-	  Y_INDEX(i, edim),
-	  X_INDEX(i, edim)
-	};
-
-      for(int d=0; d<ND; d++)
-	ex[d] -= par_dir[d];
-
-      gauge_field.index[i] = NULL;  
-      for(int d=0; d<ND; d++)
-	{
-	  if(ex[d] == ldim[d] || ex[d] == -1)
-	    {
-	      gauge_field.index[i] = (void *) gauge_field.boundaries[bnd_idx][0];
-	      gauge_field.index0[i] = (void *) gauge_field.zero_field;
-	      bnd_idx++;
-	      break;
-	    }
-	}
-
-      if(gauge_field.index[i] == NULL)
-	{
-	  int v = LEXICO(ex, ldim);
-	  gauge_field.index[i] = (void *) gauge_field.bulk[v][0];
-	  gauge_field.index0[i] = (void *) gauge_field.bulk[v][0];
-	}
+  int lvol = problem_params.l_vol;
+  for(int lv=0; lv<lvol; lv++)
+    {
+      int v = blk_to_ext[lv];
+      gauge_field.index[v] = (void *) gauge_field.bulk[lv][0];
+      gauge_field.index0[v] = (void *) gauge_field.bulk[lv][0];
     }
+
+  unsigned int bnd_offset = 0;
+  for(int dir=0; dir<ND; dir++)
+    if(par_dir[dir])
+      {
+  	int dims[ND];
+  	for(int d=0; d<ND; d++)
+  	  dims[d] = edim[d];
+
+  	for(int d=dir+1; d<ND; d++)
+  	  dims[d] = ldim[d];
+
+  	dims[dir] = 1;
+  	int bvol = 1;
+  	for(int d=0; d<ND; d++)
+  	  bvol *= dims[d];
+
+  	for(int sign=0; sign<2; sign++)
+  	  {
+	    gauge_field.boundary_start[dir+ND*sign] =
+	      &(gauge_field.boundaries[bnd_offset][0]);
+  	    for(int bv=0; bv<bvol; bv++)
+  	      {
+  		int x[ND];
+  		x[0] = T_INDEX(bv, dims);
+  		x[1] = Z_INDEX(bv, dims);
+  		x[2] = Y_INDEX(bv, dims);
+  		x[3] = X_INDEX(bv, dims);	       		
+  		x[dir] = sign == 0 ? 0 : edim[dir]-1;
+		for(int d=dir+1; d<ND; d++)
+		  x[d] += par_dir[d];
+		
+  		int ext_v = LEXICO(x, edim);
+  		gauge_field.index[ext_v] = 
+		  (qpb_link*)gauge_field.boundary_start[dir+ND*sign]+bv*ND;
+
+  		gauge_field.index0[ext_v] = 
+		  gauge_field.zero_field;
+  	      }
+  	    bnd_offset += bvol;
+	  }
+      }
   return gauge_field;
 };
 

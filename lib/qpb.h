@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <mpi.h>
 
+#ifdef OPENMP
+#	include <omp.h>
+#endif
+
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_init.h>

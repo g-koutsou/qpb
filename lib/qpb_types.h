@@ -31,6 +31,7 @@ typedef qpb_complex_double qpb_spinor_double[NC*NS];
 typedef struct{
   qpb_link_float (*bulk)[ND];
   qpb_link_float (*boundaries)[ND];  
+  void *boundary_start[2*ND];
   qpb_complex_float *zero_field;  
   void **index0;
   void **index;
@@ -39,6 +40,7 @@ typedef struct{
 typedef struct{
   qpb_link_double (*bulk)[ND];
   qpb_link_double (*boundaries)[ND];
+  void *boundary_start[2*ND];
   qpb_complex_double *zero_field;  
   void **index0;
   void **index;
@@ -51,6 +53,7 @@ typedef struct{
   qpb_complex_float *zero_field;
   void **index0;
   void **index;
+  MPI_Request recv_req[2*ND];
 } qpb_spinor_field_float;
 
 typedef struct{
@@ -60,6 +63,7 @@ typedef struct{
   qpb_complex_double *zero_field;
   void **index0;
   void **index;
+  MPI_Request recv_req[2*ND];
 } qpb_spinor_field_double;
 
 typedef struct{

@@ -47,7 +47,6 @@ qpb_spinor_field_init()
       par_dir[d] = problem_params.par_dir[d];
     }
 
-  int evol = problem_params.ext_vol;
   int lvol = problem_params.l_vol;
 
   for(int lv=0; lv<lvol; lv++)
@@ -91,10 +90,20 @@ qpb_spinor_field_init()
   		int ext_v = LEXICO(x, edim);
   		spinor_field.index[ext_v] = 
 		  (qpb_spinor *)spinor_field.boundary_start[dir+ND*sign]+bv;
+
   		spinor_field.index0[ext_v] = 
 		  spinor_field.zero_field;
   	      }
   	    bnd_offset += bvol;
+	  }
+	for(int sign=0; sign<2; sign++)
+	  {
+	    int nn = problem_params.proc_neigh[dir+sign*ND];
+	    MPI_Recv_init(spinor_field.boundary_start[dir+ND*((sign+1)%2)], 
+			  sizeof(qpb_spinor)*bvol, MPI_BYTE, nn,
+			  problem_params.proc_id + sign*problem_params.nprocs, 
+			  MPI_COMM_WORLD, 
+			  &spinor_field.recv_req[dir+sign*ND]);
   	  }
       }
   return spinor_field;
@@ -109,5 +118,10 @@ qpb_spinor_field_finalize(qpb_spinor_field spinor_field)
   free(spinor_field.index);
   free(spinor_field.index0);
   free(spinor_field.zero_field);
+  for(int d=0; d<ND; d++) 
+    if(problem_params.par_dir[d])
+      for(int sign=0; sign<2; sign++)
+	MPI_Request_free(&spinor_field.recv_req[sign*ND+d]);
   return;
 };
+

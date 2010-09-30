@@ -9,133 +9,74 @@
 void
 qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
 {
+
+  int edim[ND], ldim[ND], par_dir[ND];
+  for(int d=0; d<ND; d++)
+    {
+      edim[d] = problem_params.ext_dim[d];
+      ldim[d] = problem_params.l_dim[d];
+      par_dir[d] = problem_params.par_dir[d];
+    }
+
   qpb_link (*sendb)[ND];
-  qpb_link (*recvb)[ND];
-
-  int ext_dim[ND] = 
-    {
-      problem_params.ext_dim[0],
-      problem_params.ext_dim[1],
-      problem_params.ext_dim[2],
-      problem_params.ext_dim[3]
-    };
-
-  for(int dir=1; dir<ND; dir++)
-    {
-      if(problem_params.par_dir[dir])
+  for(int dir=0; dir<ND; dir++)
+    if(par_dir[dir])
 	{
 	  MPI_Request rcv_req, snd_req;
 	  MPI_Status stat;
 	  int nn;
-	  int b_vol = 1;
-	  int b_dim[ND], shifts[ND];
-	  for(int d=0; d<dir; d++)
-	    {
-	      b_dim[d] = problem_params.ext_dim[d];
-	      shifts[d] = 0;
-	    }
-	  for(int d=dir+1; d<ND; d++)
-	    {
-	      b_dim[d] = problem_params.l_dim[d];
-	      shifts[d] = problem_params.par_dir[d];
-	    }
-	  b_dim[dir] = 1;
-	  shifts[dir] = 0;
+
+	  int dims[ND];
 	  for(int d=0; d<ND; d++)
-	    b_vol *= b_dim[d];
+	    dims[d] = edim[d];
+
+	  for(int d=dir+1; d<ND; d++)
+	    dims[d] = ldim[d];
+
+	  dims[dir] = 1;
+
+	  int bvol = 1;
+	  for(int d=0; d<ND; d++)
+	    bvol *= dims[d];
 	  
-	  recvb = qpb_alloc(sizeof(qpb_link) * ND * b_vol);
-	  sendb = qpb_alloc(sizeof(qpb_link) * ND * b_vol);
+	  sendb = qpb_alloc(sizeof(qpb_link) * ND * bvol);
 
-	  for(int i=0; i<b_vol; i++)
-	    {
-	      int x[ND];
-	      x[3] = X_INDEX(i, b_dim);
-	      x[2] = Y_INDEX(i, b_dim);
-	      x[1] = Z_INDEX(i, b_dim);
-	      x[0] = T_INDEX(i, b_dim);
+	  for(int sign=0; sign<2; sign++)
+	    {	      
+	      for(int bv=0; bv<bvol; bv++)
+		{
+		  int x[ND];
+		  x[3] = X_INDEX(bv, dims);
+		  x[2] = Y_INDEX(bv, dims);
+		  x[1] = Z_INDEX(bv, dims);
+		  x[0] = T_INDEX(bv, dims);
+		  
+		  x[dir] = sign == 0 ? 1 : edim[dir]-2;
+		  for(int d=dir+1; d<ND; d++)
+		    x[d] += par_dir[d];
+		  
+		  int ext_v = LEXICO(x, edim);	      
+		  memcpy(sendb[bv], (void *)gauge_field.index[ext_v], 
+			 ND*sizeof(qpb_link));
+		}
+	  
+	      nn = problem_params.proc_neigh[dir+sign*ND];
+	      MPI_Irecv(gauge_field.boundary_start[dir+((1+sign)%2)*ND], 
+			sizeof(qpb_link)*ND*bvol, MPI_BYTE, nn, 
+			problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
 	      
-	      x[dir] = 1;
-	      for(int d=0; d<ND; d++)
-		x[d] += shifts[d];
-
-	      int v = LEXICO(x, ext_dim);	      
-	      memcpy(sendb[i], (void *)gauge_field.index[v], ND*sizeof(qpb_link));
+	      nn = problem_params.proc_neigh[dir+((1+sign)%2)*ND];
+	      MPI_Isend(sendb, sizeof(qpb_link)*ND*bvol, MPI_BYTE, nn,
+			nn, MPI_COMM_WORLD, &snd_req);
+	      
+	      MPI_Wait(&rcv_req, &stat);
+	      MPI_Wait(&snd_req, &stat);
 	    }
-
-	  nn = problem_params.proc_neigh[dir];
-	  MPI_Irecv(recvb, sizeof(qpb_link)*ND*b_vol, MPI_BYTE, nn, 
-		    problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
-
-	  nn = problem_params.proc_neigh[dir+ND];
-	  MPI_Isend(sendb, sizeof(qpb_link)*ND*b_vol, MPI_BYTE, nn,
-		    nn, MPI_COMM_WORLD, &snd_req);
-
-	  MPI_Wait(&rcv_req, &stat);
-	  MPI_Wait(&snd_req, &stat);
-
-	  for(int i=0; i<b_vol; i++)
-	    {
-	      int x[ND];
-	      x[3] = X_INDEX(i, b_dim);
-	      x[2] = Y_INDEX(i, b_dim);
-	      x[1] = Z_INDEX(i, b_dim);
-	      x[0] = T_INDEX(i, b_dim);
-	      
-	      x[dir] = ext_dim[dir] - 1;
-	      for(int d=0; d<ND; d++)
-                x[d] += shifts[d];
-
-              int v = LEXICO(x, ext_dim);
-	      memcpy((void *)gauge_field.index[v], recvb[i], ND*sizeof(qpb_link));
-	    }
-
-	  for(int i=0; i<b_vol; i++)
-	    {
-	      int x[ND];
-	      x[3] = X_INDEX(i, b_dim);
-	      x[2] = Y_INDEX(i, b_dim);
-	      x[1] = Z_INDEX(i, b_dim);
-	      x[0] = T_INDEX(i, b_dim);
-	      
-	      x[dir] = ext_dim[dir] - 2;
-              for(int d=0; d<ND; d++)
-                x[d] += shifts[d];
-
-              int v = LEXICO(x, ext_dim);	      
-	      memcpy(sendb[i], (void *)gauge_field.index[v], ND*sizeof(qpb_link));
-	    }
-
-	  nn = problem_params.proc_neigh[dir+ND];
-	  MPI_Irecv(recvb, sizeof(qpb_link)*ND*b_vol, MPI_BYTE, nn, 
-		    problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
-
-	  nn = problem_params.proc_neigh[dir];
-	  MPI_Isend(sendb, sizeof(qpb_link)*ND*b_vol, MPI_BYTE, nn,
-		    nn, MPI_COMM_WORLD, &snd_req);
-
-	  MPI_Wait(&rcv_req, &stat);
-	  MPI_Wait(&snd_req, &stat);
-
-	  for(int i=0; i<b_vol; i++)
-	    {
-	      int x[ND];
-	      x[3] = X_INDEX(i, b_dim);
-	      x[2] = Y_INDEX(i, b_dim);
-	      x[1] = Z_INDEX(i, b_dim);
-	      x[0] = T_INDEX(i, b_dim);
-	      
-	      x[dir] = 0;
-              for(int d=0; d<ND; d++)
-                x[d] += shifts[d];
-
-              int v = LEXICO(x, ext_dim);
-	      memcpy((void *)gauge_field.index[v], recvb[i], ND*sizeof(qpb_link));
-	    }	  
-
 	  free(sendb);
-	  free(recvb);
 	}
-    }
+
   return;
 }
+
+
+

@@ -9,6 +9,9 @@ qpb_apply_clover_term(qpb_spinor_field out_spinor, qpb_spinor_field in_spinor,
 		      qpb_clover_term clover_term, qpb_double c_sw)
 {
   int lvol = problem_params.l_vol;
+#ifdef OPENMP
+#pragma omp parallel for
+#endif
   for(int lv=0; lv<lvol; lv++)
     {
       int v = blk_to_ext[lv];
