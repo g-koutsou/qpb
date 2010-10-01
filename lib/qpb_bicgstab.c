@@ -113,13 +113,13 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, qpb_gauge_field gauge,
     {
       error(" !\n");
       error(" BiCGStab *did not* converge, after %d iterrations\n", iters);
-      error(" residual = %e, relative = %e\n", res_norm, res_norm / b_norm);
+      error(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
       error(" !\n");
       return -1;
     }
 
   print(" After %d iterrations BiCGStab converged\n", iters);
-  print(" residual = %e, relative = %e, t = %g\n", res_norm, res_norm / b_norm, t);
+  print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
   
   return iters;
 }
