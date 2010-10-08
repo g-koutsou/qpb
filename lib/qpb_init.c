@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <qpb_alloc.h>
 #include <qpb_types.h>
 #include <qpb_globals.h>
@@ -244,6 +245,23 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
     am_master = 1;
   else
     am_master = 0;
+
+  /* initialize dir_comb_2: serializes the two-direction combinations,
+     so that each combination has it's own index */
+  int idx = 0;
+  for(int d0=0; d0<ND; d0++)
+    for(int d1=0; d1<ND; d1++)
+      dir_comb_2.index[d0][d1] = USHRT_MAX; /* bogus number */
+  for(int d0=0; d0<ND; d0++)
+    for(int d1=d0+1; d1<ND; d1++)
+      {
+	dir_comb_2.dirs[idx][0] = d0;
+	dir_comb_2.dirs[idx][1] = d1;
+	dir_comb_2.index[d0][d1] = idx;
+	dir_comb_2.index[d1][d0] = idx;
+	idx++;
+      }
+
 
   return;
 }

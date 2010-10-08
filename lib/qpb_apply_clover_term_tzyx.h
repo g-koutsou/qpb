@@ -18,7 +18,7 @@ qpb_apply_clover_term_xy(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 3, nu = 2;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAXY(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);
@@ -35,7 +35,7 @@ qpb_apply_clover_term_xz(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 3, nu = 1;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAXZ(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);
@@ -52,7 +52,7 @@ qpb_apply_clover_term_xt(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 3, nu = 0;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAXT(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);
@@ -69,7 +69,7 @@ qpb_apply_clover_term_yz(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 2, nu = 1;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAYZ(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);
@@ -86,7 +86,7 @@ qpb_apply_clover_term_yt(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 2, nu = 0;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAYT(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);
@@ -103,7 +103,7 @@ qpb_apply_clover_term_zt(qpb_complex *out, void **in, void **clover, int v)
   qpb_complex *link;
   int mu = 1, nu = 0;
 
-  link = (qpb_complex *) ((qpb_link *)clover[v] + clover_idx[mu][nu]);
+  link = (qpb_complex *) ((qpb_link *)clover[v] + dir_comb_2.index[mu][nu]);
   sp_ptr = (qpb_complex *) in[v];
   SIGMAZT(sp, sp_ptr);
   COL_MPLY_PEQ(out, link, sp);

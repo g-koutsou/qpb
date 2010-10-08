@@ -1,24 +1,21 @@
 #include <stdlib.h>
-#include <limits.h>
 
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_alloc.h>
-#include <qpb_clover_term_get.h>
-
 /* Allocates memory for a clover_term struct */
 qpb_clover_term
-qpb_clover_term_init(qpb_gauge_field gauge)
+qpb_clover_term_init()
 {
   qpb_clover_term clover_term;
   /* allocate bulk */
   clover_term.bulk = qpb_alloc(problem_params.l_vol
-			       * sizeof(qpb_link)*(ND*(ND-1))/2);
-
+			       * sizeof(qpb_link)*N_DIR_COMB_2);
+  
   /* allocate index map */
   clover_term.index = qpb_alloc(problem_params.ext_vol
 				* sizeof(void *));
-
+  
   /* map extended volume index to bulk or boundary buffer 
      
      "Extended volume" is the hypercube: (local volume) + boundaries
@@ -67,22 +64,6 @@ qpb_clover_term_init(qpb_gauge_field gauge)
 	  clover_term.index[i] = (void *) clover_term.bulk[v][0];
 	}
     }
-  
-  /* initialize global clover_idx[ND][ND] */
-  for(int d0=0; d0<ND; d0++)
-    for(int d1=0; d1<ND; d1++)
-      clover_idx[d0][d0] = USHRT_MAX;
-  
-  int idx = 0;
-  for(int d0=0; d0<ND; d0++)
-    for(int d1=d0+1; d1<ND; d1++)
-      {
-	clover_idx[d0][d1] = idx++;
-	clover_idx[d1][d0] = clover_idx[d0][d1];
-      }
-
-  qpb_clover_term_get(clover_term, gauge);
- 
   return clover_term;
 };
 

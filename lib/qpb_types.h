@@ -9,9 +9,11 @@
 #define QPB_MASTER_PROC 0
 
 #define NS 4 /* spin components */
-#define ND 4 /* dimensions */
 #define NC 3 /* colors */
-
+#define ND 4 /* dimensions, if you change this, 
+		also see qpb_diagonal_links*/
+#define N_DIR_COMB_2 ((ND*(ND-1))/2) /* The number of destinct combinations 
+					of two directions */
 typedef struct{
   float re;
   float im;
@@ -67,14 +69,25 @@ typedef struct{
 } qpb_spinor_field_double;
 
 typedef struct{
-  qpb_link_float (*bulk)[(ND*(ND-1))/2];
+  qpb_link_float (*bulk)[N_DIR_COMB_2];
   void **index;
 } qpb_clover_term_float;
 
 typedef struct{
-  qpb_link_double (*bulk)[(ND*(ND-1))/2];
+  qpb_link_double (*bulk)[N_DIR_COMB_2];
   void **index;
 } qpb_clover_term_double;
+
+typedef struct{
+  qpb_link_float (*bulk)[((3*3*3*3)-1)/2]; /* (3**ND - 1)/2 */
+  void **index;
+} qpb_diagonal_links_float;
+
+typedef struct{
+  qpb_link_double (*bulk)[((3*3*3*3)-1)/2]; /* (3**ND - 1)/2 */
+  void **index;
+} qpb_diagonal_links_double;
+
 
 typedef struct{
   unsigned short int g_dim[ND];
@@ -105,6 +118,7 @@ enum qpb_field_init_opts{
 	typedef qpb_link_float qpb_link;
 	typedef qpb_gauge_field_float qpb_gauge_field;
 	typedef qpb_clover_term_float qpb_clover_term;
+	typedef qpb_diagonal_links_float qpb_diagonal_links;
 	typedef qpb_spinor_float qpb_spinor;
 	typedef qpb_spinor_field_float qpb_spinor_field;
 #else
@@ -112,6 +126,7 @@ enum qpb_field_init_opts{
 	typedef qpb_link_double qpb_link;
 	typedef qpb_gauge_field_double qpb_gauge_field;
 	typedef qpb_clover_term_double qpb_clover_term;
+	typedef qpb_diagonal_links_double qpb_diagonal_links;
 	typedef qpb_spinor_double qpb_spinor;
 	typedef qpb_spinor_field_double qpb_spinor_field;
 #endif /* SINGLE_PRECISION */

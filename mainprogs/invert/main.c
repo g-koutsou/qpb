@@ -220,7 +220,8 @@ main(int argc, char *argv[])
   print(" Plaquette = %12.8f\n", plaquette);
 
   /* Clover term */
-  qpb_clover_term clover_term = qpb_clover_term_init(gauge);
+  qpb_clover_term clover_term = qpb_clover_term_init();
+  qpb_clover_term_get(clover_term, gauge);
 
   /* Allocate source and solution spinor */
   qpb_spinor_field source = qpb_spinor_field_init();
