@@ -12,8 +12,23 @@
 #define NC 3 /* colors */
 #define ND 4 /* dimensions, if you change this, 
 		also see qpb_diagonal_links*/
-#define N_DIR_COMB_2 ((ND*(ND-1))/2) /* The number of destinct combinations 
-					of two directions */
+/* 
+   The number of distinct combinations 
+   between two directions (number of
+   surfaces that can be realized in ND 
+   dimensions)
+*/
+#define N_DIR_COMB_2 ((ND*(ND-1))/2) 
+/* 
+   Number of one-hop neighbors 
+   in taxi-driver metric: 
+	  i) three integers for each direction (-hop, +hop, no-hop)
+	 ii) excluding no-hop in all directions (minus one)
+	iii) only define when first hop is forward (half)
+   => (3**ND - 1)/2
+*/
+#define N_HYPERCUBE_NEIGH ((3*3*3*3-1)/2) 
+
 typedef struct{
   float re;
   float im;
@@ -79,12 +94,16 @@ typedef struct{
 } qpb_clover_term_double;
 
 typedef struct{
-  qpb_link_float (*bulk)[((3*3*3*3)-1)/2]; /* (3**ND - 1)/2 */
+  qpb_link_float (*bulk)[N_HYPERCUBE_NEIGH];
+  qpb_link_float (*boundaries)[N_HYPERCUBE_NEIGH];
+  void *boundary_start[2*ND];
   void **index;
 } qpb_diagonal_links_float;
 
 typedef struct{
-  qpb_link_double (*bulk)[((3*3*3*3)-1)/2]; /* (3**ND - 1)/2 */
+  qpb_link_double (*bulk)[N_HYPERCUBE_NEIGH];
+  qpb_link_double (*boundaries)[N_HYPERCUBE_NEIGH];
+  void *boundary_start[2*ND];
   void **index;
 } qpb_diagonal_links_double;
 

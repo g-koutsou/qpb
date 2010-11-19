@@ -25,13 +25,13 @@ qpb_plaquette(qpb_gauge_field gauge)
 	  /*
 	    u0 = (qpb_complex *)((qpb_link *) gauge.index[v] + mu);
 	    u1 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[mu][v]] + nu);
-	    U_TIMES_U_00(aux0, u0, u1);
+	    sun_mul_uu(aux0, u0, u1);
 	    
 	    u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[nu][v]] + mu);
-	    U_TIMES_U_01(aux1, aux0, u0);
+	    sun_mul_ud(aux1, aux0, u0);
 	    
 	    u0 = (qpb_complex *)((qpb_link *) gauge.index[v] + nu);
-	    U_TIMES_U_01(aux0, aux1, u0);
+	    sun_mul_ud(aux0, aux1, u0);
 	  */
 	  
 	  /* Plaquette using alternative links. Checks diagonal 
@@ -40,16 +40,16 @@ qpb_plaquette(qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[ND+mu][v]] + mu);
 	  u1 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[mu+ND][nneigh[nu+ND][v]]] 
 			       + nu);
-	  U_TIMES_U_11(aux0, u0, u1);
+	  sun_mul_dd(aux0, u0, u1);
 	  
 	  u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[mu+ND][nneigh[nu+ND][v]]] 
 			       + mu);
-	  U_TIMES_U_00(aux1, aux0, u0);
+	  sun_mul_uu(aux1, aux0, u0);
 	  
 	  u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[ND+nu][v]] + nu);
-	  U_TIMES_U_00(aux0, aux1, u0);
+	  sun_mul_uu(aux0, aux1, u0);
 	  
-	  plaquette += TRACE_U(aux0);
+	  plaquette += sun_trace(aux0) / 3.;
 	}
     }  
   qpb_double plaquette_vec[nprocs];

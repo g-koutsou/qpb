@@ -3,6 +3,7 @@
 #endif
 #include <qpb_types.h>
 #include <qpb_globals.h>
+#include <qpb_spinor_gammas.h>
 #include <qpb_spinor_linalg.h>
 #include <qpb_apply_dirac_tzyx.h>
 #include <qpb_apply_laplace_tzyx.h>
@@ -161,8 +162,8 @@ qpb_apply_dirac_laplace(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
     {
       qpb_complex *out = (qpb_complex *)(spinor_out.bulk[lv]);
       qpb_complex *in = (qpb_complex *)(spinor_in.bulk[lv]);
-      COLSPIN_SCALE(out, 0.5, out);
-      COLSPIN_AXPY(out, (mass+4.0), in, out);
+      spinor_ax(out, 0.5, out);
+      spinor_axpy(out, (mass+4.0), in, out);
     }
   
   return;

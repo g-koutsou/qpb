@@ -13,12 +13,12 @@ qpb_apply_laplace_t(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 0;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
+  spinor_sun_mul(sp0, link, ptr);
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp1, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
-  COLSPIN_SUB(out, out, sp1);
+  spinor_sun_dag_mul(sp1, link, ptr);
+  spinor_xmy(out, out, sp0);
+  spinor_xmy(out, out, sp1);
   return;
 }
 
@@ -33,8 +33,8 @@ qpb_apply_laplace_p_z(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 1;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
   
   return;
 }
@@ -50,8 +50,8 @@ qpb_apply_laplace_m_z(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 1;
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_dag_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
 
   return;
 }
@@ -68,12 +68,12 @@ qpb_apply_laplace_z(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 1;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
+  spinor_sun_mul(sp0, link, ptr);
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp1, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
-  COLSPIN_SUB(out, out, sp1);
+  spinor_sun_dag_mul(sp1, link, ptr);
+  spinor_xmy(out, out, sp0);
+  spinor_xmy(out, out, sp1);
 
   return;
 }
@@ -89,8 +89,8 @@ qpb_apply_laplace_p_y(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 2;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
 
   return;
 }
@@ -106,8 +106,8 @@ qpb_apply_laplace_m_y(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 2;
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_dag_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
 
   return;
 }
@@ -124,12 +124,12 @@ qpb_apply_laplace_y(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 2;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
+  spinor_sun_mul(sp0, link, ptr);
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp1, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
-  COLSPIN_SUB(out, out, sp1);
+  spinor_sun_dag_mul(sp1, link, ptr);
+  spinor_xmy(out, out, sp0);
+  spinor_xmy(out, out, sp1);
   return;
 }
 
@@ -144,8 +144,8 @@ qpb_apply_laplace_p_x(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 3;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
 
   return;
 }
@@ -162,8 +162,8 @@ qpb_apply_laplace_m_x(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 3;
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp0, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
+  spinor_sun_dag_mul(sp0, link, ptr);
+  spinor_xmy(out, out, sp0);
 
   return;
 }
@@ -180,12 +180,12 @@ qpb_apply_laplace_x(qpb_complex *out, void **in, void **gauge, int v)
   int dir = 3;
   link = (qpb_complex *)((qpb_link *) gauge[v] + dir);
   ptr = (qpb_complex *) in[nneigh[dir][v]];
-  COL_MPLY(sp0, link, ptr);
+  spinor_sun_mul(sp0, link, ptr);
   link = (qpb_complex *)((qpb_link *) gauge[nneigh[dir+ND][v]] + dir);
   ptr = (qpb_complex *) in[nneigh[dir+ND][v]];
-  COL_MPLY_DAG(sp1, link, ptr);
-  COLSPIN_SUB(out, out, sp0);
-  COLSPIN_SUB(out, out, sp1);
+  spinor_sun_dag_mul(sp1, link, ptr);
+  spinor_xmy(out, out, sp0);
+  spinor_xmy(out, out, sp1);
 
   return;
 }

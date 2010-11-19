@@ -246,7 +246,9 @@ main(int argc, char *argv[])
       break;
     }
   qpb_spinor_field_set_zero(sol);
-  
+
+  //qpb_diagonal_links diagonal_links = qpb_diagonal_links_init();
+  //qpb_diagonal_links_get(diagonal_links, gauge);
   qpb_bicgstab_init();
   int iters = qpb_bicgstab(sol, source, gauge, clover_term, kappa, c_sw,
 			   epsilon, max_iters);
@@ -259,6 +261,7 @@ main(int argc, char *argv[])
   qpb_spinor_field_finalize(sol);
   qpb_spinor_field_finalize(source);
   qpb_gauge_field_finalize(gauge);
+  //qpb_diagonal_links_finalize(diagonal_links);
   qpb_clover_term_finalize(clover_term);
   qpb_rng_finalize();
   qpb_finalize();

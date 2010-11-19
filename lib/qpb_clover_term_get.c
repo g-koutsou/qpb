@@ -35,15 +35,15 @@ qpb_clover_term_get(qpb_clover_term clover_term, qpb_gauge_field gauge)
 	  */
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[v] + mu);
 	  u1 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[mu][v]] + nu);
-	  U_TIMES_U_00(aux0, u0, u1);
+	  sun_mul_uu(aux0, u0, u1);
 	    
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu][v]] + mu);
-	  U_TIMES_U_01(aux1, aux0, u0);
+	  sun_mul_ud(aux1, aux0, u0);
 
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[v] + nu);
-	  U_TIMES_U_01(aux0, aux1, u0);
+	  sun_mul_ud(aux0, aux1, u0);
 
-	  U_EQ_U(c, aux0);
+	  sun_uequ(c, aux0);
 
 	  /* 
 	     Bottom left plaquette 
@@ -51,16 +51,16 @@ qpb_clover_term_get(qpb_clover_term clover_term, qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu+ND][v]] + nu);
 	  u1 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu+ND][nneigh[mu+ND][v]]]
 			       + mu);
-	  U_TIMES_U_11(aux0, u0, u1);
+	  sun_mul_dd(aux0, u0, u1);
 	    
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu+ND][nneigh[mu+ND][v]]]
 			       + nu);
-	  U_TIMES_U_00(aux1, aux0, u0);
+	  sun_mul_uu(aux1, aux0, u0);
 
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[mu+ND][v]] + mu);
-	  U_TIMES_U_00(aux0, aux1, u0);
+	  sun_mul_uu(aux0, aux1, u0);
 
-	  U_MEQ_U(c, aux0);
+	  sun_umequ(c, aux0);
 
 	  /* 
 	     Top left plaquette 
@@ -68,15 +68,15 @@ qpb_clover_term_get(qpb_clover_term clover_term, qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[v] + nu);
 	  u1 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu][nneigh[mu+ND][v]]]
 			       + mu);
-	  U_TIMES_U_01(aux0, u0, u1);
+	  sun_mul_ud(aux0, u0, u1);
 	    
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[mu+ND][v]] + nu);
-	  U_TIMES_U_01(aux1, aux0, u0);
+	  sun_mul_ud(aux1, aux0, u0);
 
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[mu+ND][v]] + mu);
-	  U_TIMES_U_00(aux0, aux1, u0);
+	  sun_mul_uu(aux0, aux1, u0);
 
-	  U_PEQ_U(c, aux0);
+	  sun_upequ(c, aux0);
 
 	  /* 
 	     Bottom right plaquette 
@@ -84,24 +84,24 @@ qpb_clover_term_get(qpb_clover_term clover_term, qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[v] + mu);
 	  u1 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[mu][nneigh[nu+ND][v]]] 
 			       + nu);
-	  U_TIMES_U_01(aux0, u0, u1);
+	  sun_mul_ud(aux0, u0, u1);
 	    
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu+ND][v]] + mu);
-	  U_TIMES_U_01(aux1, aux0, u0);
+	  sun_mul_ud(aux1, aux0, u0);
 
 	  u0 = (qpb_complex *)((qpb_link *)gauge.index[nneigh[nu+ND][v]] + nu);
-	  U_TIMES_U_00(aux0, aux1, u0);
+	  sun_mul_uu(aux0, aux1, u0);
 
-	  U_MEQ_U(c, aux0);
+	  sun_umequ(c, aux0);
 
 	  /*
 	    C = -(i/4) ( P - P^+ )/2
 	  */
-	  U_EQ_U(aux0, c);
-	  U_EQ_U_DAGGER(aux1, c);
-	  U_MEQ_U(aux0, aux1);
+	  sun_uequ(aux0, c);
+	  sun_ueqd(aux1, c);
+	  sun_umequ(aux0, aux1);
 	  qpb_complex z = (qpb_complex){0, -1./(2.*4.)};
-	  U_TIMES_C(c, aux0, z);
+	  sun_mul_au(c, z, aux0);
 	}
     }
   return;

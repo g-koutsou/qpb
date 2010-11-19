@@ -17,7 +17,7 @@ qpb_apply_clover_term(qpb_spinor_field out_spinor, qpb_spinor_field in_spinor,
       int v = blk_to_ext[lv];
       qpb_spinor aux_spinor;
       qpb_complex *sp = (qpb_complex *)&aux_spinor;
-      COLSPIN_ZERO(sp);
+      spinor_set_zero(sp);
 
       qpb_apply_clover_term_xy(sp, in_spinor.index, clover_term.index, v);
       qpb_apply_clover_term_xz(sp, in_spinor.index, clover_term.index, v);

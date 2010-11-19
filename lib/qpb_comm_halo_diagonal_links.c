@@ -7,7 +7,7 @@
 #include <qpb_alloc.h>
 
 void
-qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
+qpb_comm_halo_diagonal_links(qpb_diagonal_links diagonal_links)
 {
 
   int edim[ND], ldim[ND], par_dir[ND];
@@ -18,7 +18,7 @@ qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
       par_dir[d] = problem_params.par_dir[d];
     }
 
-  qpb_link (*sendb)[ND];
+  qpb_link (*sendb)[N_HYPERCUBE_NEIGH];
   for(int dir=0; dir<ND; dir++)
     if(par_dir[dir])
 	{
@@ -39,7 +39,7 @@ qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
 	  for(int d=0; d<ND; d++)
 	    bvol *= dims[d];
 	  
-	  sendb = qpb_alloc(sizeof(qpb_link) * ND * bvol);
+	  sendb = qpb_alloc(sizeof(qpb_link) * N_HYPERCUBE_NEIGH * bvol);
 
 	  for(int sign=0; sign<2; sign++)
 	    {	      
@@ -56,17 +56,17 @@ qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
 		    x[d] += par_dir[d];
 		  
 		  int ext_v = LEXICO(x, edim);	      
-		  memcpy(sendb[bv], (void *)gauge_field.index[ext_v], 
-			 ND*sizeof(qpb_link));
+		  memcpy(sendb[bv], (void *)diagonal_links.index[ext_v], 
+			 N_HYPERCUBE_NEIGH*sizeof(qpb_link));
 		}
 	  
 	      nn = problem_params.proc_neigh[dir+sign*ND];
-	      MPI_Irecv(gauge_field.boundary_start[dir+((1+sign)%2)*ND], 
-			sizeof(qpb_link)*ND*bvol, MPI_BYTE, nn, 
+	      MPI_Irecv(diagonal_links.boundary_start[dir+((1+sign)%2)*ND], 
+			sizeof(qpb_link)*N_HYPERCUBE_NEIGH*bvol, MPI_BYTE, nn, 
 			problem_params.proc_id, MPI_COMM_WORLD, &rcv_req);
 	      
 	      nn = problem_params.proc_neigh[dir+((1+sign)%2)*ND];
-	      MPI_Isend(sendb, sizeof(qpb_link)*ND*bvol, MPI_BYTE, nn,
+	      MPI_Isend(sendb, sizeof(qpb_link)*N_HYPERCUBE_NEIGH*bvol, MPI_BYTE, nn,
 			nn, MPI_COMM_WORLD, &snd_req);
 	      
 	      MPI_Wait(&rcv_req, &stat);
@@ -77,3 +77,6 @@ qpb_comm_halo_gauge_field(qpb_gauge_field gauge_field)
 
   return;
 }
+
+
+

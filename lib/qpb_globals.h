@@ -7,13 +7,27 @@ unsigned int *skin_to_ext[2*ND];
 unsigned int *nneigh[2*ND];
 unsigned int *blk_to_ext;
 unsigned short int am_master;
+unsigned short int **permutations[ND+1];
+
 struct {
   unsigned short int dirs[N_DIR_COMB_2][2];
   unsigned short int index[ND][ND];
 } dir_comb_2;
 
+struct {
+  unsigned short int hops[N_HYPERCUBE_NEIGH][ND];
+} hypercube_neigh;
+
 #define print(FMT, ...) if(am_master) printf(FMT, ##__VA_ARGS__); fflush(stdout)
 #define error(FMT, ...) if(am_master) fprintf(stderr, FMT, ##__VA_ARGS__); fflush(stderr)
+
+#define print_sun(a)						\
+  for(int i=0; i<NC; i++)					\
+    {								\
+      for(int j=0; j<NC; j++)					\
+	print(" %+e%+e*J ", a[j+i*NC].re, a[j+i*NC].im);	\
+      print("\n");						\
+    }
 
 #define X_INDEX(i, L) (i % L[3])
 #define Y_INDEX(i, L) ((i - X_INDEX(i, L)) / L[3]) % L[2]

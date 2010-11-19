@@ -246,8 +246,10 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
   else
     am_master = 0;
 
-  /* initialize dir_comb_2: serializes the two-direction combinations,
-     so that each combination has it's own index */
+  /* 
+     initialize dir_comb_2: serializes the two-direction combinations,
+     so that each combination has it's own index 
+  */
   int idx = 0;
   for(int d0=0; d0<ND; d0++)
     for(int d1=0; d1<ND; d1++)
@@ -262,6 +264,189 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
 	idx++;
       }
 
+  /* 
+     initialize hypercube_neigh: serializes the indexing
+     of all one-hop neighbors in taxi-driver metric, 
+     so that each neighbor has it's own index 
+
+     For each direction there can be three values:
+     0: no-hop, 1: forward-hop, 2: backward-hop
+     
+     We exclude the combination where all hops are no-hop
+     
+     We define only half: hops where first hop is a forward-hop
+
+     see qpb_diagonal_links_get.c for more info
+  */
+  idx = 0;
+  int d[ND];
+  for(d[0]=0; d[0]<3; d[0]++)
+    for(d[1]=0; d[1]<3; d[1]++)
+      for(d[2]=0; d[2]<3; d[2]++)
+	for(d[3]=0; d[3]<3; d[3]++)
+	  {
+	    int sum = 0;
+	    int flag = 0;
+	    for(int i=0; i<ND; i++)
+	      {
+		sum += d[i];
+		if(sum != 0)
+		  {
+		    if(d[i] == 2)
+		      flag = 1;
+		    break;
+		  }
+	      }
+	    /*
+	      flag = 1 if first non-zero dir is = 2
+	      sum = 0 if all dirs = 0
+	     */
+	    if(flag || !sum)
+	      continue;
+	    hypercube_neigh.hops[idx][0] = d[0];
+	    hypercube_neigh.hops[idx][1] = d[1];
+	    hypercube_neigh.hops[idx][2] = d[2];
+	    hypercube_neigh.hops[idx][3] = d[3];
+	    idx++;
+	  }
+
+  /*
+    Define permutation arrays (i.e. epsilon tensors)    
+   */
+  permutations[1] = qpb_alloc(sizeof(unsigned short int *)*1);
+  for(int i=0; i<1; i++)
+    permutations[1][i] = qpb_alloc(sizeof(unsigned short int)*1);
+  permutations[1][0][0] = 0;
+
+  permutations[2] = qpb_alloc(sizeof(unsigned short int *)*(1*2));
+  for(int i=0; i<1*2; i++)
+    permutations[2][i] = qpb_alloc(sizeof(unsigned short int)*2);
+  permutations[2][0][0] = 0;
+  permutations[2][0][1] = 1;
+  permutations[2][1][0] = 1;
+  permutations[2][1][1] = 0;
+
+  permutations[3] = qpb_alloc(sizeof(unsigned short int *)*(1*2*3));
+  for(int i=0; i<1*2*3; i++)
+    permutations[3][i] = qpb_alloc(sizeof(unsigned short int)*3);
+  permutations[3][0][0] = 0;
+  permutations[3][0][1] = 1;
+  permutations[3][0][2] = 2;
+  permutations[3][1][0] = 1;
+  permutations[3][1][1] = 2;
+  permutations[3][1][2] = 0;
+  permutations[3][2][0] = 2;
+  permutations[3][2][1] = 0;
+  permutations[3][2][2] = 1;
+  permutations[3][3][0] = 2;
+  permutations[3][3][1] = 1;
+  permutations[3][3][2] = 0;
+  permutations[3][4][0] = 1;
+  permutations[3][4][1] = 0;
+  permutations[3][4][2] = 2;
+  permutations[3][5][0] = 0;
+  permutations[3][5][1] = 2;
+  permutations[3][5][2] = 1;
+
+  permutations[4] = qpb_alloc(sizeof(unsigned short int *)*(1*2*3*4));
+  for(int i=0; i<1*2*3*4; i++)
+    permutations[4][i] = qpb_alloc(sizeof(unsigned short int)*4);
+  permutations[4][ 0][0] = 0;
+  permutations[4][ 0][1] = 1;
+  permutations[4][ 0][2] = 2;
+  permutations[4][ 0][3] = 3;
+  permutations[4][ 1][0] = 0;
+  permutations[4][ 1][1] = 1;
+  permutations[4][ 1][2] = 3;
+  permutations[4][ 1][3] = 2;
+  permutations[4][ 2][0] = 0;
+  permutations[4][ 2][1] = 2;
+  permutations[4][ 2][2] = 1;
+  permutations[4][ 2][3] = 3;
+  permutations[4][ 3][0] = 0;
+  permutations[4][ 3][1] = 2;
+  permutations[4][ 3][2] = 3;
+  permutations[4][ 3][3] = 1;
+  permutations[4][ 4][0] = 0;
+  permutations[4][ 4][1] = 3;
+  permutations[4][ 4][2] = 1;
+  permutations[4][ 4][3] = 2;
+  permutations[4][ 5][0] = 0;
+  permutations[4][ 5][1] = 3;
+  permutations[4][ 5][2] = 2;
+  permutations[4][ 5][3] = 1;
+  permutations[4][ 6][0] = 1;
+  permutations[4][ 6][1] = 0;
+  permutations[4][ 6][2] = 2;
+  permutations[4][ 6][3] = 3;
+  permutations[4][ 7][0] = 1;
+  permutations[4][ 7][1] = 0;
+  permutations[4][ 7][2] = 3;
+  permutations[4][ 7][3] = 2;
+  permutations[4][ 8][0] = 1;
+  permutations[4][ 8][1] = 2;
+  permutations[4][ 8][2] = 0;
+  permutations[4][ 8][3] = 3;
+  permutations[4][ 9][0] = 1;
+  permutations[4][ 9][1] = 2;
+  permutations[4][ 9][2] = 3;
+  permutations[4][ 9][3] = 0;
+  permutations[4][10][0] = 1;
+  permutations[4][10][1] = 3;
+  permutations[4][10][2] = 0;
+  permutations[4][10][3] = 2;
+  permutations[4][11][0] = 1;
+  permutations[4][11][1] = 3;
+  permutations[4][11][2] = 2;
+  permutations[4][11][3] = 0;
+  permutations[4][12][0] = 2;
+  permutations[4][12][1] = 0;
+  permutations[4][12][2] = 1;
+  permutations[4][12][3] = 3;
+  permutations[4][13][0] = 2;
+  permutations[4][13][1] = 0;
+  permutations[4][13][2] = 3;
+  permutations[4][13][3] = 1;
+  permutations[4][14][0] = 2;
+  permutations[4][14][1] = 1;
+  permutations[4][14][2] = 0;
+  permutations[4][14][3] = 3;
+  permutations[4][15][0] = 2;
+  permutations[4][15][1] = 1;
+  permutations[4][15][2] = 3;
+  permutations[4][15][3] = 0;
+  permutations[4][16][0] = 2;
+  permutations[4][16][1] = 3;
+  permutations[4][16][2] = 0;
+  permutations[4][16][3] = 1;
+  permutations[4][17][0] = 2;
+  permutations[4][17][1] = 3;
+  permutations[4][17][2] = 1;
+  permutations[4][17][3] = 0;
+  permutations[4][18][0] = 3;
+  permutations[4][18][1] = 0;
+  permutations[4][18][2] = 1;
+  permutations[4][18][3] = 2;
+  permutations[4][19][0] = 3;
+  permutations[4][19][1] = 0;
+  permutations[4][19][2] = 2;
+  permutations[4][19][3] = 1;
+  permutations[4][20][0] = 3;
+  permutations[4][20][1] = 1;
+  permutations[4][20][2] = 0;
+  permutations[4][20][3] = 2;
+  permutations[4][21][0] = 3;
+  permutations[4][21][1] = 1;
+  permutations[4][21][2] = 2;
+  permutations[4][21][3] = 0;
+  permutations[4][22][0] = 3;
+  permutations[4][22][1] = 2;
+  permutations[4][22][2] = 0;
+  permutations[4][22][3] = 1;
+  permutations[4][23][0] = 3;
+  permutations[4][23][1] = 2;
+  permutations[4][23][2] = 1;
+  permutations[4][23][3] = 0;
 
   return;
 }
