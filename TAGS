@@ -1,4 +1,23 @@
 
+python/qpb_sun_utils.tmpl.h,31
+#define _QPB_SUN_UTILS_H 2,25
+
+python/qpb_spinor_gammas.tmpl.h,35
+#define _QPB_SPINOR_GAMMAS_H 2,29
+
+python/qpb_sun_mul.tmpl.h,29
+#define _QPB_SUN_MUL_H 2,23
+
+python/qpb_spinor_sun_mul.tmpl.h,36
+#define _QPB_SPINOR_SUN_MUL_H 2,30
+
+python/qpb_apply_bri_dslash_site.tmpl.h,76
+#define _QPB_APPLY_BRI_DSLASH_SITE_H 2,37
+qpb_apply_bri_dslash_site(9,204
+
+python/qpb_spinor_sigmas.tmpl.h,35
+#define _QPB_SPINOR_SIGMAS_H 2,29
+
 mainprogs/invert/main.c,25
 usage(4,23
 main(11,130
@@ -16,8 +35,14 @@ lib/qpb_gauge_field.c,63
 qpb_gauge_field_init(9,157
 qpb_gauge_field_finalize(102,2867
 
+lib/qpb_apply_dslash.h,34
+#define _QPB_APPLY_DSLASH_H 2,28
+
 lib/qpb_comm_halo_diagonal_links.h,46
 #define _QPB_COMM_HALO_DIAGONAL_LINKS_H 2,40
+
+lib/qpb_apply_bri_dslash.h,38
+#define _QPB_APPLY_BRI_DSLASH_H 2,32
 
 lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
@@ -91,11 +116,18 @@ svd(179,4835
 qpb_sun_project(217,6267
 qpb_sun_project(233,6536
 
+lib/qpb_apply_dslash.c,25
+qpb_apply_dslash(12,231
+
 lib/qpb_spinor_xmy.h,34
 #define _QPB_SPINOR_XMEQY_H 2,28
 
 lib/qpb_msg_passing_init.h,38
 #define _QPB_MSG_PASSING_INIT_H 2,32
+
+lib/qpb_apply_dslash_site.h,68
+#define _QPB_APPLY_DSLASH_SITE_H 2,33
+qpb_apply_dslash_site(8,171
 
 lib/qpb_spinor_field.h,34
 #define _QPB_SPINOR_FIELD_H 2,28
@@ -269,19 +301,6 @@ lib/qpb_parser.h,28
 lib/qpb_spinor_field_set_delta.c,33
 qpb_spinor_field_set_delta(8,98
 
-lib/qpb_apply_dirac_tzyx.h,322
-#define _QPB_APPLY_DIRAC_TZYX_H 2,32
-qpb_apply_dirac_t(8,169
-qpb_apply_dirac_p_z(30,812
-qpb_apply_dirac_m_z(47,1213
-qpb_apply_dirac_z(64,1637
-qpb_apply_dirac_p_y(86,2284
-qpb_apply_dirac_m_y(103,2685
-qpb_apply_dirac_y(120,3109
-qpb_apply_dirac_p_x(142,3756
-qpb_apply_dirac_m_x(159,4157
-qpb_apply_dirac_x(176,4581
-
 lib/qpb_diagonal_links_get.h,40
 #define _QPB_DIAGONAL_LINKS_GET_H 2,34
 
@@ -318,24 +337,11 @@ lib/qpb_gauge_field_set_unit.h,43
 lib/qpb_read_spinor.c,24
 qpb_read_spinor(12,186
 
-lib/qpb_apply_laplace_tzyx.h,342
-#define _QPB_APPLY_LAPLACE_TZYX_H 2,34
-qpb_apply_laplace_t(5,87
-qpb_apply_laplace_p_z(26,731
-qpb_apply_laplace_m_z(43,1134
-qpb_apply_laplace_z(60,1556
-qpb_apply_laplace_p_y(82,2201
-qpb_apply_laplace_m_y(99,2600
-qpb_apply_laplace_y(116,3022
-qpb_apply_laplace_p_x(137,3666
-qpb_apply_laplace_m_x(155,4066
-qpb_apply_laplace_x(172,4488
-
-lib/qpb_apply_dirac_laplace.c,32
-qpb_apply_dirac_laplace(13,266
-
 lib/qpb_read_gauge.h,32
 #define _QPB_READ_GAUGE_H 2,26
+
+lib/qpb_apply_bri_dslash.c,29
+qpb_apply_bri_dslash(12,235
 
 lib/qpb_comm_halo_spinor_field.h,44
 #define _QPB_COMM_HALO_SPINOR_FIELD_H 2,38
@@ -398,7 +404,7 @@ qpb_rng_init(7,80
 qpb_rng_finalize(21,373
 qpb_get_rand(28,463
 
-lib/qpb_globals.h,702
+lib/qpb_globals.h,743
 #define _QPB_GLOBALS_H 2,23
 qpb_problem_params problem_params;5,50
 unsigned int *skin_to_ext[skin_to_ext6,85
@@ -410,17 +416,18 @@ unsigned short int **permutations[permutations10,202
   unsigned short int index[index14,297
 } dir_comb_2;15,333
   unsigned short int hops[hops18,357
-} hypercube_neigh;19,407
-#define print(21,427
-#define error(22,508
-#define print_sun(24,599
-#define X_INDEX(32,795
-#define Y_INDEX(33,828
-#define Z_INDEX(34,886
-#define T_INDEX(35,969
-#define LEXICO(37,1069
-qpb_random_state rng_state;43,1190
-#define DEBUG_HERE(45,1219
+  unsigned long int index[index19,407
+} hypercube_neigh;20,450
+#define print(22,470
+#define error(23,551
+#define print_sun(25,642
+#define X_INDEX(33,838
+#define Y_INDEX(34,871
+#define Z_INDEX(35,929
+#define T_INDEX(36,1012
+#define LEXICO(38,1112
+qpb_random_state rng_state;44,1233
+#define DEBUG_HERE(46,1262
 
 lib/qpb_clover_term_get.h,37
 #define _QPB_CLOVER_TERM_GET_H 2,31
@@ -435,12 +442,12 @@ lib/qpb_spinor_field_set_random.h,45
 #define _QPB_SPINOR_FIELD_SET_RANDOM_H 2,39
 
 lib/qpb_bicgstab.c,211
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 10,250
-#define qpb_dslash(12,289
-qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,414
-qpb_bicgstab_init(19,486
-qpb_bicgstab_finalize(31,737
-qpb_bicgstab(42,940
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 11,277
+#define qpb_dslash(13,316
+qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs17,457
+qpb_bicgstab_init(20,529
+qpb_bicgstab_finalize(32,780
+qpb_bicgstab(43,983
 
 lib/qpb_spinor_xdoty.c,24
 qpb_spinor_xdoty(8,103
@@ -456,9 +463,6 @@ lib/qpb_alloc.h,27
 
 lib/qpb_sun_project.h,31
 #define _QPB_SUN_PROJECT 2,25
-
-lib/qpb_apply_dirac_laplace.h,41
-#define _QPB_APPLY_DIRAC_LAPLACE_H 2,35
 
 lib/qpb_clover_term.h,33
 #define _QPB_CLOVER_TERM_H 2,27
