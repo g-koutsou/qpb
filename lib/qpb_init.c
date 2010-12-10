@@ -307,6 +307,7 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
 	    hypercube_neigh.hops[idx][1] = d[1];
 	    hypercube_neigh.hops[idx][2] = d[2];
 	    hypercube_neigh.hops[idx][3] = d[3];
+	    hypercube_neigh.index[d[0]][d[1]][d[2]][d[3]] = idx;
 	    idx++;
 	  }
 

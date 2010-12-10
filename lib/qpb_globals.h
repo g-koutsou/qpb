@@ -16,6 +16,7 @@ struct {
 
 struct {
   unsigned short int hops[N_HYPERCUBE_NEIGH][ND];
+  unsigned long int index[ND][ND][ND][ND];
 } hypercube_neigh;
 
 #define print(FMT, ...) if(am_master) printf(FMT, ##__VA_ARGS__); fflush(stdout)

@@ -33,7 +33,8 @@ SOURCES = qpb_init\
 	qpb_sun_project\
 	qpb_clover_term_get\
 	qpb_diagonal_links_get\
-	qpb_apply_dirac_laplace\
+	qpb_apply_dslash\
+	qpb_apply_bri_dslash\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
 	qpb_spinor_xdotx\
@@ -44,7 +45,8 @@ SOURCES = qpb_init\
 	qpb_stop_watch\
 	qpb_finalize
 
-PYTARGETS = qpb_spinor_gammas\
+PYTARGETS = qpb_apply_bri_dslash_site\
+	qpb_spinor_gammas\
 	qpb_spinor_sigmas\
 	qpb_spinor_sun_mul\
 	qpb_sun_mul\
@@ -63,10 +65,10 @@ libqpb.a: ${addsuffix .h, $(PYTARGETS)} ${addsuffix .o, $(SOURCES)}
 
 # Assumes missing .h and .c files should be python-generated
 %.h: ../python/%.py
-	python $<
+	python $< > $@
 
 %.c: ../python/%.py
-	python $<
+	python $< > $@
 
 pyclean:
 	$(RM) ${addsuffix .h, $(PYTARGETS)}
