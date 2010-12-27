@@ -9,6 +9,11 @@
 qpb_spinor *sendb[2*ND];
 MPI_Request send_req[2*ND];
 
+
+/*
+ * Initializes persistent communication 
+ * for spinor fields
+ */
 void
 qpb_comm_halo_spinor_field_init()
 {
@@ -47,6 +52,10 @@ qpb_comm_halo_spinor_field_init()
   return;
 }
 
+/*
+ * Cleans up persistent communication
+ * buffers and MPI_Requests
+ */
 void
 qpb_comm_halo_spinor_field_finalize()
 {
@@ -60,6 +69,16 @@ qpb_comm_halo_spinor_field_finalize()
   return;
 }
 
+/*
+ * Starts communication over all
+ * parallelized directions. 
+ *
+ * IMORTANT:
+ *
+ * Does not guarantee communication of corners.
+ * For corner communication, run individual directions
+ * in the order z, y, x AND WAIT after EVERY direction.
+ */
 void
 qpb_comm_halo_spinor_field_start(qpb_spinor_field spinor_field)
 {
@@ -117,6 +136,10 @@ qpb_comm_halo_spinor_field_start(qpb_spinor_field spinor_field)
   return;
 }
 
+/*
+ * Blocks until the boundaries of all parallelized
+ * directions have arrived.
+ */
 void
 qpb_comm_halo_spinor_field_wait(qpb_spinor_field spinor_field)
 {
@@ -133,4 +156,266 @@ qpb_comm_halo_spinor_field_wait(qpb_spinor_field spinor_field)
 	  MPI_Wait(&send_req[dir+sign*ND], &stat);
 	}
   return;
+}
+
+/*
+ * Start transfer of boundaries along x. Guarantees that corners
+ * shall be communicated ONLY IF run in the order:
+ *  start_z;
+ *  wait_z;
+ *  start_y;
+ *  wait_y;
+ *  start_x;
+ *  wait_x;
+ */
+void
+qpb_comm_halo_spinor_field_x_start(qpb_spinor_field spinor_field)
+{
+  int edim[ND], ldim[ND], par_dir[ND];
+  for(int d=0; d<ND; d++)
+    {
+      edim[d] = problem_params.ext_dim[d];
+      ldim[d] = problem_params.l_dim[d];
+      par_dir[d] = problem_params.par_dir[d];
+    }
+
+  int dir = 3;
+  if(par_dir[dir])
+    {
+      int dims[ND];
+      for(int d=0; d<dir; d++)
+	dims[d] = edim[d];
+
+      for(int d=dir+1; d<ND; d++)
+	dims[d] = ldim[d];
+
+      dims[dir] = 1;
+      int bvol = 1;
+      for(int d=0; d<ND; d++)
+	bvol *= dims[d];
+	  
+      for(int sign=0; sign<2; sign++)
+	{
+	  MPI_Start(&spinor_field.recv_req[dir+sign*ND]);
+#ifdef OPENMP
+#pragma omp parallel for
+#endif
+	  for(int bv=0; bv<bvol; bv++)
+	    {
+	      int x[ND];
+	      x[3] = X_INDEX(bv, dims);
+	      x[2] = Y_INDEX(bv, dims);
+	      x[1] = Z_INDEX(bv, dims);
+	      x[0] = T_INDEX(bv, dims);
+	      x[dir] = sign == 0 ? 1 : edim[dir]-2;
+	      for(int d=dir+1; d<ND; d++)
+		x[d] += par_dir[d];
+		  
+	      int ext_v = LEXICO(x, edim);	      
+	      memcpy(sendb[dir+((sign+1)%2)*ND][bv], 
+		     (void *)spinor_field.index[ext_v], 
+		     sizeof(qpb_spinor));
+	    }
+	}
+      for(int sign=0; sign<2; sign++)
+	MPI_Start(&send_req[dir+sign*ND]);
+    }
+  return;
+}
+
+/*
+ * Wait for x-boundaries
+ */
+void
+qpb_comm_halo_spinor_field_x_wait(qpb_spinor_field spinor_field)
+{
+  int par_dir[ND];
+  for(int d=0; d<ND; d++)
+    par_dir[d] = problem_params.par_dir[d];
+  
+  int dir = 3;
+  if(problem_params.par_dir[dir])
+    for(int sign=0; sign<2; sign++)
+      {	    
+	MPI_Status stat;
+	MPI_Wait(&spinor_field.recv_req[dir+((sign+1)%2)*ND], &stat);
+	MPI_Wait(&send_req[dir+sign*ND], &stat);
+      }
+
+  return;
+}
+
+/*
+ * Start transfer of boundaries along y. Guarantees that corners
+ * shall be communicated ONLY IF run in the order:
+ *  start_z;
+ *  wait_z;
+ *  start_y;
+ *  wait_y;
+ *  start_x;
+ *  wait_x;
+ */
+void
+qpb_comm_halo_spinor_field_y_start(qpb_spinor_field spinor_field)
+{
+  int edim[ND], ldim[ND], par_dir[ND];
+  for(int d=0; d<ND; d++)
+    {
+      edim[d] = problem_params.ext_dim[d];
+      ldim[d] = problem_params.l_dim[d];
+      par_dir[d] = problem_params.par_dir[d];
+    }
+
+  int dir = 2;
+  if(par_dir[dir])
+    {
+      int dims[ND];
+      for(int d=0; d<dir; d++)
+	dims[d] = edim[d];
+
+      for(int d=dir+1; d<ND; d++)
+	dims[d] = ldim[d];
+
+      dims[dir] = 1;
+      int bvol = 1;
+      for(int d=0; d<ND; d++)
+	bvol *= dims[d];
+	  
+      for(int sign=0; sign<2; sign++)
+	{
+	  MPI_Start(&spinor_field.recv_req[dir+sign*ND]);
+#ifdef OPENMP
+#pragma omp parallel for
+#endif
+	  for(int bv=0; bv<bvol; bv++)
+	    {
+	      int x[ND];
+	      x[3] = X_INDEX(bv, dims);
+	      x[2] = Y_INDEX(bv, dims);
+	      x[1] = Z_INDEX(bv, dims);
+	      x[0] = T_INDEX(bv, dims);
+	      x[dir] = sign == 0 ? 1 : edim[dir]-2;
+	      for(int d=dir+1; d<ND; d++)
+		x[d] += par_dir[d];
+		  
+	      int ext_v = LEXICO(x, edim);	      
+	      memcpy(sendb[dir+((sign+1)%2)*ND][bv], 
+		     (void *)spinor_field.index[ext_v], 
+		     sizeof(qpb_spinor));
+	    }
+	}
+      for(int sign=0; sign<2; sign++)
+	MPI_Start(&send_req[dir+sign*ND]);
+    }
+  return;
+}
+
+/*
+ * Wait for y-boundaries
+ */
+void
+qpb_comm_halo_spinor_field_y_wait(qpb_spinor_field spinor_field)
+{
+  int par_dir[ND];
+  for(int d=0; d<ND; d++)
+    par_dir[d] = problem_params.par_dir[d];
+  
+  int dir = 2;
+  if(problem_params.par_dir[dir])
+    for(int sign=0; sign<2; sign++)
+      {	    
+	MPI_Status stat;
+	MPI_Wait(&spinor_field.recv_req[dir+((sign+1)%2)*ND], &stat);
+	MPI_Wait(&send_req[dir+sign*ND], &stat);
+      }
+
+  return;
+}
+
+/*
+ * Start transfer of boundaries along z. Guarantees that corners
+ * shall be communicated ONLY IF run in the order:
+ *  start_z;
+ *  wait_z;
+ *  start_y;
+ *  wait_y;
+ *  start_x;
+ *  wait_x;
+ */
+void
+qpb_comm_halo_spinor_field_z_start(qpb_spinor_field spinor_field)
+{
+  int edim[ND], ldim[ND], par_dir[ND];
+  for(int d=0; d<ND; d++)
+    {
+      edim[d] = problem_params.ext_dim[d];
+      ldim[d] = problem_params.l_dim[d];
+      par_dir[d] = problem_params.par_dir[d];
+    }
+
+  int dir = 1;
+  if(par_dir[dir])
+    {
+      int dims[ND];
+      for(int d=0; d<dir; d++)
+	dims[d] = edim[d];
+
+      for(int d=dir+1; d<ND; d++)
+	dims[d] = ldim[d];
+
+      dims[dir] = 1;
+      int bvol = 1;
+      for(int d=0; d<ND; d++)
+	bvol *= dims[d];
+	  
+      for(int sign=0; sign<2; sign++)
+	{
+	  MPI_Start(&spinor_field.recv_req[dir+sign*ND]);
+#ifdef OPENMP
+#pragma omp parallel for
+#endif
+	  for(int bv=0; bv<bvol; bv++)
+	    {
+	      int x[ND];
+	      x[3] = X_INDEX(bv, dims);
+	      x[2] = Y_INDEX(bv, dims);
+	      x[1] = Z_INDEX(bv, dims);
+	      x[0] = T_INDEX(bv, dims);
+	      x[dir] = sign == 0 ? 1 : edim[dir]-2;
+	      for(int d=dir+1; d<ND; d++)
+		x[d] += par_dir[d];
+		  
+	      int ext_v = LEXICO(x, edim);	      
+	      memcpy(sendb[dir+((sign+1)%2)*ND][bv], 
+		     (void *)spinor_field.index[ext_v], 
+		     sizeof(qpb_spinor));
+	    }
+	}
+      for(int sign=0; sign<2; sign++)
+	MPI_Start(&send_req[dir+sign*ND]);
+    }
+  return;
+}
+
+/*
+ * Wait for z-boundaries
+ */
+void
+qpb_comm_halo_spinor_field_z_wait(qpb_spinor_field spinor_field)
+{
+  int par_dir[ND];
+  for(int d=0; d<ND; d++)
+    par_dir[d] = problem_params.par_dir[d];
+  
+  int dir = 1;
+  if(problem_params.par_dir[dir])
+    for(int sign=0; sign<2; sign++)
+      {	    
+	MPI_Status stat;
+	MPI_Wait(&spinor_field.recv_req[dir+((sign+1)%2)*ND], &stat);
+	MPI_Wait(&send_req[dir+sign*ND], &stat);
+      }
+
+  return;
+
 }

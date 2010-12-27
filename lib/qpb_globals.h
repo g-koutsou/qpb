@@ -1,6 +1,6 @@
 #ifndef _QPB_GLOBALS_H
 #define _QPB_GLOBALS_H 1
-
+#include <qpb_operators.h>
 
 qpb_problem_params problem_params;
 unsigned int *skin_to_ext[2*ND];
@@ -8,6 +8,7 @@ unsigned int *nneigh[2*ND];
 unsigned int *blk_to_ext;
 unsigned short int am_master;
 unsigned short int **permutations[ND+1];
+enum qpb_operators which_dslash_op;
 
 struct {
   unsigned short int dirs[N_DIR_COMB_2][2];
@@ -26,8 +27,8 @@ struct {
   for(int i=0; i<NC; i++)					\
     {								\
       for(int j=0; j<NC; j++)					\
-	print(" %+e%+e*J ", a[j+i*NC].re, a[j+i*NC].im);	\
-      print("\n");						\
+	printf(" %+e%+e*J ", a[j+i*NC].re, a[j+i*NC].im);	\
+      printf("\n");						\
     }
 
 #define X_INDEX(i, L) (i % L[3])

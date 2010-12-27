@@ -10,8 +10,9 @@
 
 void 
 qpb_apply_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
-		 qpb_gauge_field gauge, qpb_double mass)
+		 void *U, qpb_double mass)
 {
+  qpb_gauge_field gauge = *(qpb_gauge_field *)U;
   qpb_comm_halo_spinor_field_start(spinor_in);
   int lvol = problem_params.l_vol;
   unsigned short int *y = problem_params.par_dir;

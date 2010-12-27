@@ -10,8 +10,8 @@
 
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 5
 
-#define qpb_dslash(y, x)					\
-  (*dslash_func)(y, x, *((qpb_diagonal_links *)gauge), mass);	\
+#define qpb_dslash(y, x)			\
+  (*dslash_func)(y, x, gauge, mass);		\
   qpb_apply_clover_term(y, x, clover, c_sw);
 
 qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
@@ -56,7 +56,16 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma, rho, zeta;
   qpb_double mass = 1./(2.*kappa) - 4.;
-  void (* dslash_func)() = &qpb_apply_bri_dslash;
+  void (* dslash_func)() = NULL;
+  switch(which_dslash_op)
+    {
+    case QPB_DSLASH_BRILLOUIN:
+      dslash_func = qpb_apply_bri_dslash;
+      break;
+    case QPB_DSLASH_STANDARD:
+      dslash_func = qpb_apply_dslash;
+      break;
+    }
 
   qpb_spinor_xdotx(&b_norm, b);
   qpb_dslash(r, x);

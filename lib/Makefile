@@ -52,6 +52,8 @@ PYTARGETS = qpb_apply_bri_dslash_site\
 	qpb_sun_mul\
 	qpb_sun_utils
 
+py: ${addsuffix .h, $(PYTARGETS)}
+
 # pull in dependency info for *existing* .o files
 include $(wildcard *.d)
 
@@ -76,5 +78,5 @@ pyclean:
 clean:
 	$(RM) *.o *.d
 
-cleanall: clean pyclean
+cleanall: clean
 	$(RM) libqpb.a

@@ -144,6 +144,26 @@ main(int argc, char *argv[])
     case QPB_RAND:
       break;
     }
+
+  if(sscanf(qpb_parse("Dslash operator"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Dslash operator");
+      exit(QPB_PARSER_ERROR);
+    }
+  /* which_dslash_op is a global */
+  if(strcmp(aux_string, "Brillouin") == 0)
+    which_dslash_op = QPB_DSLASH_BRILLOUIN;
+  else if(strcmp(aux_string, "Standard") == 0)
+    which_dslash_op = QPB_DSLASH_STANDARD;
+  else
+    {
+      error("%s: option should be one of: ", "Dslash operator");
+      error("%s, ", "Brillouin"); 
+      error("%s\n", "Standard"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
   qpb_double kappa;
   if(sscanf(qpb_parse("kappa"), "%lf", &kappa)!=1)
     {
@@ -195,7 +215,15 @@ main(int argc, char *argv[])
   print(" Clover param = %g\n", c_sw);
   print(" Solver epsilon = %e\n", epsilon);
   print(" Max solver iters = %d\n", max_iters);
-  
+  switch(which_dslash_op)
+    {
+    case QPB_DSLASH_BRILLOUIN:
+      print(" Dslash operator is Brillouin\n");
+      break;
+    case QPB_DSLASH_STANDARD:
+      print(" Dslash operator is Standard\n");
+      break;
+    }
   qpb_rng_init(seed);
   /* allocate gauge field */
   qpb_gauge_field gauge = qpb_gauge_field_init();
@@ -247,23 +275,33 @@ main(int argc, char *argv[])
     }
   qpb_spinor_field_set_zero(sol);
 
-  qpb_diagonal_links diagonal_links = qpb_diagonal_links_init();
-  qpb_diagonal_links_get(diagonal_links, gauge);
+  qpb_diagonal_links diagonal_links;
+  int iters = -2;
   qpb_bicgstab_init();
-  /* int iters = qpb_bicgstab(sol, source, (void *)&gauge, clover_term, kappa, c_sw, */
-  /* 			   epsilon, max_iters); */
-  int iters = qpb_bicgstab(sol, source, (void *)&diagonal_links, clover_term, kappa, c_sw,
+
+  switch(which_dslash_op)
+    {
+    case QPB_DSLASH_BRILLOUIN:
+      diagonal_links= qpb_diagonal_links_init();
+      qpb_diagonal_links_get(diagonal_links, gauge);
+      iters = qpb_bicgstab(sol, source, (void *)&diagonal_links, clover_term, kappa, c_sw,
 			   epsilon, max_iters);
+      qpb_diagonal_links_finalize(diagonal_links);
+      break;
+      
+    case QPB_DSLASH_STANDARD:
+      iters = qpb_bicgstab(sol, source, (void *)&gauge, clover_term, kappa, c_sw,
+			   epsilon, max_iters);
+      break;
+    }
   qpb_bicgstab_finalize();
 
   print(" BiCGStab done: %d\n", iters);
-
   qpb_write_spinor(sol, sol_file);
   /* clean up */
   qpb_spinor_field_finalize(sol);
   qpb_spinor_field_finalize(source);
   qpb_gauge_field_finalize(gauge);
-  qpb_diagonal_links_finalize(diagonal_links);
   qpb_clover_term_finalize(clover_term);
   qpb_rng_finalize();
   qpb_finalize();

@@ -18,7 +18,7 @@ qpb_comm_halo_diagonal_links(qpb_diagonal_links diagonal_links)
       par_dir[d] = problem_params.par_dir[d];
     }
 
-  qpb_link (*sendb)[N_HYPERCUBE_NEIGH];
+  qpb_link *sendb;;
   for(int dir=0; dir<ND; dir++)
     if(par_dir[dir])
 	{
@@ -56,7 +56,7 @@ qpb_comm_halo_diagonal_links(qpb_diagonal_links diagonal_links)
 		    x[d] += par_dir[d];
 		  
 		  int ext_v = LEXICO(x, edim);	      
-		  memcpy(sendb[bv], (void *)diagonal_links.index[ext_v], 
+		  memcpy(sendb+bv*N_HYPERCUBE_NEIGH, (void *)diagonal_links.index[ext_v], 
 			 N_HYPERCUBE_NEIGH*sizeof(qpb_link));
 		}
 	  

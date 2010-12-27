@@ -7,6 +7,7 @@
 #include <qpb_sun_linalg.h>
 #include <qpb_gauge_field.h>
 #include <qpb_sun_project.h>
+#include <qpb_comm_halo_gauge_field.h>
 #include <qpb_comm_halo_diagonal_links.h>
 /*
   each site has four slots, indicating the direction
@@ -54,6 +55,7 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
   gauge[0] = fwd_gauge;
   gauge[1] = qpb_gauge_field_init();
   
+  qpb_comm_halo_gauge_field(gauge[0]);
   for(int lv=0; lv<lvol; lv++)
     for(int dir=0; dir<ND; dir++)
       {
@@ -63,7 +65,8 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
 	u1 = (qpb_complex *)((qpb_link *) gauge[1].index[v] + dir);
 	sun_ueqd(u1, u0);
       }
-  
+  qpb_comm_halo_gauge_field(gauge[1]);
+
   for(int hyper_dir=0; hyper_dir<N_HYPERCUBE_NEIGH; hyper_dir++)
     for(int lv=0; lv<lvol; lv++)
       {
@@ -148,6 +151,5 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
   qpb_gauge_field_finalize(gauge[1]);
 
   qpb_comm_halo_diagonal_links(diagonal_links);
-  
   return;
 }

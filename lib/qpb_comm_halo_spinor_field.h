@@ -5,4 +5,12 @@ void qpb_comm_halo_spinor_field_init();
 void qpb_comm_halo_spinor_field_finalize();
 void qpb_comm_halo_spinor_field_start(qpb_spinor_field);
 void qpb_comm_halo_spinor_field_wait(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_start(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_wait(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_x_start(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_x_wait(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_y_start(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_y_wait(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_z_start(qpb_spinor_field);
+void qpb_comm_halo_spinor_field_z_wait(qpb_spinor_field);
 #endif /* _QPB_COMM_HALO_SPINOR_FIELD_H */
