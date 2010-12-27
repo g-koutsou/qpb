@@ -24,9 +24,7 @@ qpb_apply_bri_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
   qpb_comm_halo_spinor_field_x_wait(spinor_in);
 
   int lvol = problem_params.l_vol;
-  unsigned short int *y = problem_params.par_dir;
   unsigned short int *l_dim = problem_params.l_dim;
-  unsigned short int *e_dim = problem_params.ext_dim;
   int x[ND];
 
 #ifdef OPENMP
@@ -43,43 +41,7 @@ qpb_apply_bri_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	    
 	    qpb_apply_bri_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
 	  }
-  /*
-    #ifdef OPENMP
-    #pragma omp parallel for private(x)
-    #endif
-    for(int x0=y[0]; x0<l_dim[0]-y[0]; x0++)
-    for(x[1]=y[1]; x[1]<l_dim[1]-y[1]; x[1]++)
-    for(x[2]=y[2]; x[2]<l_dim[2]-y[2]; x[2]++)
-    for(x[3]=y[3]; x[3]<l_dim[3]-y[3]; x[3]++)
-    {
-    x[0] = x0;
-    int v = blk_to_ext[LEXICO(x, l_dim)];
-    qpb_complex *spinor_ptr = (qpb_complex *)spinor_out.index[v];
-    
-    qpb_apply_bri_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
-    }
-    
-  for(int dir=1; dir<ND; dir++)
-    if(problem_params.par_dir[dir])
-      {
-#ifdef OPENMP
-#pragma omp parallel for
-#endif
-	for(int i=0; i<lvol/l_dim[dir]; i++)
-	  {
-	    int v;
-	    qpb_complex *spinor_ptr;
 
-	    v = skin_to_ext[dir+ND][i];
-	    spinor_ptr = (qpb_complex *)spinor_out.index[v];
-	    qpb_apply_bri_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
-
-	    v = skin_to_ext[dir][i];
-	    spinor_ptr = (qpb_complex *)spinor_out.index[v];
-	    qpb_apply_bri_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
-	  }
-      }
-*/
 #ifdef OPENMP
 #pragma omp parallel for
 #endif

@@ -27,6 +27,7 @@ SOURCES = qpb_init\
 	qpb_read_gauge\
 	qpb_read_spinor\
 	qpb_write_spinor\
+	qpb_write_n_spinor\
 	qpb_plaquette\
 	qpb_clover_term\
 	qpb_diagonal_links\

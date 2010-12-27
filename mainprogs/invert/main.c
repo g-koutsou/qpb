@@ -1,5 +1,10 @@
 #include <qpb.h>
 
+enum {
+  INVERT_COLUMN,
+  INVERT_PROPAGATOR
+} invert_mode;
+
 void
 usage(char *argv[])
 {
@@ -10,6 +15,7 @@ usage(char *argv[])
 int
 main(int argc, char *argv[])
 {
+  int n_spinors;
   /* calls MPI_Init() */
   qpb_msg_passing_init(&argc, &argv);
 
@@ -33,8 +39,34 @@ main(int argc, char *argv[])
     }
   
   /* parse parameter (input) file */
-  int g_dim[ND];
+
+  char aux_string[QPB_MAX_STRING];
   qpb_init_parser(argv[2]);
+  if(sscanf(qpb_parse("Invert mode"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Invert mode");
+      exit(QPB_PARSER_ERROR);
+    }
+  if(strcmp(aux_string, "propagator") == 0)
+    {
+      invert_mode = INVERT_PROPAGATOR;  
+      n_spinors = 12;
+    }
+  else if(strcmp(aux_string, "column") == 0)
+    {
+      invert_mode = INVERT_COLUMN;
+      n_spinors = 1;
+    }
+  else
+    {
+      error("%s: option should be one of: ", "Invert mode");
+      error("%s, ", "propagator"); 
+      error("%s\n", "column"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
+  int g_dim[ND];
   if(sscanf(qpb_parse("Dimensions"), "%d %d %d %d",
 	    g_dim, g_dim+1, g_dim+2, g_dim+3)!=ND)
     {
@@ -42,7 +74,6 @@ main(int argc, char *argv[])
 	      "Dimensions");
       exit(QPB_PARSER_ERROR);
     }
-  char aux_string[QPB_MAX_STRING];
   if(sscanf(qpb_parse("Conf"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
@@ -119,18 +150,36 @@ main(int argc, char *argv[])
     case QPB_ZERO:
       break;
     case QPB_UNIT:
-      if(sscanf(qpb_parse("Point source coords"), /* t, z, y, x, spin, col */
-		"%d %d %d %d %d %d", 
-		point_source_coords,
-		point_source_coords+1,
-		point_source_coords+2,
-		point_source_coords+3,
-		point_source_coords+4,
-		point_source_coords+5)!=6)
+      switch(invert_mode)
 	{
-	  error("error parsing for %s\n",
-		  "Point source coords");
-	  exit(QPB_PARSER_ERROR);
+	case INVERT_COLUMN:
+	  if(sscanf(qpb_parse("Point source coords"), /* t, z, y, x, spin, col */
+		    "%d %d %d %d %d %d", 
+		    point_source_coords,
+		    point_source_coords+1,
+		    point_source_coords+2,
+		    point_source_coords+3,
+		    point_source_coords+4,
+		    point_source_coords+5)!=6)
+	    {
+	      error("error parsing for %s\n",
+		    "Point source coords");
+	      exit(QPB_PARSER_ERROR);
+	    }
+	  break;
+	case INVERT_PROPAGATOR:
+	  if(sscanf(qpb_parse("Point source coords"), /* t, z, y, x */
+		    "%d %d %d %d", 
+		    point_source_coords,
+		    point_source_coords+1,
+		    point_source_coords+2,
+		    point_source_coords+3)!=4)
+	    {
+	      error("error parsing for %s\n",
+		    "Point source coords");
+	      exit(QPB_PARSER_ERROR);
+	    }
+	  break;	  
 	}
       break;
     case QPB_FILE:
@@ -252,31 +301,61 @@ main(int argc, char *argv[])
   qpb_clover_term_get(clover_term, gauge);
 
   /* Allocate source and solution spinor */
-  qpb_spinor_field source = qpb_spinor_field_init();
-  qpb_spinor_field sol = qpb_spinor_field_init();
+  qpb_spinor_field *source;
+  qpb_spinor_field *sol;
+  source = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors);
+  sol = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors);
+  for(int i=0; i<n_spinors; i++)
+    {
+      source[i] = qpb_spinor_field_init();
+      sol[i] = qpb_spinor_field_init();
+    }
   
   switch(source_opt)
     {
     case QPB_ZERO:
-      qpb_spinor_field_set_zero(source);
+      for(int i=0; i<n_spinors; i++)
+	qpb_spinor_field_set_zero(source[i]);
       break;
     case QPB_UNIT:
-      qpb_spinor_field_set_delta(source, 
-				 point_source_coords, 
-				 point_source_coords[4],
-				 point_source_coords[5]);
+      switch(invert_mode)
+	{
+	case INVERT_COLUMN:
+	  qpb_spinor_field_set_delta(source[0], 
+				     point_source_coords, 
+				     point_source_coords[4],
+				     point_source_coords[5]);
+	  break;
+	case INVERT_PROPAGATOR:
+	  for(int i=0; i<n_spinors; i++)
+	    qpb_spinor_field_set_delta(source[i], 
+				       point_source_coords, 
+				       i/NC, i%NC);
+	  break;
+	}
       break;
     case QPB_FILE:
-      qpb_read_spinor(source, source_file);
+      if(n_spinors == 1)
+	qpb_read_spinor(source[0], source_file);
+      else
+	{
+	  error(" reading spinors in propagator mode not implemented\n");
+	  exit(QPB_FILE_ERROR);
+	}
       break;
     case QPB_RAND:
-      qpb_spinor_field_set_random(source);
+      for(int i=0; i<n_spinors; i++)
+	qpb_spinor_field_set_random(source[i]);
       break;
     }
-  qpb_spinor_field_set_zero(sol);
+
+  for(int i=0; i<n_spinors; i++)
+    qpb_spinor_field_set_zero(sol[i]);
 
   qpb_diagonal_links diagonal_links;
   int iters = -2;
+
+  qpb_double t = qpb_stop_watch(0);
   qpb_bicgstab_init();
 
   switch(which_dslash_op)
@@ -284,23 +363,37 @@ main(int argc, char *argv[])
     case QPB_DSLASH_BRILLOUIN:
       diagonal_links= qpb_diagonal_links_init();
       qpb_diagonal_links_get(diagonal_links, gauge);
-      iters = qpb_bicgstab(sol, source, (void *)&diagonal_links, clover_term, kappa, c_sw,
-			   epsilon, max_iters);
+      for(int i=0; i<n_spinors; i++)
+	{
+	  iters = qpb_bicgstab(sol[i], source[i], (void *)&diagonal_links, clover_term,
+			        kappa, c_sw, epsilon, max_iters);
+	  print(" Done column = %d / %d\n", i+1, n_spinors);
+	}
       qpb_diagonal_links_finalize(diagonal_links);
       break;
       
     case QPB_DSLASH_STANDARD:
-      iters = qpb_bicgstab(sol, source, (void *)&gauge, clover_term, kappa, c_sw,
-			   epsilon, max_iters);
+      for(int i=0; i<n_spinors; i++)
+	{
+	  iters = qpb_bicgstab(sol[i], source[i], (void *)&gauge, clover_term, kappa, c_sw,
+			       epsilon, max_iters);
+	  print(" Done column = %d / %d\n", i+1, n_spinors);
+	}
       break;
     }
   qpb_bicgstab_finalize();
+  t = qpb_stop_watch(t);
+  print(" BiCGStab done, %d columns in t = %f sec\n", n_spinors, t);
 
-  print(" BiCGStab done: %d\n", iters);
-  qpb_write_spinor(sol, sol_file);
+  qpb_write_n_spinor(sol, n_spinors, sol_file);
   /* clean up */
-  qpb_spinor_field_finalize(sol);
-  qpb_spinor_field_finalize(source);
+  for(int i=0; i<n_spinors; i++)
+    {
+      qpb_spinor_field_finalize(sol[i]);
+      qpb_spinor_field_finalize(source[i]);
+    }
+  free(sol);
+  free(source);
   qpb_gauge_field_finalize(gauge);
   qpb_clover_term_finalize(clover_term);
   qpb_rng_finalize();
