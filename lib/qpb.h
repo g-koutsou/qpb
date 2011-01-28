@@ -31,6 +31,7 @@
 #include <qpb_diagonal_links.h>
 #include <qpb_diagonal_links_get.h>
 #include <qpb_gauge_field_set_unit.h>
+#include <qpb_write_gauge.h>
 #include <qpb_read_gauge.h>
 #include <qpb_read_spinor.h>
 #include <qpb_write_spinor.h>
@@ -42,5 +43,7 @@
 #include <qpb_plaquette.h>
 #include <qpb_bicgstab.h>
 #include <qpb_finalize.h>
-
+#include <qpb_apesmear.h>
+#include <qpb_gauge_field_copy.h>
+#include <qpb_gauge_field_shift.h>
 #endif /* _QPB_H */

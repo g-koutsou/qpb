@@ -17,6 +17,9 @@ SOURCES = qpb_init\
 	qpb_init\
 	qpb_comm_halo_gauge_field\
 	qpb_comm_halo_diagonal_links\
+	qpb_apesmear\
+	qpb_gauge_field_copy\
+	qpb_gauge_field_shift\
 	qpb_spinor_field\
 	qpb_spinor_field_set_delta\
 	qpb_spinor_field_set_zero\
@@ -25,6 +28,7 @@ SOURCES = qpb_init\
 	qpb_gauge_field\
 	qpb_comm_halo_spinor_field\
 	qpb_read_gauge\
+	qpb_write_gauge\
 	qpb_read_spinor\
 	qpb_write_spinor\
 	qpb_write_n_spinor\

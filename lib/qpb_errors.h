@@ -5,6 +5,7 @@ enum qpb_errors {
   QPB_INIT_ERROR = -1,
   QPB_PARSER_ERROR = -2,
   QPB_FILE_ERROR = -3,
-  QPB_MALLOC_ERROR = -4
+  QPB_MALLOC_ERROR = -4,
+  QPB_PARAMETERS_ERROR = -5
 };
 #endif /* _QPB_ERRORS_H */
