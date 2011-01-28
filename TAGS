@@ -18,9 +18,19 @@ qpb_apply_bri_dslash_site(9,204
 python/qpb_spinor_sigmas.tmpl.h,35
 #define _QPB_SPINOR_SIGMAS_H 2,29
 
-mainprogs/invert/main.c,25
-usage(4,23
-main(11,130
+mainprogs/invert/main.c,92
+  INVERT_COLUMN,4,25
+  INVERT_PROPAGATOR5,42
+} invert_mode;6,62
+usage(9,83
+main(16,190
+
+mainprogs/apesmear/main.c,92
+  INVERT_COLUMN,4,25
+  INVERT_PROPAGATOR5,42
+} invert_mode;6,62
+usage(9,83
+main(16,190
 
 lib/qpb_bicgstab.h,30
 #define _QPB_BICGSTAB_H 2,24
@@ -48,7 +58,7 @@ lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
 qpb_spinor_field_finalize(114,3198
 
-lib/qpb_errors.h,172
+lib/qpb_errors.h,202
 #define _QPB_ERRORS_H 2,22
 enum qpb_errors 3,46
   QPB_ARGS_ERROR 4,64
@@ -56,6 +66,7 @@ enum qpb_errors 3,46
   QPB_PARSER_ERROR 6,109
   QPB_FILE_ERROR 7,134
   QPB_MALLOC_ERROR 8,157
+  QPB_PARAMETERS_ERROR 9,182
 
 lib/qpb_apply_clover_term.h,39
 #define _QPB_APPLY_CLOVER_TERM_H 2,33
@@ -88,13 +99,23 @@ qpb_apply_clover_term_yz(65,1913
 qpb_apply_clover_term_yt(82,2336
 qpb_apply_clover_term_zt(99,2759
 
-lib/qpb_comm_halo_spinor_field.c,238
+lib/qpb_apesmear.c,49
+qpb_apesmear(17,338
+qpb_apesmear_niter(91,2492
+
+lib/qpb_comm_halo_spinor_field.c,505
 qpb_spinor *sendb[sendb9,132
 MPI_Request send_req[send_req10,157
-qpb_comm_halo_spinor_field_init(13,191
-qpb_comm_halo_spinor_field_finalize(51,1014
-qpb_comm_halo_spinor_field_start(64,1258
-qpb_comm_halo_spinor_field_wait(121,2495
+qpb_comm_halo_spinor_field_init(18,261
+qpb_comm_halo_spinor_field_finalize(60,1157
+qpb_comm_halo_spinor_field_start(83,1648
+qpb_comm_halo_spinor_field_wait(144,2971
+qpb_comm_halo_spinor_field_x_start(172,3590
+qpb_comm_halo_spinor_field_x_wait(230,4861
+qpb_comm_halo_spinor_field_y_start(259,5466
+qpb_comm_halo_spinor_field_y_wait(317,6737
+qpb_comm_halo_spinor_field_z_start(346,7342
+qpb_comm_halo_spinor_field_z_wait(404,8613
 
 lib/qpb_clover_term.c,62
 qpb_clover_term_init(8,156
@@ -115,6 +136,9 @@ get_theta_matrix(135,3492
 svd(179,4835
 qpb_sun_project(217,6267
 qpb_sun_project(233,6536
+
+lib/qpb_gauge_field_shift.h,39
+#define _QPB_GAUGE_FIELD_SHIFT_H 2,33
 
 lib/qpb_apply_dslash.c,25
 qpb_apply_dslash(12,231
@@ -261,6 +285,13 @@ enum qpb_field_init_opts{qpb_field_init_opts128,3054
 lib/qpb_stop_watch.h,32
 #define _QPB_STOP_WATCH_H 2,26
 
+lib/qpb_apply_bri_dslash_site.h,76
+#define _QPB_APPLY_BRI_DSLASH_SITE_H 2,37
+qpb_apply_bri_dslash_site(9,204
+
+lib/qpb_apesmear.h,30
+#define _QPB_APESMEAR_H 2,24
+
 lib/qpb_read_gauge.c,23
 qpb_read_gauge(12,186
 
@@ -307,6 +338,9 @@ lib/qpb_diagonal_links_get.h,40
 lib/qpb_finalize.h,30
 #define _QPB_FINALIZE_H 2,24
 
+lib/qpb_write_gauge.h,33
+#define _QPB_WRITE_GAUGE_H 2,27
+
 lib/qpb_spinor_field_set_delta.h,44
 #define _QPB_SPINOR_FIELD_SET_DELTA_H 2,38
 
@@ -331,6 +365,9 @@ qpb_apply_clover_term(8,126
 lib/qpb_spinor_xdoty.h,34
 #define _QPB_SPINOR_XDOTY_H 2,28
 
+lib/qpb_write_n_spinor.c,27
+qpb_write_n_spinor(12,186
+
 lib/qpb_gauge_field_set_unit.h,43
 #define _QPB_SPINOR_FIELD_SET_UNIT_H 2,37
 
@@ -346,9 +383,51 @@ qpb_apply_bri_dslash(12,235
 lib/qpb_comm_halo_spinor_field.h,44
 #define _QPB_COMM_HALO_SPINOR_FIELD_H 2,38
 
+lib/qpb_spinor_sun_mul.h,389
+#define _QPB_SPINOR_SUN_MUL_H 2,30
+spinor_sun_mul(8,151
+spinor_sun_peq_mul(34,761
+spinor_sun_meq_mul(60,1383
+spinor_sun_dag_mul(86,2005
+spinor_sun_dag_peq_mul(112,2619
+spinor_sun_dag_meq_mul(138,3245
+spinor_sun_mul(166,3904
+spinor_sun_peq_mul(248,7866
+spinor_sun_meq_mul(330,11856
+spinor_sun_dag_mul(412,15846
+spinor_sun_dag_peq_mul(494,19812
+spinor_sun_dag_meq_mul(576,23806
+
 lib/qpb_diagonal_links.c,68
 qpb_diagonal_links_init(9,163
 qpb_diagonal_links_finalize(92,2568
+
+lib/qpb_spinor_sigmas.h,699
+#define _QPB_SPINOR_SIGMAS_H 2,29
+spinor_sigma_zt(8,149
+spinor_sigma_yz(23,453
+spinor_sigma_xt(38,757
+spinor_sigma_yt(53,1061
+spinor_sigma_xy(68,1365
+spinor_sigma_xz(83,1669
+spinor_sigma_peq_zt(98,1973
+spinor_sigma_peq_yz(113,2289
+spinor_sigma_peq_xt(128,2605
+spinor_sigma_peq_yt(143,2921
+spinor_sigma_peq_xy(158,3237
+spinor_sigma_peq_xz(173,3553
+spinor_sigma_zt(190,3902
+spinor_sigma_yz(221,4654
+spinor_sigma_xt(252,5406
+spinor_sigma_yt(283,6158
+spinor_sigma_xy(314,6910
+spinor_sigma_xz(345,7662
+spinor_sigma_peq_zt(376,8414
+spinor_sigma_peq_yz(407,9194
+spinor_sigma_peq_xt(438,9974
+spinor_sigma_peq_yt(469,10754
+spinor_sigma_peq_xy(500,11534
+spinor_sigma_peq_xz(531,12314
 
 lib/qpb_sun_linalg.h,30
 #define _QPB_SUN_MMUL_H 2,24
@@ -365,8 +444,30 @@ lib/qpb_spinor_axpy.h,33
 lib/qpb_spinor_xeqy.c,23
 qpb_spinor_xeqy(8,106
 
+lib/qpb_gauge_field_copy.h,38
+#define _QPB_GAUGE_FIELD_COPY_H 2,32
+
+lib/qpb_sun_mul.h,230
+#define _QPB_SUN_MUL_H 2,23
+sun_mul_uu(8,137
+sun_mul_ud(19,356
+sun_mul_du(30,575
+sun_mul_dd(41,794
+sun_mul_au(52,1014
+sun_mul_uu(65,1241
+sun_mul_ud(128,4232
+sun_mul_du(191,7223
+sun_mul_dd(254,10214
+sun_mul_au(317,13214
+
 lib/qpb_alloc.c,16
 qpb_alloc(6,71
+
+lib/qpb_operators.h,114
+#define _QPB_OPERATORS_H 2,25
+enum qpb_operators 3,52
+  QPB_DSLASH_BRILLOUIN 4,73
+  QPB_DSLASH_STANDARD 5,101
 
 lib/qpb_spinor_axpy.c,22
 qpb_spinor_axpy(6,85
@@ -378,7 +479,7 @@ lib/qpb_read_spinor.h,33
 #define _QPB_READ_SPINOR_H 2,27
 
 lib/qpb_diagonal_links_get.c,32
-qpb_diagonal_links_get(47,1343
+qpb_diagonal_links_get(48,1382
 
 lib/qpb_write_spinor.h,34
 #define _QPB_WRITE_SPINOR_H 2,28
@@ -388,6 +489,12 @@ lib/qpb_diagonal_links.h,36
 
 lib/qpb_spinor_field_set_zero.c,32
 qpb_spinor_field_set_zero(8,98
+
+lib/qpb_write_n_spinor.h,36
+#define _QPB_WRITE_N_SPINOR_H 2,30
+
+lib/qpb_write_gauge.c,24
+qpb_write_gauge(12,186
 
 lib/qpb_spinor_xeqy.h,33
 #define _QPB_SPINOR_XEQY_H 2,27
@@ -404,30 +511,31 @@ qpb_rng_init(7,80
 qpb_rng_finalize(21,373
 qpb_get_rand(28,463
 
-lib/qpb_globals.h,743
+lib/qpb_globals.h,787
 #define _QPB_GLOBALS_H 2,23
-qpb_problem_params problem_params;5,50
-unsigned int *skin_to_ext[skin_to_ext6,85
-unsigned int *nneigh[nneigh7,118
-unsigned int *blk_to_ext;blk_to_ext8,146
-unsigned short int am_master;9,172
-unsigned short int **permutations[permutations10,202
-  unsigned short int dirs[dirs13,253
-  unsigned short int index[index14,297
-} dir_comb_2;15,333
-  unsigned short int hops[hops18,357
-  unsigned long int index[index19,407
-} hypercube_neigh;20,450
-#define print(22,470
-#define error(23,551
-#define print_sun(25,642
-#define X_INDEX(33,838
-#define Y_INDEX(34,871
-#define Z_INDEX(35,929
-#define T_INDEX(36,1012
-#define LEXICO(38,1112
-qpb_random_state rng_state;44,1233
-#define DEBUG_HERE(46,1262
+qpb_problem_params problem_params;5,76
+unsigned int *skin_to_ext[skin_to_ext6,111
+unsigned int *nneigh[nneigh7,144
+unsigned int *blk_to_ext;blk_to_ext8,172
+unsigned short int am_master;9,198
+unsigned short int **permutations[permutations10,228
+enum qpb_operators which_dslash_op;11,269
+  unsigned short int dirs[dirs14,315
+  unsigned short int index[index15,359
+} dir_comb_2;16,395
+  unsigned short int hops[hops19,419
+  unsigned long int index[index20,469
+} hypercube_neigh;21,512
+#define print(23,532
+#define error(24,613
+#define print_sun(26,704
+#define X_INDEX(34,902
+#define Y_INDEX(35,935
+#define Z_INDEX(36,993
+#define T_INDEX(37,1076
+#define LEXICO(39,1176
+qpb_random_state rng_state;45,1297
+#define DEBUG_HERE(47,1326
 
 lib/qpb_clover_term_get.h,37
 #define _QPB_CLOVER_TERM_GET_H 2,31
@@ -438,16 +546,342 @@ lib/qpb_byte_order.h,32
 lib/qpb_comm_halo_gauge_field.c,34
 qpb_comm_halo_gauge_field(10,137
 
+lib/qpb_gauge_field_copy.c,28
+qpb_gauge_field_copy(7,124
+
 lib/qpb_spinor_field_set_random.h,45
 #define _QPB_SPINOR_FIELD_SET_RANDOM_H 2,39
 
 lib/qpb_bicgstab.c,211
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 11,277
 #define qpb_dslash(13,316
-qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs17,457
-qpb_bicgstab_init(20,529
-qpb_bicgstab_finalize(32,780
-qpb_bicgstab(43,983
+qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs17,431
+qpb_bicgstab_init(20,503
+qpb_bicgstab_finalize(32,754
+qpb_bicgstab(43,957
+
+lib/qpb_spinor_gammas.h,11311
+#define _QPB_SPINOR_GAMMAS_H 2,29
+spinor_gamma_mz_py(8,149
+spinor_gamma_mz_px(23,560
+spinor_gamma_mz_mx(38,971
+spinor_gamma_mz_my(53,1382
+spinor_gamma_mt_py_px(68,1793
+spinor_gamma_pt_mz_my(83,2311
+spinor_gamma_pt_mz_my_mx(98,2829
+spinor_gamma_pt_pz_mx(113,3454
+spinor_gamma_pt_pz_px(128,3972
+spinor_gamma_mt_mx(143,4490
+spinor_gamma_pt_pz_py_mx(158,4901
+spinor_gamma_pz_py_mx(173,5526
+spinor_gamma_pt_pz_my_mx(188,6044
+spinor_gamma_mt_my(203,6669
+spinor_gamma_mz_my_px(218,7080
+spinor_gamma_px(233,7598
+spinor_gamma_py_mx(248,7902
+spinor_gamma_mz_my_mx(263,8313
+spinor_gamma_pt_my_mx(278,8831
+spinor_gamma_pt_mz_mx(293,9349
+spinor_gamma_pz_my_px(308,9867
+spinor_gamma_my_mx(323,10385
+spinor_gamma_mz_py_px(338,10796
+spinor_gamma_mt_pz_py_px(353,11314
+spinor_gamma_pt_pz_my(368,11939
+spinor_gamma_pt_mz_my_px(383,12457
+spinor_gamma_my_px(398,13082
+spinor_gamma_pt_my_px(413,13493
+spinor_gamma_mz_py_mx(428,14011
+spinor_gamma_mt_mz_py_mx(443,14529
+spinor_gamma_mt(458,15154
+spinor_gamma_pz_px(473,15458
+spinor_gamma_pz_py(488,15869
+spinor_gamma_py(503,16280
+spinor_gamma_mt_pz_py_mx(518,16584
+spinor_gamma_pz_my(533,17209
+spinor_gamma_pz_mx(548,17620
+spinor_gamma_mt_pz_my_mx(563,18031
+spinor_gamma_mt_pz_py(578,18656
+spinor_gamma_mt_pz_px(593,19174
+spinor_gamma_my(608,19692
+spinor_gamma_mx(623,19996
+spinor_gamma_mz(638,20300
+spinor_gamma_pt_pz_py(653,20604
+spinor_gamma_mt_mz_py_px(668,21122
+spinor_gamma_pt_mz(683,21747
+spinor_gamma_mt_mz_my(698,22158
+spinor_gamma_mt_mz_mx(713,22676
+spinor_gamma_pt_mz_py_mx(728,23194
+spinor_gamma_pt_mz_py(743,23819
+spinor_gamma_mt_py_mx(758,24337
+spinor_gamma_pt(773,24855
+spinor_gamma_mt_pz_my_px(788,25159
+spinor_gamma_pt_mz_py_px(803,25784
+spinor_gamma_mt_my_px(818,26409
+spinor_gamma_mt_pz_mx(833,26927
+spinor_gamma_mt_pz_my(848,27445
+spinor_gamma_mt_mz(863,27963
+spinor_gamma_mt_mz_my_mx(878,28374
+spinor_gamma_pz(893,28999
+spinor_gamma_mt_pz(908,29303
+spinor_gamma_mt_py(923,29714
+spinor_gamma_mt_px(938,30125
+spinor_gamma_pt_py_px(953,30536
+spinor_gamma_py_px(968,31054
+spinor_gamma_pt_mz_px(983,31465
+spinor_gamma_pt_my(998,31983
+spinor_gamma_pt_mx(1013,32394
+spinor_gamma_mt_mz_px(1028,32805
+spinor_gamma_mt_mz_py(1043,33323
+spinor_gamma_pz_my_mx(1058,33841
+spinor_gamma_pt_pz_my_px(1073,34359
+spinor_gamma_mt_my_mx(1088,34984
+spinor_gamma_pt_py_mx(1103,35502
+spinor_gamma_pz_py_px(1118,36020
+spinor_gamma_pt_pz(1133,36538
+spinor_gamma_pt_px(1148,36949
+spinor_gamma_pt_py(1163,37360
+spinor_gamma_mt_mz_my_px(1178,37771
+spinor_gamma_pt_pz_py_px(1193,38396
+spinor_gamma_peq_mz_py(1208,39021
+spinor_gamma_peq_mz_px(1223,39444
+spinor_gamma_peq_mz_mx(1238,39867
+spinor_gamma_peq_mz_my(1253,40290
+spinor_gamma_peq_mt_py_px(1268,40713
+spinor_gamma_peq_pt_mz_my(1283,41243
+spinor_gamma_peq_pt_mz_my_mx(1298,41773
+spinor_gamma_peq_pt_pz_mx(1313,42410
+spinor_gamma_peq_pt_pz_px(1328,42940
+spinor_gamma_peq_mt_mx(1343,43470
+spinor_gamma_peq_pt_pz_py_mx(1358,43893
+spinor_gamma_peq_pz_py_mx(1373,44530
+spinor_gamma_peq_pt_pz_my_mx(1388,45060
+spinor_gamma_peq_mt_my(1403,45697
+spinor_gamma_peq_mz_my_px(1418,46120
+spinor_gamma_peq_px(1433,46650
+spinor_gamma_peq_py_mx(1448,46966
+spinor_gamma_peq_mz_my_mx(1463,47389
+spinor_gamma_peq_pt_my_mx(1478,47919
+spinor_gamma_peq_pt_mz_mx(1493,48449
+spinor_gamma_peq_pz_my_px(1508,48979
+spinor_gamma_peq_my_mx(1523,49509
+spinor_gamma_peq_mz_py_px(1538,49932
+spinor_gamma_peq_mt_pz_py_px(1553,50462
+spinor_gamma_peq_pt_pz_my(1568,51099
+spinor_gamma_peq_pt_mz_my_px(1583,51629
+spinor_gamma_peq_my_px(1598,52266
+spinor_gamma_peq_pt_my_px(1613,52689
+spinor_gamma_peq_mz_py_mx(1628,53219
+spinor_gamma_peq_mt_mz_py_mx(1643,53749
+spinor_gamma_peq_mt(1658,54386
+spinor_gamma_peq_pz_px(1673,54702
+spinor_gamma_peq_pz_py(1688,55125
+spinor_gamma_peq_py(1703,55548
+spinor_gamma_peq_mt_pz_py_mx(1718,55864
+spinor_gamma_peq_pz_my(1733,56501
+spinor_gamma_peq_pz_mx(1748,56924
+spinor_gamma_peq_mt_pz_my_mx(1763,57347
+spinor_gamma_peq_mt_pz_py(1778,57984
+spinor_gamma_peq_mt_pz_px(1793,58514
+spinor_gamma_peq_my(1808,59044
+spinor_gamma_peq_mx(1823,59360
+spinor_gamma_peq_mz(1838,59676
+spinor_gamma_peq_pt_pz_py(1853,59992
+spinor_gamma_peq_mt_mz_py_px(1868,60522
+spinor_gamma_peq_pt_mz(1883,61159
+spinor_gamma_peq_mt_mz_my(1898,61582
+spinor_gamma_peq_mt_mz_mx(1913,62112
+spinor_gamma_peq_pt_mz_py_mx(1928,62642
+spinor_gamma_peq_pt_mz_py(1943,63279
+spinor_gamma_peq_mt_py_mx(1958,63809
+spinor_gamma_peq_pt(1973,64339
+spinor_gamma_peq_mt_pz_my_px(1988,64655
+spinor_gamma_peq_pt_mz_py_px(2003,65292
+spinor_gamma_peq_mt_my_px(2018,65929
+spinor_gamma_peq_mt_pz_mx(2033,66459
+spinor_gamma_peq_mt_pz_my(2048,66989
+spinor_gamma_peq_mt_mz(2063,67519
+spinor_gamma_peq_mt_mz_my_mx(2078,67942
+spinor_gamma_peq_pz(2093,68579
+spinor_gamma_peq_mt_pz(2108,68895
+spinor_gamma_peq_mt_py(2123,69318
+spinor_gamma_peq_mt_px(2138,69741
+spinor_gamma_peq_pt_py_px(2153,70164
+spinor_gamma_peq_py_px(2168,70694
+spinor_gamma_peq_pt_mz_px(2183,71117
+spinor_gamma_peq_pt_my(2198,71647
+spinor_gamma_peq_pt_mx(2213,72070
+spinor_gamma_peq_mt_mz_px(2228,72493
+spinor_gamma_peq_mt_mz_py(2243,73023
+spinor_gamma_peq_pz_my_mx(2258,73553
+spinor_gamma_peq_pt_pz_my_px(2273,74083
+spinor_gamma_peq_mt_my_mx(2288,74720
+spinor_gamma_peq_pt_py_mx(2303,75250
+spinor_gamma_peq_pz_py_px(2318,75780
+spinor_gamma_peq_pt_pz(2333,76310
+spinor_gamma_peq_pt_px(2348,76733
+spinor_gamma_peq_pt_py(2363,77156
+spinor_gamma_peq_mt_mz_my_px(2378,77579
+spinor_gamma_peq_pt_pz_py_px(2393,78216
+spinor_gamma_mz_py(2410,78886
+spinor_gamma_mz_px(2441,79953
+spinor_gamma_mz_mx(2472,81020
+spinor_gamma_mz_my(2503,82087
+spinor_gamma_mt_py_px(2534,83154
+spinor_gamma_pt_mz_my(2565,84536
+spinor_gamma_pt_mz_my_mx(2596,85918
+spinor_gamma_pt_pz_mx(2627,87615
+spinor_gamma_pt_pz_px(2658,88997
+spinor_gamma_mt_mx(2689,90379
+spinor_gamma_pt_pz_py_mx(2720,91446
+spinor_gamma_pz_py_mx(2751,93143
+spinor_gamma_pt_pz_my_mx(2782,94525
+spinor_gamma_mt_my(2813,96222
+spinor_gamma_mz_my_px(2844,97289
+spinor_gamma_px(2875,98671
+spinor_gamma_py_mx(2906,99423
+spinor_gamma_mz_my_mx(2937,100490
+spinor_gamma_pt_my_mx(2968,101872
+spinor_gamma_pt_mz_mx(2999,103254
+spinor_gamma_pz_my_px(3030,104636
+spinor_gamma_my_mx(3061,106018
+spinor_gamma_mz_py_px(3092,107085
+spinor_gamma_mt_pz_py_px(3123,108467
+spinor_gamma_pt_pz_my(3154,110164
+spinor_gamma_pt_mz_my_px(3185,111546
+spinor_gamma_my_px(3216,113243
+spinor_gamma_pt_my_px(3247,114310
+spinor_gamma_mz_py_mx(3278,115692
+spinor_gamma_mt_mz_py_mx(3309,117074
+spinor_gamma_mt(3340,118771
+spinor_gamma_pz_px(3371,119523
+spinor_gamma_pz_py(3402,120590
+spinor_gamma_py(3433,121657
+spinor_gamma_mt_pz_py_mx(3464,122409
+spinor_gamma_pz_my(3495,124106
+spinor_gamma_pz_mx(3526,125173
+spinor_gamma_mt_pz_my_mx(3557,126240
+spinor_gamma_mt_pz_py(3588,127937
+spinor_gamma_mt_pz_px(3619,129319
+spinor_gamma_my(3650,130701
+spinor_gamma_mx(3681,131453
+spinor_gamma_mz(3712,132205
+spinor_gamma_pt_pz_py(3743,132957
+spinor_gamma_mt_mz_py_px(3774,134339
+spinor_gamma_pt_mz(3805,136036
+spinor_gamma_mt_mz_my(3836,137103
+spinor_gamma_mt_mz_mx(3867,138485
+spinor_gamma_pt_mz_py_mx(3898,139867
+spinor_gamma_pt_mz_py(3929,141564
+spinor_gamma_mt_py_mx(3960,142946
+spinor_gamma_pt(3991,144328
+spinor_gamma_mt_pz_my_px(4022,145080
+spinor_gamma_pt_mz_py_px(4053,146777
+spinor_gamma_mt_my_px(4084,148474
+spinor_gamma_mt_pz_mx(4115,149856
+spinor_gamma_mt_pz_my(4146,151238
+spinor_gamma_mt_mz(4177,152620
+spinor_gamma_mt_mz_my_mx(4208,153687
+spinor_gamma_pz(4239,155384
+spinor_gamma_mt_pz(4270,156136
+spinor_gamma_mt_py(4301,157203
+spinor_gamma_mt_px(4332,158270
+spinor_gamma_pt_py_px(4363,159337
+spinor_gamma_py_px(4394,160719
+spinor_gamma_pt_mz_px(4425,161786
+spinor_gamma_pt_my(4456,163168
+spinor_gamma_pt_mx(4487,164235
+spinor_gamma_mt_mz_px(4518,165302
+spinor_gamma_mt_mz_py(4549,166684
+spinor_gamma_pz_my_mx(4580,168066
+spinor_gamma_pt_pz_my_px(4611,169448
+spinor_gamma_mt_my_mx(4642,171145
+spinor_gamma_pt_py_mx(4673,172527
+spinor_gamma_pz_py_px(4704,173909
+spinor_gamma_pt_pz(4735,175291
+spinor_gamma_pt_px(4766,176358
+spinor_gamma_pt_py(4797,177425
+spinor_gamma_mt_mz_my_px(4828,178492
+spinor_gamma_pt_pz_py_px(4859,180189
+spinor_gamma_peq_mz_py(4890,181886
+spinor_gamma_peq_mz_px(4921,182981
+spinor_gamma_peq_mz_mx(4952,184076
+spinor_gamma_peq_mz_my(4983,185171
+spinor_gamma_peq_mt_py_px(5014,186266
+spinor_gamma_peq_pt_mz_my(5045,187676
+spinor_gamma_peq_pt_mz_my_mx(5076,189086
+spinor_gamma_peq_pt_pz_mx(5107,190811
+spinor_gamma_peq_pt_pz_px(5138,192221
+spinor_gamma_peq_mt_mx(5169,193631
+spinor_gamma_peq_pt_pz_py_mx(5200,194726
+spinor_gamma_peq_pz_py_mx(5231,196451
+spinor_gamma_peq_pt_pz_my_mx(5262,197861
+spinor_gamma_peq_mt_my(5293,199586
+spinor_gamma_peq_mz_my_px(5324,200681
+spinor_gamma_peq_px(5355,202091
+spinor_gamma_peq_py_mx(5386,202871
+spinor_gamma_peq_mz_my_mx(5417,203966
+spinor_gamma_peq_pt_my_mx(5448,205376
+spinor_gamma_peq_pt_mz_mx(5479,206786
+spinor_gamma_peq_pz_my_px(5510,208196
+spinor_gamma_peq_my_mx(5541,209606
+spinor_gamma_peq_mz_py_px(5572,210701
+spinor_gamma_peq_mt_pz_py_px(5603,212111
+spinor_gamma_peq_pt_pz_my(5634,213836
+spinor_gamma_peq_pt_mz_my_px(5665,215246
+spinor_gamma_peq_my_px(5696,216971
+spinor_gamma_peq_pt_my_px(5727,218066
+spinor_gamma_peq_mz_py_mx(5758,219476
+spinor_gamma_peq_mt_mz_py_mx(5789,220886
+spinor_gamma_peq_mt(5820,222611
+spinor_gamma_peq_pz_px(5851,223391
+spinor_gamma_peq_pz_py(5882,224486
+spinor_gamma_peq_py(5913,225581
+spinor_gamma_peq_mt_pz_py_mx(5944,226361
+spinor_gamma_peq_pz_my(5975,228086
+spinor_gamma_peq_pz_mx(6006,229181
+spinor_gamma_peq_mt_pz_my_mx(6037,230276
+spinor_gamma_peq_mt_pz_py(6068,232001
+spinor_gamma_peq_mt_pz_px(6099,233411
+spinor_gamma_peq_my(6130,234821
+spinor_gamma_peq_mx(6161,235601
+spinor_gamma_peq_mz(6192,236381
+spinor_gamma_peq_pt_pz_py(6223,237161
+spinor_gamma_peq_mt_mz_py_px(6254,238571
+spinor_gamma_peq_pt_mz(6285,240296
+spinor_gamma_peq_mt_mz_my(6316,241391
+spinor_gamma_peq_mt_mz_mx(6347,242801
+spinor_gamma_peq_pt_mz_py_mx(6378,244211
+spinor_gamma_peq_pt_mz_py(6409,245936
+spinor_gamma_peq_mt_py_mx(6440,247346
+spinor_gamma_peq_pt(6471,248756
+spinor_gamma_peq_mt_pz_my_px(6502,249536
+spinor_gamma_peq_pt_mz_py_px(6533,251261
+spinor_gamma_peq_mt_my_px(6564,252986
+spinor_gamma_peq_mt_pz_mx(6595,254396
+spinor_gamma_peq_mt_pz_my(6626,255806
+spinor_gamma_peq_mt_mz(6657,257216
+spinor_gamma_peq_mt_mz_my_mx(6688,258311
+spinor_gamma_peq_pz(6719,260036
+spinor_gamma_peq_mt_pz(6750,260816
+spinor_gamma_peq_mt_py(6781,261911
+spinor_gamma_peq_mt_px(6812,263006
+spinor_gamma_peq_pt_py_px(6843,264101
+spinor_gamma_peq_py_px(6874,265511
+spinor_gamma_peq_pt_mz_px(6905,266606
+spinor_gamma_peq_pt_my(6936,268016
+spinor_gamma_peq_pt_mx(6967,269111
+spinor_gamma_peq_mt_mz_px(6998,270206
+spinor_gamma_peq_mt_mz_py(7029,271616
+spinor_gamma_peq_pz_my_mx(7060,273026
+spinor_gamma_peq_pt_pz_my_px(7091,274436
+spinor_gamma_peq_mt_my_mx(7122,276161
+spinor_gamma_peq_pt_py_mx(7153,277571
+spinor_gamma_peq_pz_py_px(7184,278981
+spinor_gamma_peq_pt_pz(7215,280391
+spinor_gamma_peq_pt_px(7246,281486
+spinor_gamma_peq_pt_py(7277,282581
+spinor_gamma_peq_mt_mz_my_px(7308,283676
+spinor_gamma_peq_pt_pz_py_px(7339,285401
 
 lib/qpb_spinor_xdoty.c,24
 qpb_spinor_xdoty(8,103
@@ -463,6 +897,26 @@ lib/qpb_alloc.h,27
 
 lib/qpb_sun_project.h,31
 #define _QPB_SUN_PROJECT 2,25
+
+lib/qpb_sun_utils.h,282
+#define _QPB_SUN_UTILS_H 2,25
+sun_uequ(8,141
+sun_ueqd(17,268
+sun_upu(26,396
+sun_upequ(35,564
+sun_umu(44,694
+sun_umequ(53,862
+sun_trace(62,998
+sun_uequ(70,1099
+sun_ueqd(97,1660
+sun_upu(124,2230
+sun_upequ(151,3040
+sun_umu(178,3620
+sun_umequ(205,4430
+sun_trace(232,5016
+
+lib/qpb_gauge_field_shift.c,30
+qpb_gauge_field_shift(10,249
 
 lib/qpb_clover_term.h,33
 #define _QPB_CLOVER_TERM_H 2,27
