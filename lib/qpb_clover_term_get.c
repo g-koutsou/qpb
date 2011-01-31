@@ -1,5 +1,6 @@
 #include <qpb_types.h>
 #include <qpb_globals.h>
+#include <qpb_comm_halo_gauge_field.h>
 #include <qpb_sun_linalg.h>
 
 #define PRINT_MAT_NC(a)				\
@@ -16,6 +17,7 @@
 void
 qpb_clover_term_get(qpb_clover_term clover_term, qpb_gauge_field gauge)
 {
+  qpb_comm_halo_gauge_field(gauge);
   int lvol = problem_params.l_vol;
   
   for(int lv=0; lv<lvol; lv++)
