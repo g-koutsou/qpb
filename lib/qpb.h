@@ -34,6 +34,7 @@
 #include <qpb_write_gauge.h>
 #include <qpb_read_gauge.h>
 #include <qpb_read_spinor.h>
+#include <qpb_read_n_spinor.h>
 #include <qpb_write_spinor.h>
 #include <qpb_write_n_spinor.h>
 #include <qpb_apply_clover_term.h>
@@ -46,4 +47,5 @@
 #include <qpb_apesmear.h>
 #include <qpb_gauge_field_copy.h>
 #include <qpb_gauge_field_shift.h>
+#include <qpb_meson_2pt_corr.h>
 #endif /* _QPB_H */

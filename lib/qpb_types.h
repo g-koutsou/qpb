@@ -150,6 +150,12 @@ enum qpb_field_init_opts{
 	typedef qpb_spinor_field_double qpb_spinor_field;
 #endif /* SINGLE_PRECISION */
 
+#define _C0_ ((qpb_complex){0.0, 0.0})
+#define _CP1_ ((qpb_complex){+1.0, +0.0})
+#define _CPI_ ((qpb_complex){+0.0, +1.0})
+#define _CM1_ ((qpb_complex){-1.0, +0.0})
+#define _CMI_ ((qpb_complex){+0.0, -1.0})
+
 #define CNORM2(a)  ((a).re*(a).re + (a).im*(a).im)
 #define CNORM(a)  (sqrt((a).re*(a).re + (a).im*(a).im))
 #define CMULR(a, b) ((a).re*(b).re - (a).im*(b).im)

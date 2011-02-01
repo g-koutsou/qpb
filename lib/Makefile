@@ -30,6 +30,7 @@ SOURCES = qpb_init\
 	qpb_read_gauge\
 	qpb_write_gauge\
 	qpb_read_spinor\
+	qpb_read_n_spinor\
 	qpb_write_spinor\
 	qpb_write_n_spinor\
 	qpb_plaquette\
@@ -42,6 +43,7 @@ SOURCES = qpb_init\
 	qpb_apply_bri_dslash\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
+	qpb_meson_2pt_corr\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_axpy\

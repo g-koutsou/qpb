@@ -32,6 +32,10 @@ mainprogs/apesmear/main.c,92
 usage(9,83
 main(16,190
 
+mainprogs/mesons/main.c,25
+usage(4,23
+main(11,130
+
 lib/qpb_bicgstab.h,30
 #define _QPB_BICGSTAB_H 2,24
 
@@ -58,7 +62,7 @@ lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
 qpb_spinor_field_finalize(114,3198
 
-lib/qpb_errors.h,202
+lib/qpb_errors.h,238
 #define _QPB_ERRORS_H 2,22
 enum qpb_errors 3,46
   QPB_ARGS_ERROR 4,64
@@ -67,6 +71,7 @@ enum qpb_errors 3,46
   QPB_FILE_ERROR 7,134
   QPB_MALLOC_ERROR 8,157
   QPB_PARAMETERS_ERROR 9,182
+  QPB_NOT_IMPLEMENTED_ERROR 10,211
 
 lib/qpb_apply_clover_term.h,39
 #define _QPB_APPLY_CLOVER_TERM_H 2,33
@@ -156,7 +161,15 @@ qpb_apply_dslash_site(8,171
 lib/qpb_spinor_field.h,34
 #define _QPB_SPINOR_FIELD_H 2,28
 
-lib/qpb_types.h,4692
+lib/qpb_gamma_matrices.h,251
+#define _QPB_GAMMA_MATRICES_H 2,30
+qpb_complex qpb_gamma_x[qpb_gamma_x5,127
+qpb_complex qpb_gamma_y[qpb_gamma_y6,160
+qpb_complex qpb_gamma_z[qpb_gamma_z7,193
+qpb_complex qpb_gamma_t[qpb_gamma_t8,226
+qpb_complex qpb_gamma_5[qpb_gamma_59,259
+
+lib/qpb_types.h,4811
 #define _QPB_TYPES_H 2,21
 #define qpb_float 4,61
 #define qpb_double 5,85
@@ -260,27 +273,32 @@ enum qpb_field_init_opts{qpb_field_init_opts128,3054
 	typedef qpb_diagonal_links_double qpb_diagonal_links;148,3663
 	typedef qpb_spinor_double qpb_spinor;149,3718
 	typedef qpb_spinor_field_double qpb_spinor_field;150,3757
-#define CNORM2(153,3839
-#define CNORM(154,3890
-#define CMULR(155,3946
-#define CMULI(156,3998
-#define CMUL(157,4050
-#define CSCALE(158,4120
-#define CADD(159,4186
-#define CSUB(160,4256
-#define CNEGATE(161,4326
-#define CCONJ(162,4380
-#define CDEV(163,4431
-#define CDEVR(164,4496
-#define CDEVI(165,4553
-#define CSQRTR(166,4610
-#define CSQRTI(167,4674
-#define CSQRT(168,4738
-#define CARG(169,4795
-#define CPOWR(170,4835
-#define CPOWI(171,4889
-#define MIN(172,4943
-#define MAX(173,4979
+#define _C0_ 153,3839
+#define _CP1_ 154,3878
+#define _CPI_ 155,3920
+#define _CM1_ 156,3962
+#define _CMI_ 157,4004
+#define CNORM2(159,4047
+#define CNORM(160,4098
+#define CMULR(161,4154
+#define CMULI(162,4206
+#define CMUL(163,4258
+#define CSCALE(164,4328
+#define CADD(165,4394
+#define CSUB(166,4464
+#define CNEGATE(167,4534
+#define CCONJ(168,4588
+#define CDEV(169,4639
+#define CDEVR(170,4704
+#define CDEVI(171,4761
+#define CSQRTR(172,4818
+#define CSQRTI(173,4882
+#define CSQRT(174,4946
+#define CARG(175,5003
+#define CPOWR(176,5043
+#define CPOWI(177,5097
+#define MIN(178,5151
+#define MAX(179,5187
 
 lib/qpb_stop_watch.h,32
 #define _QPB_STOP_WATCH_H 2,26
@@ -374,8 +392,14 @@ lib/qpb_gauge_field_set_unit.h,43
 lib/qpb_read_spinor.c,24
 qpb_read_spinor(12,186
 
+lib/qpb_read_n_spinor.c,26
+qpb_read_n_spinor(12,186
+
 lib/qpb_read_gauge.h,32
 #define _QPB_READ_GAUGE_H 2,26
+
+lib/qpb_meson_2pt_corr.h,36
+#define _QPB_MESON_2PT_CORR_H 2,30
 
 lib/qpb_apply_bri_dslash.c,29
 qpb_apply_bri_dslash(12,235
@@ -429,6 +453,9 @@ spinor_sigma_peq_yt(469,10754
 spinor_sigma_peq_xy(500,11534
 spinor_sigma_peq_xz(531,12314
 
+lib/qpb_read_n_spinor.h,35
+#define _QPB_READ_N_SPINOR_H 2,29
+
 lib/qpb_sun_linalg.h,30
 #define _QPB_SUN_MMUL_H 2,24
 
@@ -473,7 +500,7 @@ lib/qpb_spinor_axpy.c,22
 qpb_spinor_axpy(6,85
 
 lib/qpb_init.c,17
-qpb_init(16,316
+qpb_init(18,368
 
 lib/qpb_read_spinor.h,33
 #define _QPB_READ_SPINOR_H 2,27
@@ -499,9 +526,9 @@ qpb_write_gauge(12,186
 lib/qpb_spinor_xeqy.h,33
 #define _QPB_SPINOR_XEQY_H 2,27
 
-lib/qpb_clover_term_get.c,55
-#define PRINT_MAT_NC(5,77
-qpb_clover_term_get(17,336
+lib/qpb_clover_term_get.c,56
+#define PRINT_MAT_NC(6,116
+qpb_clover_term_get(18,375
 
 lib/qpb_spinor_xmy.c,21
 qpb_spinor_xmy(6,85
@@ -891,6 +918,18 @@ lib/qpb_spinor_xdotx.h,34
 
 lib/qpb_gauge_field.h,33
 #define _QPB_GAUGE_FIELD_H 2,27
+
+lib/qpb_meson_2pt_corr.c,223
+#define QPB_N_MESON_2PT_CHANNELS 10,185
+enum qpb_meson_2pt_channels 11,220
+  G5_G5,12,250
+  G5_G4G5,13,259
+  G4G5_G5,14,270
+  G4G5_G4G5,15,281
+  G1_G1,16,294
+  G2_G2,17,303
+  G3_G318,312
+qpb_meson_2pt_corr(29,551
 
 lib/qpb_alloc.h,27
 #define _QPB_ALLOC_H 2,21

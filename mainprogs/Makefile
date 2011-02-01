@@ -1,6 +1,6 @@
 include ../Makefile.in
 
-DIRS = invert
+DIRS = invert mesons apesmear
 
 all: 
 	-for d in $(DIRS); do (cd $$d && $(MAKE)); done

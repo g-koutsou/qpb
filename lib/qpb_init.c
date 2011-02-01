@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <string.h>
 #include <qpb_alloc.h>
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_errors.h>
+#include <qpb_gamma_matrices.h>
 #include <mpi.h>
 
 /* 
@@ -449,5 +451,46 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
   permutations[4][23][2] = 1;
   permutations[4][23][3] = 0;
 
+  /* initialize gamma matrices */
+  qpb_complex _qpb_gamma_x[NS][NS] = { 
+    { _C0_, _C0_, _C0_, _CPI_  },
+    { _C0_, _C0_, _CPI_, _C0_  },
+    { _C0_, _CMI_, _C0_, _C0_ },
+    { _CMI_, _C0_, _C0_, _C0_ }
+  };
+
+  qpb_complex _qpb_gamma_y[NS][NS] = { 
+    { _C0_, _C0_, _C0_, _CP1_  },
+    { _C0_, _C0_, _CM1_, _C0_ },
+    { _C0_, _CM1_, _C0_, _C0_ },
+    { _CP1_, _C0_, _C0_, _C0_  }
+  };
+
+  qpb_complex _qpb_gamma_z[NS][NS] = { 
+    { _C0_, _C0_, _CPI_, _C0_  },
+    { _C0_, _C0_, _C0_, _CMI_ },
+    { _CMI_, _C0_, _C0_, _C0_ },
+    { _C0_, _CPI_, _C0_, _C0_  }
+  };
+
+  qpb_complex _qpb_gamma_t[NS][NS] = { 
+    { _CP1_, _C0_, _C0_, _C0_  },
+    { _C0_, _CP1_, _C0_, _C0_  },
+    { _C0_, _C0_, _CM1_, _C0_ },
+    { _C0_, _C0_, _C0_, _CM1_ }
+  };
+
+  qpb_complex _qpb_gamma_5[NS][NS] = { 
+    { _C0_, _C0_, _CP1_, _C0_ },
+    { _C0_, _C0_, _C0_, _CP1_ },
+    { _CP1_, _C0_, _C0_, _C0_ },
+    { _C0_, _CP1_, _C0_, _C0_ }
+  };
+
+  memcpy(qpb_gamma_x, _qpb_gamma_x, NS*NS*sizeof(qpb_complex));
+  memcpy(qpb_gamma_y, _qpb_gamma_y, NS*NS*sizeof(qpb_complex));
+  memcpy(qpb_gamma_z, _qpb_gamma_z, NS*NS*sizeof(qpb_complex));
+  memcpy(qpb_gamma_t, _qpb_gamma_t, NS*NS*sizeof(qpb_complex));
+  memcpy(qpb_gamma_5, _qpb_gamma_5, NS*NS*sizeof(qpb_complex));
   return;
 }
