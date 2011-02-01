@@ -242,6 +242,12 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfil
 		      corr[ich][t].im += CMULI(prod[id], c);
 		    }
 	    }
+	}
+      /*
+       * Do this outside of OpenMP
+       */
+      for(int t=0; t<lt; t++)
+	{
 	  qpb_complex recv;	  
 	  MPI_Allreduce(&corr[ich][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	  MPI_Allreduce(&corr[ich][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
