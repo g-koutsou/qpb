@@ -28,6 +28,8 @@ SOURCES = qpb_init\
 	qpb_gauge_field\
 	qpb_comm_halo_spinor_field\
 	qpb_read_gauge\
+	qpb_read_raw_gauge\
+	qpb_read_ildg_gauge\
 	qpb_write_gauge\
 	qpb_read_spinor\
 	qpb_read_n_spinor\

@@ -9,11 +9,23 @@
 #include <qpb_errors.h>
 
 void
-qpb_read_gauge(qpb_gauge_field gauge_field, char fname[])
+qpb_read_gauge(qpb_gauge_field gauge_field, size_t offset, size_t precision, char fname[])
 {
-  MPI_Datatype mpi_dtype_link_float, filetype;
-  MPI_Type_contiguous(2*NC*NC*ND, MPI_FLOAT, &mpi_dtype_link_float);
-  MPI_Type_commit(&mpi_dtype_link_float);
+  MPI_Datatype mpi_dtype_link, filetype;
+  if(precision == 32)
+    {
+      MPI_Type_contiguous(2*NC*NC*ND, MPI_FLOAT, &mpi_dtype_link);
+    }
+  else if(precision == 64)
+    {
+      MPI_Type_contiguous(2*NC*NC*ND, MPI_DOUBLE, &mpi_dtype_link);
+    }
+  else
+    {
+      fprintf(stderr, "%s: precision should be either 32 or 64\n", __func__);
+      exit(QPB_NOT_IMPLEMENTED_ERROR);
+    }
+  MPI_Type_commit(&mpi_dtype_link);
 
   int starts[ND], l_dim[ND], g_dim[ND];
   for(int i=0; i<ND; i++)
@@ -24,7 +36,7 @@ qpb_read_gauge(qpb_gauge_field gauge_field, char fname[])
     };
 
   int ierr = MPI_Type_create_subarray(ND, g_dim, l_dim, starts, MPI_ORDER_C, 
-				      mpi_dtype_link_float, &filetype);
+				      mpi_dtype_link, &filetype);
   MPI_Type_commit(&filetype);
 
   MPI_File fhandle;
@@ -39,7 +51,7 @@ qpb_read_gauge(qpb_gauge_field gauge_field, char fname[])
 	}
     }
 
-  ierr = MPI_File_set_view(fhandle, 0, mpi_dtype_link_float, filetype, 
+  ierr = MPI_File_set_view(fhandle, (MPI_Offset)offset, mpi_dtype_link, filetype, 
 			   "native", MPI_INFO_NULL);
   if(ierr != MPI_SUCCESS)
     {
@@ -50,11 +62,20 @@ qpb_read_gauge(qpb_gauge_field gauge_field, char fname[])
 	}
     }
 
-  void *buffer = qpb_alloc(problem_params.l_vol*ND*sizeof(qpb_link_float));
+  void *buffer = NULL;
+
+  if(precision == 32)
+    {
+      buffer = qpb_alloc(problem_params.l_vol*ND*sizeof(qpb_link_float));
+    }
+  else if(precision == 64)
+    {
+      buffer = qpb_alloc(problem_params.l_vol*ND*sizeof(qpb_link_double));
+    }
 
   MPI_Status status;
   ierr = MPI_File_read_all(fhandle, buffer, problem_params.l_vol, 
-			   mpi_dtype_link_float, &status);
+			   mpi_dtype_link, &status);
   if(ierr != MPI_SUCCESS)
     {
       if(am_master)
@@ -65,17 +86,28 @@ qpb_read_gauge(qpb_gauge_field gauge_field, char fname[])
     }
 
   if(!qpb_is_bigendian())
-    qpb_byte_swap_float(buffer, problem_params.l_vol*ND*NC*NC*2);
+    {
+      if(precision == 32)
+	qpb_byte_swap_float(buffer, problem_params.l_vol*ND*NC*NC*2);
+      else if(precision == 64)
+	qpb_byte_swap_double(buffer, problem_params.l_vol*ND*NC*NC*2);
+    }
 
   for(int mu=0; mu<ND; mu++)
     for(int v=0; v<problem_params.l_vol; v++)
       {
 	for(int col=0; col<NC*NC; col++)
 	  {
-	    gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex){
-	      ((float *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
-	      ((float *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
-	    };	  
+	    if(precision == 32)
+	      gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex){
+		((float *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
+		((float *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
+	      };	  
+	    else if(precision == 64)
+	      gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex){
+		((double *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
+		((double *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
+	      };	  
 	  }
       }
     

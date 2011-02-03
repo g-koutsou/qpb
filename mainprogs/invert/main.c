@@ -5,6 +5,12 @@ enum {
   INVERT_PROPAGATOR
 } invert_mode;
 
+enum {
+  CONF_ILDG,
+  CONF_RAW_32,
+  CONF_RAW_64,
+} conf_format;
+
 void
 usage(char *argv[])
 {
@@ -107,6 +113,26 @@ main(int argc, char *argv[])
 		"Conf file");
 	  exit(QPB_PARSER_ERROR);
 	}  
+      if(sscanf(qpb_parse("Conf format"), "%s",
+		aux_string)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Conf format");
+	  exit(QPB_PARSER_ERROR);
+	}  
+      if(strcmp(aux_string, "ildg") == 0)
+	conf_format = CONF_ILDG;
+      else if(strcmp(aux_string, "raw_32") == 0)
+	conf_format = CONF_RAW_32;
+      else if(strcmp(aux_string, "raw_64") == 0)
+	conf_format = CONF_RAW_64;
+      else
+	{
+	  error("%s: option should be one of: ", "Conf format");
+	  error("%s, ", "raw"); 
+	  error("%s\n", "ildg"); 
+	  exit(QPB_PARSER_ERROR);
+	}
       break;
     case QPB_RAND:
       break;
@@ -311,7 +337,18 @@ main(int argc, char *argv[])
       print(" Gauge field = Unit\n");
       break;
     case QPB_FILE:
-      print(" Gauge field = %s\n", conf_file);
+      if(conf_format == CONF_ILDG)
+	{
+	  print(" Gauge field (ildg) = %s\n", conf_file);
+	}
+      else if(conf_format == CONF_RAW_32)
+	{
+	  print(" Gauge field (raw_32) = %s\n", conf_file);
+	}
+      else if(conf_format == CONF_RAW_64)
+	{
+	  print(" Gauge field (raw_64) = %s\n", conf_file);
+	}
       break;
     case QPB_RAND:
       print(" Gauge field = Random\n");
@@ -346,7 +383,18 @@ main(int argc, char *argv[])
       qpb_gauge_field_set_unit(gauge);
       break;
     case QPB_FILE:
-      qpb_read_gauge(gauge, conf_file);
+      if(conf_format == CONF_RAW_32)
+	{
+	  qpb_read_raw32_gauge(gauge, conf_file);
+	}
+      else if(conf_format == CONF_RAW_64)
+	{
+	  qpb_read_raw64_gauge(gauge, conf_file);
+	}
+      else if(conf_format == CONF_ILDG)
+	{
+	  qpb_read_ildg_gauge(gauge, conf_file);
+	}
       break;
     case QPB_RAND:
       break;

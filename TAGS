@@ -18,19 +18,16 @@ qpb_apply_bri_dslash_site(9,204
 python/qpb_spinor_sigmas.tmpl.h,35
 #define _QPB_SPINOR_SIGMAS_H 2,29
 
-mainprogs/invert/main.c,92
+mainprogs/invert/main.c,177
   INVERT_COLUMN,4,25
   INVERT_PROPAGATOR5,42
 } invert_mode;6,62
-usage(9,83
-main(16,190
-
-mainprogs/apesmear/main.c,92
-  INVERT_COLUMN,4,25
-  INVERT_PROPAGATOR5,42
-} invert_mode;6,62
-usage(9,83
-main(16,190
+  CONF_ILDG,9,85
+  CONF_RAW_32,10,98
+  CONF_RAW_64,11,113
+} conf_format;12,128
+usage(15,149
+main(22,256
 
 mainprogs/mesons/main.c,25
 usage(4,23
@@ -151,8 +148,15 @@ qpb_apply_dslash(12,231
 lib/qpb_spinor_xmy.h,34
 #define _QPB_SPINOR_XMEQY_H 2,28
 
+lib/qpb_read_ildg_gauge.c,46
+xpath_get(19,355
+qpb_read_ildg_gauge(37,831
+
 lib/qpb_msg_passing_init.h,38
 #define _QPB_MSG_PASSING_INIT_H 2,32
+
+lib/qpb_read_ildg_gauge.h,37
+#define _QPB_READ_ILDG_GAUGE_H 2,31
 
 lib/qpb_apply_dslash_site.h,68
 #define _QPB_APPLY_DSLASH_SITE_H 2,33
@@ -302,6 +306,10 @@ enum qpb_field_init_opts{qpb_field_init_opts128,3054
 
 lib/qpb_stop_watch.h,32
 #define _QPB_STOP_WATCH_H 2,26
+
+lib/qpb_read_raw_gauge.c,58
+qpb_read_raw32_gauge(13,214
+qpb_read_raw64_gauge(22,393
 
 lib/qpb_apply_bri_dslash_site.h,76
 #define _QPB_APPLY_BRI_DSLASH_SITE_H 2,37
@@ -529,6 +537,9 @@ lib/qpb_spinor_xeqy.h,33
 lib/qpb_clover_term_get.c,56
 #define PRINT_MAT_NC(6,116
 qpb_clover_term_get(18,375
+
+lib/qpb_read_raw_gauge.h,36
+#define _QPB_READ_RAW_GAUGE_H 2,30
 
 lib/qpb_spinor_xmy.c,21
 qpb_spinor_xmy(6,85

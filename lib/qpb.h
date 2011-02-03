@@ -33,6 +33,8 @@
 #include <qpb_gauge_field_set_unit.h>
 #include <qpb_write_gauge.h>
 #include <qpb_read_gauge.h>
+#include <qpb_read_raw_gauge.h>
+#include <qpb_read_ildg_gauge.h>
 #include <qpb_read_spinor.h>
 #include <qpb_read_n_spinor.h>
 #include <qpb_write_spinor.h>
