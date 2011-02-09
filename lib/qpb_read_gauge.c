@@ -14,11 +14,11 @@ qpb_read_gauge(qpb_gauge_field gauge_field, size_t offset, size_t precision, cha
   MPI_Datatype mpi_dtype_link, filetype;
   if(precision == 32)
     {
-      MPI_Type_contiguous(2*NC*NC*ND, MPI_FLOAT, &mpi_dtype_link);
+      MPI_Type_contiguous(4*2*NC*NC*ND, MPI_BYTE, &mpi_dtype_link);
     }
   else if(precision == 64)
     {
-      MPI_Type_contiguous(2*NC*NC*ND, MPI_DOUBLE, &mpi_dtype_link);
+      MPI_Type_contiguous(8*2*NC*NC*ND, MPI_BYTE, &mpi_dtype_link);
     }
   else
     {
@@ -76,41 +76,10 @@ qpb_read_gauge(qpb_gauge_field gauge_field, size_t offset, size_t precision, cha
   MPI_Status status;
   ierr = MPI_File_read_all(fhandle, buffer, problem_params.l_vol, 
 			   mpi_dtype_link, &status);
-  if(ierr != MPI_SUCCESS)
-    {
-      if(am_master)
-       	{
-	  fprintf(stderr, "%s: MPI_File_read() returned in error\n", fname);
-	  exit(QPB_FILE_ERROR);
-	}
-    }
 
-  if(!qpb_is_bigendian())
-    {
-      if(precision == 32)
-	qpb_byte_swap_float(buffer, problem_params.l_vol*ND*NC*NC*2);
-      else if(precision == 64)
-	qpb_byte_swap_double(buffer, problem_params.l_vol*ND*NC*NC*2);
-    }
+  MPI_Type_free(&mpi_dtype_link);
+  MPI_Type_free(&filetype);
 
-  for(int mu=0; mu<ND; mu++)
-    for(int v=0; v<problem_params.l_vol; v++)
-      {
-	for(int col=0; col<NC*NC; col++)
-	  {
-	    if(precision == 32)
-	      gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex){
-		((float *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
-		((float *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
-	      };	  
-	    else if(precision == 64)
-	      gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex){
-		((double *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
-		((double *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
-	      };	  
-	  }
-      }
-    
   ierr = MPI_File_close(&fhandle);
   if(ierr != MPI_SUCCESS)
     {
@@ -120,6 +89,41 @@ qpb_read_gauge(qpb_gauge_field gauge_field, size_t offset, size_t precision, cha
 	  exit(QPB_FILE_ERROR);
 	}
     }
+
+  if(ierr != MPI_SUCCESS)
+    {
+      if(am_master)
+       	{
+	  fprintf(stderr, "%s: MPI_File_read() returned in error\n", fname);
+	  exit(QPB_FILE_ERROR);
+	}
+    }
+  
+  if(!qpb_is_bigendian())
+    {
+      if(precision == 32)
+	qpb_byte_swap_float(buffer, problem_params.l_vol*ND*NC*NC*2);
+
+      if(precision == 64)
+	qpb_byte_swap_double(buffer, problem_params.l_vol*ND*NC*NC*2);
+    }
+
+  for(int mu=0; mu<ND; mu++)
+    for(int v=0; v<problem_params.l_vol; v++)
+      for(int col=0; col<NC*NC; col++)
+	{
+	  if(precision == 32)
+	    gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex) {
+	      ((float *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
+	      ((float *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
+	    };
+	  if(precision == 64)
+	    gauge_field.bulk[v][ND-1 - mu][col] = (qpb_complex) {
+	      (float)((double *) buffer)[2*col + 2*mu*NC*NC + 2*v*NC*NC*ND],
+	      (float)((double *) buffer)[1 + 2*col + 2*mu*NC*NC + 2*v*NC*NC*ND]
+	    };
+	}
+
   free(buffer);
   return;
 }

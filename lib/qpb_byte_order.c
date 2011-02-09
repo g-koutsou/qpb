@@ -18,11 +18,12 @@ qpb_is_bigendian()
 }
 
 void
-qpb_byte_swap_float(float *buf, size_t n)
+qpb_byte_swap_float(void *buf, size_t n)
 {
+  int wsize = 4;
   for(int i=0; i<n; i++)
     {
-      unsigned char *c = (unsigned char *)(buf + i);
+      unsigned char *c = (unsigned char *)buf + i*wsize;
       unsigned char swap;
       swap = c[0]; c[0] = c[3]; c[3] = swap;
       swap = c[1]; c[1] = c[2]; c[2] = swap;
@@ -31,11 +32,12 @@ qpb_byte_swap_float(float *buf, size_t n)
 }
 
 void
-qpb_byte_swap_double(double *buf, size_t n)
+qpb_byte_swap_double(void *buf, size_t n)
 {
+  int wsize = 8;
   for(int i=0; i<n; i++)
     {
-      unsigned char *c = (unsigned char *)(buf + i);
+      unsigned char *c = (unsigned char *) buf + i*wsize;
       unsigned char swap;
       swap = c[0]; c[0] = c[7]; c[7] = swap;
       swap = c[1]; c[1] = c[6]; c[6] = swap;
