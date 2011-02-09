@@ -81,7 +81,7 @@ qpb_is_bigendian(4,24
     char c[c7,55
     int  i;8,70
 qpb_byte_swap_float(21,220
-qpb_byte_swap_double(34,488
+qpb_byte_swap_double(35,508
 
 lib/qpb_spinor_field_set_zero.h,43
 #define _QPB_SPINOR_FIELD_SET_ZERO_H 2,37
