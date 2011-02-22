@@ -18,7 +18,7 @@ qpb_apply_bri_dslash_site(9,204
 python/qpb_spinor_sigmas.tmpl.h,35
 #define _QPB_SPINOR_SIGMAS_H 2,29
 
-mainprogs/invert/main.c,177
+mainprogs/invert/main.c,225
   INVERT_COLUMN,4,25
   INVERT_PROPAGATOR5,42
 } invert_mode;6,62
@@ -26,8 +26,11 @@ mainprogs/invert/main.c,177
   CONF_RAW_32,10,98
   CONF_RAW_64,11,113
 } conf_format;12,128
-usage(15,149
-main(22,256
+  BICGSTAB,15,151
+  CG16,163
+} solver;17,168
+usage(20,184
+main(27,291
 
 mainprogs/mesons/main.c,25
 usage(4,23
@@ -89,17 +92,28 @@ lib/qpb_spinor_field_set_zero.h,43
 lib/qpb_spinor_linalg.h,35
 #define _QPB_SPINOR_LINALG_H 2,29
 
+lib/qpb_apply_clover_bri_dslash.c,80
+qpb_apply_clover_bri_dslash(14,295
+qpb_apply_gamma5_clover_bri_dslash(76,2264
+
 lib/qpb_finalize.c,20
 qpb_finalize(9,134
 
+lib/qpb_congrad.c,177
+#define QPB_CONGRAD_NUMB_TEMP_VECS 9,211
+qpb_spinor_field congrad_temp_vecs[congrad_temp_vecs11,249
+qpb_congrad_init(14,319
+qpb_congrad_finalize(26,566
+qpb_congrad(37,766
+
 lib/qpb_apply_clover_term_tzyx.h,247
 #define _QPB_APPLY_CLOVER_TERM_TZYX_H 2,38
-qpb_apply_clover_term_xy(14,644
-qpb_apply_clover_term_xz(31,1067
-qpb_apply_clover_term_xt(48,1490
-qpb_apply_clover_term_yz(65,1913
-qpb_apply_clover_term_yt(82,2336
-qpb_apply_clover_term_zt(99,2759
+qpb_apply_clover_term_xy(14,708
+qpb_apply_clover_term_xz(31,1135
+qpb_apply_clover_term_xt(48,1562
+qpb_apply_clover_term_yz(65,1989
+qpb_apply_clover_term_yt(82,2416
+qpb_apply_clover_term_zt(99,2843
 
 lib/qpb_apesmear.c,49
 qpb_apesmear(17,338
@@ -142,8 +156,12 @@ qpb_sun_project(233,6536
 lib/qpb_gauge_field_shift.h,39
 #define _QPB_GAUGE_FIELD_SHIFT_H 2,33
 
-lib/qpb_apply_dslash.c,25
-qpb_apply_dslash(12,231
+lib/qpb_apply_dslash.c,58
+qpb_apply_dslash(13,251
+qpb_apply_gamma5_dslash(82,2020
+
+lib/qpb_apply_clover_bri_dslash.h,45
+#define _QPB_APPLY_CLOVER_BRI_DSLASH_H 2,39
 
 lib/qpb_spinor_xmy.h,34
 #define _QPB_SPINOR_XMEQY_H 2,28
@@ -164,6 +182,16 @@ qpb_apply_dslash_site(8,171
 
 lib/qpb_spinor_field.h,34
 #define _QPB_SPINOR_FIELD_H 2,28
+
+lib/qpb_dslash_wrappers.c,227
+qpb_clover_dslash(9,203
+qpb_dslash(18,449
+qpb_clover_bri_dslash(26,637
+qpb_bri_dslash(35,907
+qpb_gamma5_clover_dslash(43,1093
+qpb_gamma5_dslash(52,1353
+qpb_gamma5_clover_bri_dslash(60,1555
+qpb_gamma5_bri_dslash(69,1839
 
 lib/qpb_gamma_matrices.h,251
 #define _QPB_GAMMA_MATRICES_H 2,30
@@ -361,6 +389,9 @@ qpb_spinor_field_set_delta(8,98
 lib/qpb_diagonal_links_get.h,40
 #define _QPB_DIAGONAL_LINKS_GET_H 2,34
 
+lib/qpb_congrad.h,29
+#define _QPB_CONGRAD_H 2,23
+
 lib/qpb_finalize.h,30
 #define _QPB_FINALIZE_H 2,24
 
@@ -409,8 +440,12 @@ lib/qpb_read_gauge.h,32
 lib/qpb_meson_2pt_corr.h,36
 #define _QPB_MESON_2PT_CORR_H 2,30
 
-lib/qpb_apply_bri_dslash.c,29
-qpb_apply_bri_dslash(12,235
+lib/qpb_apply_bri_dslash.c,66
+qpb_apply_bri_dslash(13,255
+qpb_apply_gamma5_bri_dslash(63,1571
+
+lib/qpb_dslash_wrappers.h,37
+#define _QPB_DSLASH_WRAPPERS_H 2,31
 
 lib/qpb_comm_halo_spinor_field.h,44
 #define _QPB_COMM_HALO_SPINOR_FIELD_H 2,38
@@ -519,6 +554,9 @@ qpb_diagonal_links_get(48,1382
 lib/qpb_write_spinor.h,34
 #define _QPB_WRITE_SPINOR_H 2,28
 
+lib/qpb_spinor_gamma5.c,24
+qpb_spinor_gamma5(6,85
+
 lib/qpb_diagonal_links.h,36
 #define _QPB_DIAGONAL_LINKS_H 2,30
 
@@ -530,6 +568,10 @@ lib/qpb_write_n_spinor.h,36
 
 lib/qpb_write_gauge.c,24
 qpb_write_gauge(12,186
+
+lib/qpb_apply_clover_dslash.c,72
+qpb_apply_clover_dslash(14,291
+qpb_apply_gamma5_clover_dslash(95,2741
 
 lib/qpb_spinor_xeqy.h,33
 #define _QPB_SPINOR_XEQY_H 2,27
@@ -575,6 +617,9 @@ enum qpb_operators which_dslash_op;11,269
 qpb_random_state rng_state;45,1297
 #define DEBUG_HERE(47,1326
 
+lib/qpb_spinor_gamma5.h,35
+#define _QPB_SPINOR_GAMMA5_H 2,29
+
 lib/qpb_clover_term_get.h,37
 #define _QPB_CLOVER_TERM_GET_H 2,31
 
@@ -590,13 +635,12 @@ qpb_gauge_field_copy(7,124
 lib/qpb_spinor_field_set_random.h,45
 #define _QPB_SPINOR_FIELD_SET_RANDOM_H 2,39
 
-lib/qpb_bicgstab.c,211
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 11,277
-#define qpb_dslash(13,316
-qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs17,431
-qpb_bicgstab_init(20,503
-qpb_bicgstab_finalize(32,754
-qpb_bicgstab(43,957
+lib/qpb_bicgstab.c,183
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 9,211
+qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs11,250
+qpb_bicgstab_init(14,322
+qpb_bicgstab_finalize(26,573
+qpb_bicgstab(37,776
 
 lib/qpb_spinor_gammas.h,11311
 #define _QPB_SPINOR_GAMMAS_H 2,29
@@ -970,3 +1014,6 @@ qpb_gauge_field_shift(10,249
 
 lib/qpb_clover_term.h,33
 #define _QPB_CLOVER_TERM_H 2,27
+
+lib/qpb_apply_clover_dslash.h,41
+#define _QPB_APPLY_CLOVER_DSLASH_H 2,35
