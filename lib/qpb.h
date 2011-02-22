@@ -10,6 +10,10 @@
 #	include <omp.h>
 #endif
 
+#ifndef HAVE_LONG_DOUBLE
+#warning Compiling without "long double"
+#endif
+
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_init.h>

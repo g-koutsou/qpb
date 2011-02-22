@@ -1,6 +1,6 @@
 AR=ar
 RANLIB=ranlib
 CC=cc
-CFLAGS=-fast -I./ -I${HOME}/install/include
+CFLAGS=-fast -I./ -I${HOME}/install/include -DHAVE_LONG_DOUBLE
 LDFLAGS=-L${HOME}/install/lib
 LIBS=-lgsl -lgslcblas -lm

@@ -8,11 +8,11 @@ void
 qpb_spinor_xdoty(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_field y)
 {
 #ifdef HAVE_LONG_DOUBLE
-  long double dot_prod_re = 0.;
-  long double dot_prod_im = 0.;
+  long double dot_prod_re = 0.0;
+  long double dot_prod_im = 0.0;
 #else
-  double dot_prod_re = 0.;
-  double dot_prod_im = 0.;
+  double dot_prod_re = 0.0;
+  double dot_prod_im = 0.0;
 #endif /* HAVE_LONG_DOUBLE */
 
   int lvol = problem_params.l_vol;
@@ -22,8 +22,8 @@ qpb_spinor_xdoty(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_fi
   for(int v=0; v<lvol; v++)
     for(int cs=0; cs<NS*NC; cs++)
       {
-	dot_prod_re += CMULR(CCONJ(x.bulk[v][cs]), y.bulk[v][cs]);
-	dot_prod_im += CMULI(CCONJ(x.bulk[v][cs]), y.bulk[v][cs]);
+	dot_prod_re += x.bulk[v][cs].re*y.bulk[v][cs].re + x.bulk[v][cs].im*y.bulk[v][cs].im;
+	dot_prod_im += x.bulk[v][cs].re*y.bulk[v][cs].im - x.bulk[v][cs].im*y.bulk[v][cs].re;
       }
 
 #ifdef HAVE_LONG_DOUBLE
