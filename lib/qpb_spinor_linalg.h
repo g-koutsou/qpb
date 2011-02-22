@@ -8,6 +8,7 @@
 #include <qpb_spinor_xmy.h>
 #include <qpb_spinor_axpy.h>
 #include <qpb_spinor_sun_mul.h>
+#include <qpb_spinor_gamma5.h>
 /*
  *
  *            ( 0  0  0  i)             ( 0  0  0  1)

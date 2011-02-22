@@ -5,4 +5,6 @@
 
 void qpb_apply_bri_dslash(qpb_spinor_field, qpb_spinor_field, 
 			  void *, qpb_double);
+void qpb_apply_gamma5_bri_dslash(qpb_spinor_field, qpb_spinor_field, 
+			  void *, qpb_double);
 #endif /* _QPB_APPLY_BRI_DSLASH_H */

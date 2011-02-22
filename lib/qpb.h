@@ -47,8 +47,11 @@
 #include <qpb_clover_term.h>
 #include <qpb_clover_term_get.h>
 #include <qpb_apply_bri_dslash.h>
+#include <qpb_apply_clover_dslash.h>
+#include <qpb_apply_clover_bri_dslash.h>
 #include <qpb_plaquette.h>
 #include <qpb_bicgstab.h>
+#include <qpb_congrad.h>
 #include <qpb_finalize.h>
 #include <qpb_apesmear.h>
 #include <qpb_gauge_field_copy.h>

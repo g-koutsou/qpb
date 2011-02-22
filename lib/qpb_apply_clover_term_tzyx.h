@@ -3,14 +3,14 @@
 #include <qpb_types.h>
 #include <qpb_spinor_sigmas.h>
 
-extern inline void qpb_apply_clover_term_xy(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_clover_term_xz(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_clover_term_xt(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_clover_term_yz(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_clover_term_yt(qpb_complex *, void **, void **, int);
-extern inline void qpb_apply_clover_term_zt(qpb_complex *, void **, void **, int);
+/* extern __inline__ void qpb_apply_clover_term_xy(qpb_complex *, void **, void **, int); */
+/* extern __inline__ void qpb_apply_clover_term_xz(qpb_complex *, void **, void **, int); */
+/* extern __inline__ void qpb_apply_clover_term_xt(qpb_complex *, void **, void **, int); */
+/* extern __inline__ void qpb_apply_clover_term_yz(qpb_complex *, void **, void **, int); */
+/* extern __inline__ void qpb_apply_clover_term_yt(qpb_complex *, void **, void **, int); */
+/* extern __inline__ void qpb_apply_clover_term_zt(qpb_complex *, void **, void **, int); */
 
-inline void
+__inline__ void
 qpb_apply_clover_term_xy(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;
@@ -27,7 +27,7 @@ qpb_apply_clover_term_xy(qpb_complex *out, void **in, void **clover, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_clover_term_xz(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;
@@ -44,7 +44,7 @@ qpb_apply_clover_term_xz(qpb_complex *out, void **in, void **clover, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_clover_term_xt(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;
@@ -61,7 +61,7 @@ qpb_apply_clover_term_xt(qpb_complex *out, void **in, void **clover, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_clover_term_yz(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;
@@ -78,7 +78,7 @@ qpb_apply_clover_term_yz(qpb_complex *out, void **in, void **clover, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_clover_term_yt(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;
@@ -95,7 +95,7 @@ qpb_apply_clover_term_yt(qpb_complex *out, void **in, void **clover, int v)
   return;
 }
 
-inline void
+__inline__ void
 qpb_apply_clover_term_zt(qpb_complex *out, void **in, void **clover, int v)
 {
   qpb_spinor aux_spinor;

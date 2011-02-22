@@ -11,6 +11,11 @@ enum {
   CONF_RAW_64,
 } conf_format;
 
+enum {
+  BICGSTAB,
+  CG
+} solver;
+
 void
 usage(char *argv[])
 {
@@ -211,6 +216,7 @@ main(int argc, char *argv[])
       error("%s\n", "random"); 
       exit(QPB_PARSER_ERROR);
     };
+
   char source_file[QPB_MAX_STRING];
   int point_source_coords[ND+2];
   switch(source_opt)
@@ -261,6 +267,28 @@ main(int argc, char *argv[])
     case QPB_RAND:
       break;
     }
+
+  if(sscanf(qpb_parse("Solver"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Solver");
+      exit(QPB_PARSER_ERROR);
+    }
+  if(strcmp(aux_string, "bicgstab") == 0)
+    {
+      solver = BICGSTAB;
+    }
+  else if(strcmp(aux_string, "cg") == 0)
+    {
+      solver = CG;
+    }
+  else
+    {
+      error("%s: option should be one of: ", "Solver");
+      error("%s, ", "bicgstab"); 
+      error("%s\n", "cg"); 
+      exit(QPB_PARSER_ERROR);
+    };
 
   if(sscanf(qpb_parse("Dslash operator"), "%s", aux_string)!=1)
     {
@@ -368,6 +396,15 @@ main(int argc, char *argv[])
       break;
     case QPB_DSLASH_STANDARD:
       print(" Dslash operator is Standard\n");
+      break;
+    }
+  switch(solver)
+    {
+    case BICGSTAB:
+      print(" Solver = BiCGStab \n");
+      break;
+    case CG:
+      print(" Solver = CG\n");
       break;
     }
   qpb_rng_init(seed);
@@ -478,37 +515,64 @@ main(int argc, char *argv[])
 
   qpb_diagonal_links diagonal_links;
   int iters = -2;
+  void *solver_arg_links = NULL;
 
-  qpb_double t = qpb_stop_watch(0);
-  qpb_bicgstab_init();
-
-  switch(which_dslash_op)
+  switch(which_dslash_op) 
     {
     case QPB_DSLASH_BRILLOUIN:
-      diagonal_links= qpb_diagonal_links_init();
+      diagonal_links = qpb_diagonal_links_init();
       qpb_diagonal_links_get(diagonal_links, gauge);
-      for(int i=0; i<n_spinors; i++)
-	{
-	  iters = qpb_bicgstab(sol[i], source[i], (void *)&diagonal_links, clover_term,
-			        kappa, c_sw, epsilon, max_iters);
-	  print(" Done column = %d / %d\n", i+1, n_spinors);
-	}
-      qpb_diagonal_links_finalize(diagonal_links);
+      solver_arg_links = &diagonal_links;
       break;
-      
     case QPB_DSLASH_STANDARD:
-      for(int i=0; i<n_spinors; i++)
-	{
-	  iters = qpb_bicgstab(sol[i], source[i], (void *)&gauge, clover_term, kappa, c_sw,
-			       epsilon, max_iters);
-	  print(" Done column = %d / %d\n", i+1, n_spinors);
-	}
+      solver_arg_links = &gauge;
       break;
     }
-  qpb_bicgstab_finalize();
-  t = qpb_stop_watch(t);
-  print(" BiCGStab done, %d columns in t = %f sec\n", n_spinors, t);
 
+  qpb_double t = qpb_stop_watch(0);
+  switch(solver)
+    {
+    case BICGSTAB:
+      qpb_bicgstab_init();
+      break;
+    case CG:
+      qpb_congrad_init();
+      break;
+    }
+
+  for(int i=0; i<n_spinors; i++)
+    {
+      switch(solver)
+	{
+	case BICGSTAB:
+	  iters = qpb_bicgstab(sol[i], source[i], solver_arg_links, clover_term,
+			       kappa, c_sw, epsilon, max_iters);
+	  break;
+	case CG:
+	  iters = qpb_congrad(sol[i], source[i], solver_arg_links, clover_term,
+			      kappa, c_sw, epsilon, max_iters);
+	  break;
+	}
+      print(" Done column = %d / %d\n", i+1, n_spinors);
+    }
+
+  switch(solver)             
+    {                        
+    case BICGSTAB:           
+      qpb_bicgstab_finalize();
+      t = qpb_stop_watch(t);
+      print(" BiCGStab done, %d columns in t = %f sec\n", n_spinors, t);
+      break;
+    case CG:
+      qpb_congrad_finalize();
+      t = qpb_stop_watch(t);
+      print(" CG done, %d columns in t = %f sec\n", n_spinors, t);
+      break;
+    }
+
+  if(which_dslash_op == QPB_DSLASH_BRILLOUIN)
+    qpb_diagonal_links_finalize(diagonal_links);
+  
   qpb_write_n_spinor(sol, n_spinors, sol_file);
   /* clean up */
   for(int i=0; i<n_spinors; i++)

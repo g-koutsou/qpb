@@ -3,16 +3,10 @@
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_linalg.h>
 #include <qpb_comm_halo_spinor_field.h>
-#include <qpb_apply_dslash.h>
-#include <qpb_apply_bri_dslash.h>
-#include <qpb_apply_clover_term.h>
+#include <qpb_dslash_wrappers.h>
 #include <qpb_stop_watch.h>
 
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 5
-
-#define qpb_dslash(y, x)			\
-  (*dslash_func)(y, x, gauge, mass);		\
-  qpb_apply_clover_term(y, x, clover, c_sw);
 
 qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 
@@ -57,18 +51,33 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_complex_double beta, gamma, rho, zeta;
   qpb_double mass = 1./(2.*kappa) - 4.;
   void (* dslash_func)() = NULL;
+
+  void *dslash_args[] = 
+    {
+      gauge,
+      &mass,
+      &clover,
+      &c_sw
+    };
+
   switch(which_dslash_op)
     {
     case QPB_DSLASH_BRILLOUIN:
-      dslash_func = qpb_apply_bri_dslash;
+      if(c_sw)
+	dslash_func = &qpb_clover_bri_dslash;
+      else
+	dslash_func = &qpb_bri_dslash;	
       break;
     case QPB_DSLASH_STANDARD:
-      dslash_func = qpb_apply_dslash;
+      if(c_sw)
+	dslash_func = &qpb_clover_dslash;
+      else
+	dslash_func = &qpb_dslash;	
       break;
     }
 
   qpb_spinor_xdotx(&b_norm, b);
-  qpb_dslash(r, x);
+  dslash_func(r, x, dslash_args);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xeqy(r0, r);
   qpb_spinor_xdotx(&gamma.re, r);
@@ -86,13 +95,13 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       omega = CNEGATE(omega);
       qpb_spinor_axpy(p, omega, u, p);
       qpb_spinor_axpy(p, beta, p, r);
-      qpb_dslash(u, p);
+      dslash_func(u, p, dslash_args);
       qpb_spinor_xdoty(&beta, r0, u);
       rho = gamma;
       alpha = CDEV(rho, beta);
       alpha = CNEGATE(alpha);
       qpb_spinor_axpy(r, alpha, u, r);
-      qpb_dslash(v, r);
+      dslash_func(v, r, dslash_args);
       qpb_spinor_xdoty(&zeta, v, r);
       qpb_spinor_xdotx(&beta.re, v);
       beta.im = 0;
@@ -102,7 +111,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       qpb_spinor_axpy(x, alpha, p, x);
       if(iters % n_reeval == 0)
 	{
-	  qpb_dslash(r, x);
+	  dslash_func(r, x, dslash_args);
 	  qpb_spinor_xmy(r, b, r);
 	}
       else
@@ -116,7 +125,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
 	print(" iters = %8d, res = %e\n", iters, res_norm / b_norm);
     }
   t = qpb_stop_watch(t);
-  qpb_dslash(r, x);
+  dslash_func(r, x, dslash_args);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xdotx(&res_norm, r);
 
