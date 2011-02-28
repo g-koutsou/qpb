@@ -1,6 +1,6 @@
 include ../Makefile.in
 
-DIRS = invert mesons
+DIRS = invert mesons eigens
 
 all: 
 	-for d in $(DIRS); do (cd $$d && $(MAKE)); done

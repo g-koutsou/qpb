@@ -48,11 +48,13 @@ SOURCES = qpb_init\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
 	qpb_congrad\
+	qpb_lanczos\
 	qpb_dslash_wrappers\
 	qpb_meson_2pt_corr\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_axpy\
+	qpb_spinor_ax\
 	qpb_spinor_xmy\
 	qpb_spinor_xeqy\
 	qpb_spinor_gamma5\
