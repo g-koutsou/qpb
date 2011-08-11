@@ -38,7 +38,7 @@ for NC in [1, 3]:
     ### U * U
     body += "__inline__ void\n"
     body += "sun_mul_uu(qpb_complex *z, qpb_complex *x, qpb_complex *y)\n{\n"
-    z = x*y
+    z = (x*y).expand()
     for i in range(NC):
         for j in range(NC):
             k = j + i*NC            
@@ -58,7 +58,7 @@ for NC in [1, 3]:
     ### U * U^+
     body += "__inline__ void\n"
     body += "sun_mul_ud(qpb_complex *z, qpb_complex *x, qpb_complex *y)\n{\n"
-    z = x*(y.transpose().conjugate())
+    z = (x*(y.transpose().conjugate())).expand()
     for i in range(NC):
         for j in range(NC):
             k = j + i*NC            
@@ -78,7 +78,7 @@ for NC in [1, 3]:
     ### U^+ * U
     body += "__inline__ void\n"
     body += "sun_mul_du(qpb_complex *z, qpb_complex *x, qpb_complex *y)\n{\n"
-    z = (x.transpose().conjugate())*y
+    z = ((x.transpose().conjugate())*y).expand()
     for i in range(NC):
         for j in range(NC):
             k = j + i*NC            
@@ -98,7 +98,7 @@ for NC in [1, 3]:
     ### U^+ * U^+
     body += "__inline__ void\n"
     body += "sun_mul_dd(qpb_complex *z, qpb_complex *x, qpb_complex *y)\n{\n"
-    z = (x.transpose().conjugate())*(y.transpose().conjugate())
+    z = ((x.transpose().conjugate())*(y.transpose().conjugate())).expand()
     for i in range(NC):
         for j in range(NC):
             k = j + i*NC            
@@ -118,7 +118,7 @@ for NC in [1, 3]:
     ### a * U
     body += "__inline__ void\n"
     body += "sun_mul_au(qpb_complex *z, qpb_complex a, qpb_complex *x)\n{\n"
-    z = a*x
+    z = (a*x).expand()
     for i in range(NC):
         for j in range(NC):
             k = j + i*NC            

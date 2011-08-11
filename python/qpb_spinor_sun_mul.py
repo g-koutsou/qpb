@@ -36,7 +36,7 @@ for NC in [1, 3]:
     ### U * psi
     body += "__inline__ void\n"
     body += "spinor_sun_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            
@@ -56,7 +56,7 @@ for NC in [1, 3]:
     ### += U * psi
     body += "__inline__ void\n"
     body += "spinor_sun_peq_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            
@@ -76,7 +76,7 @@ for NC in [1, 3]:
     ### -= U * psi
     body += "__inline__ void\n"
     body += "spinor_sun_meq_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            
@@ -96,7 +96,7 @@ for NC in [1, 3]:
     ### U^+ * psi
     body += "__inline__ void\n"
     body += "spinor_sun_dag_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            
@@ -116,7 +116,7 @@ for NC in [1, 3]:
     ### += U^+ * psi
     body += "__inline__ void\n"
     body += "spinor_sun_dag_peq_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            
@@ -136,7 +136,7 @@ for NC in [1, 3]:
     ### -= U^+ * psi
     body += "__inline__ void\n"
     body += "spinor_sun_dag_meq_mul(qpb_complex *q, qpb_complex *u, qpb_complex *p)\n{\n"
-    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :]))
+    q = sy.Matrix(NS, NC, lambda i, j: u.conjugate().transpose()[j, :].dot(p[i, :])).expand()
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC            

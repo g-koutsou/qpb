@@ -63,7 +63,7 @@ for NC in [1, 3]:
             p = sy.Matrix(NS, NC, lambda i, j: pr[j+i*NC] + pi[j+i*NC]*I)
 
     for name in gamma_combs:
-        q = gamma_combs[name] * p
+        q = (gamma_combs[name] * p).expand()
         body += "__inline__ void\n"
         body += "spinor_%s(qpb_complex *q, qpb_complex *p)\n{\n" % name
         for i in range(NC*NS):
@@ -74,7 +74,7 @@ for NC in [1, 3]:
         body += "\n  return;\n}\n\n"
 
     for name in gamma_combs:
-        q = gamma_combs[name] * p
+        q = (gamma_combs[name] * p).expand()
         body += "__inline__ void\n"
         body += "spinor_%s(qpb_complex *q, qpb_complex *p)\n{\n" %\
                  name.replace("gamma", "gamma_peq")

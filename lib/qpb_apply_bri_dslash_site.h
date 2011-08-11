@@ -28,7 +28,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0625000000000000, sp0,   0.1481481481481481, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -4*gx/27 - I/16 DAGGER */
+  /* -I/16 - 4*gx/27 DAGGER */
   nn = nneigh[7][v];
   idx = hypercube_neigh.index[0][0][0][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -46,7 +46,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0625000000000000, sp0,   0.1481481481481481, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -4*gy/27 - I/16 DAGGER */
+  /* -I/16 - 4*gy/27 DAGGER */
   nn = nneigh[6][v];
   idx = hypercube_neigh.index[0][0][1][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -64,7 +64,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gx/27 - gy/27 - I/32 DAGGER */
+  /* -I/32 - gx/27 - gy/27 DAGGER */
   nn = nneigh[6][nneigh[7][v]];
   idx = hypercube_neigh.index[0][0][1][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -73,7 +73,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gx/27 - I/32 + gy/27 */
+  /* -I/32 - gx/27 + gy/27 */
   nn = nneigh[2][nneigh[7][v]];
   idx = hypercube_neigh.index[0][0][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -82,7 +82,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gy/27 - I/32 + gx/27 DAGGER */
+  /* -I/32 + gx/27 - gy/27 DAGGER */
   nn = nneigh[6][nneigh[3][v]];
   idx = hypercube_neigh.index[0][0][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -100,7 +100,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0625000000000000, sp0,   0.1481481481481481, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -4*gz/27 - I/16 DAGGER */
+  /* -I/16 - 4*gz/27 DAGGER */
   nn = nneigh[5][v];
   idx = hypercube_neigh.index[0][1][0][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -118,7 +118,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gx/27 - gz/27 - I/32 DAGGER */
+  /* -I/32 - gx/27 - gz/27 DAGGER */
   nn = nneigh[5][nneigh[7][v]];
   idx = hypercube_neigh.index[0][1][0][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -127,7 +127,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gx/27 - I/32 + gz/27 */
+  /* -I/32 - gx/27 + gz/27 */
   nn = nneigh[1][nneigh[7][v]];
   idx = hypercube_neigh.index[0][1][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -136,7 +136,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gz/27 - I/32 + gx/27 DAGGER */
+  /* -I/32 + gx/27 - gz/27 DAGGER */
   nn = nneigh[5][nneigh[3][v]];
   idx = hypercube_neigh.index[0][1][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -154,7 +154,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gy/27 - gz/27 - I/32 DAGGER */
+  /* -I/32 - gy/27 - gz/27 DAGGER */
   nn = nneigh[5][nneigh[6][v]];
   idx = hypercube_neigh.index[0][1][1][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -190,7 +190,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gy/108 - gz/108 + gx/108 DAGGER */
+  /* -I/64 + gx/108 - gy/108 - gz/108 DAGGER */
   nn = nneigh[5][nneigh[6][nneigh[3][v]]];
   idx = hypercube_neigh.index[0][1][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -199,7 +199,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gy/27 - I/32 + gz/27 */
+  /* -I/32 - gy/27 + gz/27 */
   nn = nneigh[1][nneigh[6][v]];
   idx = hypercube_neigh.index[0][1][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -208,7 +208,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gz/27 - I/32 + gy/27 DAGGER */
+  /* -I/32 + gy/27 - gz/27 DAGGER */
   nn = nneigh[5][nneigh[2][v]];
   idx = hypercube_neigh.index[0][1][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -217,7 +217,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gy/108 + gx/108 + gz/108 */
+  /* -I/64 + gx/108 - gy/108 + gz/108 */
   nn = nneigh[1][nneigh[6][nneigh[3][v]]];
   idx = hypercube_neigh.index[0][1][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -226,7 +226,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gx/108 - gz/108 + gy/108 DAGGER */
+  /* -I/64 - gx/108 + gy/108 - gz/108 DAGGER */
   nn = nneigh[5][nneigh[2][nneigh[7][v]]];
   idx = hypercube_neigh.index[0][1][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -244,7 +244,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gz/108 + gx/108 + gy/108 DAGGER */
+  /* -I/64 + gx/108 + gy/108 - gz/108 DAGGER */
   nn = nneigh[5][nneigh[2][nneigh[3][v]]];
   idx = hypercube_neigh.index[0][1][2][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -262,7 +262,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0625000000000000, sp0,   0.1481481481481481, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -4*gt/27 - I/16 DAGGER */
+  /* -I/16 - 4*gt/27 DAGGER */
   nn = nneigh[4][v];
   idx = hypercube_neigh.index[1][0][0][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -280,7 +280,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - gx/27 - I/32 DAGGER */
+  /* -I/32 - gt/27 - gx/27 DAGGER */
   nn = nneigh[4][nneigh[7][v]];
   idx = hypercube_neigh.index[1][0][0][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -289,7 +289,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gx/27 - I/32 + gt/27 */
+  /* -I/32 + gt/27 - gx/27 */
   nn = nneigh[0][nneigh[7][v]];
   idx = hypercube_neigh.index[1][0][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -298,7 +298,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - I/32 + gx/27 DAGGER */
+  /* -I/32 - gt/27 + gx/27 DAGGER */
   nn = nneigh[4][nneigh[3][v]];
   idx = hypercube_neigh.index[1][0][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -316,7 +316,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - gy/27 - I/32 DAGGER */
+  /* -I/32 - gt/27 - gy/27 DAGGER */
   nn = nneigh[4][nneigh[6][v]];
   idx = hypercube_neigh.index[1][0][1][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -343,7 +343,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gx/108 + gt/108 + gy/108 */
+  /* -I/64 + gt/108 - gx/108 + gy/108 */
   nn = nneigh[0][nneigh[2][nneigh[7][v]]];
   idx = hypercube_neigh.index[1][0][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -352,7 +352,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gt/108 - gy/108 + gx/108 DAGGER */
+  /* -I/64 - gt/108 + gx/108 - gy/108 DAGGER */
   nn = nneigh[4][nneigh[6][nneigh[3][v]]];
   idx = hypercube_neigh.index[1][0][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -361,7 +361,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gy/27 - I/32 + gt/27 */
+  /* -I/32 + gt/27 - gy/27 */
   nn = nneigh[0][nneigh[6][v]];
   idx = hypercube_neigh.index[1][0][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -370,7 +370,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - I/32 + gy/27 DAGGER */
+  /* -I/32 - gt/27 + gy/27 DAGGER */
   nn = nneigh[4][nneigh[2][v]];
   idx = hypercube_neigh.index[1][0][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -379,7 +379,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gy/108 + gt/108 + gx/108 */
+  /* -I/64 + gt/108 + gx/108 - gy/108 */
   nn = nneigh[0][nneigh[6][nneigh[3][v]]];
   idx = hypercube_neigh.index[1][0][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -397,7 +397,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gx/108 - gy/108 + gt/108 */
+  /* -I/64 + gt/108 - gx/108 - gy/108 */
   nn = nneigh[0][nneigh[6][nneigh[7][v]]];
   idx = hypercube_neigh.index[1][0][2][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -424,7 +424,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - gz/27 - I/32 DAGGER */
+  /* -I/32 - gt/27 - gz/27 DAGGER */
   nn = nneigh[4][nneigh[5][v]];
   idx = hypercube_neigh.index[1][1][0][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -451,7 +451,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gx/108 + gt/108 + gz/108 */
+  /* -I/64 + gt/108 - gx/108 + gz/108 */
   nn = nneigh[0][nneigh[1][nneigh[7][v]]];
   idx = hypercube_neigh.index[1][1][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -460,7 +460,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gt/108 - gz/108 + gx/108 DAGGER */
+  /* -I/64 - gt/108 + gx/108 - gz/108 DAGGER */
   nn = nneigh[4][nneigh[5][nneigh[3][v]]];
   idx = hypercube_neigh.index[1][1][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -505,7 +505,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gx/432 + gt/432 + gy/432 + gz/432 */
+  /* -I/128 + gt/432 - gx/432 + gy/432 + gz/432 */
   nn = nneigh[0][nneigh[1][nneigh[2][nneigh[7][v]]]];
   idx = hypercube_neigh.index[1][1][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -514,7 +514,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/128 - gt/432 - gy/432 - gz/432 + gx/432 DAGGER */
+  /* -I/128 - gt/432 + gx/432 - gy/432 - gz/432 DAGGER */
   nn = nneigh[4][nneigh[5][nneigh[6][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][1][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -523,7 +523,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gy/108 + gt/108 + gz/108 */
+  /* -I/64 + gt/108 - gy/108 + gz/108 */
   nn = nneigh[0][nneigh[1][nneigh[6][v]]];
   idx = hypercube_neigh.index[1][1][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -532,7 +532,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/64 - gt/108 - gz/108 + gy/108 DAGGER */
+  /* -I/64 - gt/108 + gy/108 - gz/108 DAGGER */
   nn = nneigh[4][nneigh[5][nneigh[2][v]]];
   idx = hypercube_neigh.index[1][1][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -541,7 +541,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gy/432 + gt/432 + gx/432 + gz/432 */
+  /* -I/128 + gt/432 + gx/432 - gy/432 + gz/432 */
   nn = nneigh[0][nneigh[1][nneigh[6][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][1][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -550,7 +550,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/128 - gt/432 - gx/432 - gz/432 + gy/432 DAGGER */
+  /* -I/128 - gt/432 - gx/432 + gy/432 - gz/432 DAGGER */
   nn = nneigh[4][nneigh[5][nneigh[2][nneigh[7][v]]]];
   idx = hypercube_neigh.index[1][1][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -559,7 +559,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gx/432 - gy/432 + gt/432 + gz/432 */
+  /* -I/128 + gt/432 - gx/432 - gy/432 + gz/432 */
   nn = nneigh[0][nneigh[1][nneigh[6][nneigh[7][v]]]];
   idx = hypercube_neigh.index[1][1][2][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -568,7 +568,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/128 - gt/432 - gz/432 + gx/432 + gy/432 DAGGER */
+  /* -I/128 - gt/432 + gx/432 + gy/432 - gz/432 DAGGER */
   nn = nneigh[4][nneigh[5][nneigh[2][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][1][2][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -577,7 +577,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -gz/27 - I/32 + gt/27 */
+  /* -I/32 + gt/27 - gz/27 */
   nn = nneigh[0][nneigh[5][v]];
   idx = hypercube_neigh.index[1][2][0][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -586,7 +586,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -gt/27 - I/32 + gz/27 DAGGER */
+  /* -I/32 - gt/27 + gz/27 DAGGER */
   nn = nneigh[4][nneigh[1][v]];
   idx = hypercube_neigh.index[1][2][0][0];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -595,7 +595,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0312500000000000, sp0,   0.0370370370370370, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gz/108 + gt/108 + gx/108 */
+  /* -I/64 + gt/108 + gx/108 - gz/108 */
   nn = nneigh[0][nneigh[5][nneigh[3][v]]];
   idx = hypercube_neigh.index[1][2][0][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -613,7 +613,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gx/108 - gz/108 + gt/108 */
+  /* -I/64 + gt/108 - gx/108 - gz/108 */
   nn = nneigh[0][nneigh[5][nneigh[7][v]]];
   idx = hypercube_neigh.index[1][2][0][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -631,7 +631,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gz/108 + gt/108 + gy/108 */
+  /* -I/64 + gt/108 + gy/108 - gz/108 */
   nn = nneigh[0][nneigh[5][nneigh[2][v]]];
   idx = hypercube_neigh.index[1][2][1][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -649,7 +649,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gz/432 + gt/432 + gx/432 + gy/432 */
+  /* -I/128 + gt/432 + gx/432 + gy/432 - gz/432 */
   nn = nneigh[0][nneigh[5][nneigh[2][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][2][1][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -667,7 +667,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gx/432 - gz/432 + gt/432 + gy/432 */
+  /* -I/128 + gt/432 - gx/432 + gy/432 - gz/432 */
   nn = nneigh[0][nneigh[5][nneigh[2][nneigh[7][v]]]];
   idx = hypercube_neigh.index[1][2][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -676,7 +676,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_peq_mul(out, link, sp2);
 
-  /* -I/128 - gt/432 - gy/432 + gx/432 + gz/432 DAGGER */
+  /* -I/128 - gt/432 + gx/432 - gy/432 + gz/432 DAGGER */
   nn = nneigh[4][nneigh[1][nneigh[6][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][2][1][2];
   link = (qpb_complex *)((qpb_link *)gauge[nn] + idx);
@@ -685,7 +685,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/64 - gy/108 - gz/108 + gt/108 */
+  /* -I/64 + gt/108 - gy/108 - gz/108 */
   nn = nneigh[0][nneigh[5][nneigh[6][v]]];
   idx = hypercube_neigh.index[1][2][2][0];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -703,7 +703,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0156250000000000, sp0,   0.0092592592592593, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gy/432 - gz/432 + gt/432 + gx/432 */
+  /* -I/128 + gt/432 + gx/432 - gy/432 - gz/432 */
   nn = nneigh[0][nneigh[5][nneigh[6][nneigh[3][v]]]];
   idx = hypercube_neigh.index[1][2][2][1];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
@@ -721,7 +721,7 @@ qpb_apply_bri_dslash_site(qpb_complex *out, void **in, void **gauge, int v)
   spinor_axpby(sp2,  -0.0078125000000000, sp0,   0.0023148148148148, sp1);
   spinor_sun_dag_peq_mul(out, link, sp2);
 
-  /* -I/128 - gx/432 - gy/432 - gz/432 + gt/432 */
+  /* -I/128 + gt/432 - gx/432 - gy/432 - gz/432 */
   nn = nneigh[0][nneigh[5][nneigh[6][nneigh[7][v]]]];
   idx = hypercube_neigh.index[1][2][2][2];
   link = (qpb_complex *)((qpb_link *)gauge[v] + idx);
