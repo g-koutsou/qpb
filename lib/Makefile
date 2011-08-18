@@ -20,6 +20,7 @@ SOURCES = qpb_init\
 	qpb_apesmear\
 	qpb_gauge_field_copy\
 	qpb_gauge_field_shift\
+	qpb_timebc_set_gauge_field\
 	qpb_spinor_field\
 	qpb_spinor_field_set_delta\
 	qpb_spinor_field_set_zero\

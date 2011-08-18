@@ -116,15 +116,21 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
   problem_params.proc_neigh[ND] = problem_params.proc_id;
 
   /* Extended lattice */
-  int ext_vol = 1;
-  for(int i=0; i<ND; i++)
+  for(int i=1; i<ND; i++)
     {
       if(problem_params.procs[i] == 1)
 	problem_params.ext_dim[i] = problem_params.l_dim[i];
       else
 	problem_params.ext_dim[i] = problem_params.l_dim[i] + 2;
-      ext_vol *= problem_params.ext_dim[i];
     }
+  /* T - direction is always "extended" in order to implement 
+     boundary condition */
+  problem_params.ext_dim[0] = problem_params.l_dim[0] + 2;
+
+  int ext_vol = 1;
+  for(int i=0; i<ND; i++)
+    ext_vol *= problem_params.ext_dim[i];
+
   problem_params.ext_vol = ext_vol;  
 
   /* Allocate nneigh, skin_to_ext and blk_to_ext */
@@ -187,6 +193,7 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
       (problem_params.l_dim[2] == problem_params.ext_dim[2]) ? 0 : 1,
       (problem_params.l_dim[3] == problem_params.ext_dim[3]) ? 0 : 1
     };
+  par_dir[0] = 1; /* T - dir is pseudo-parallel */
   for(int i=0; i<ND; i++)
     problem_params.par_dir[i] = par_dir[i];
 

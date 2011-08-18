@@ -2,7 +2,10 @@
 #include <qpb_globals.h>
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_linalg.h>
+#include <qpb_gauge_field.h>
 #include <qpb_comm_halo_spinor_field.h>
+#include <qpb_comm_halo_gauge_field.h>
+#include <qpb_timebc_set_gauge_field.h>
 #include <qpb_dslash_wrappers.h>
 #include <qpb_stop_watch.h>
 
@@ -51,9 +54,15 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_double mass = 1./(2.*kappa) - 4.;
   void (* dslash_func)() = NULL;
 
+  /* set boundary condition in time
+     !!! currently not implemented for diagonal links !!! */
+  qpb_gauge_field gauge_bc = qpb_gauge_field_init();
+  qpb_timebc_set_gauge_field(gauge_bc, *(qpb_gauge_field *)gauge, problem_params.timebc);
+
+
   void *dslash_args[] = 
     {
-      gauge,
+      &gauge_bc,
       &mass,
       &clover,
       &c_sw
@@ -92,7 +101,7 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
     {
       if(res_norm / b_norm <= epsilon)
 	break;
-      
+    
       dslash_func(y, p, dslash_args);
       dslash_func(w, y, dslash_args);
 
@@ -138,5 +147,7 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   print(" After %d iterrations CG converged\n", iters);
   print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
   
+  qpb_gauge_field_finalize(gauge_bc);
+
   return iters;
 }

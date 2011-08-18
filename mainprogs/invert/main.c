@@ -344,6 +344,13 @@ main(int argc, char *argv[])
 	    "Solution file");
       exit(QPB_PARSER_ERROR);
     }
+  qpb_double timebc;
+  if(sscanf(qpb_parse("BC in time"), "%lf", &timebc)!=1)
+    {
+      error("error parsing for %s\n",
+	    "BC in time");
+      exit(QPB_PARSER_ERROR);
+    }
   
   qpb_finalize_parser();
 
@@ -387,6 +394,7 @@ main(int argc, char *argv[])
   print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
   print(" kappa = %g\n", kappa);
   print(" Clover param = %g\n", c_sw);
+  print(" BC in time = %g\n", timebc);
   print(" Solver epsilon = %e\n", epsilon);
   print(" Max solver iters = %d\n", max_iters);
   switch(which_dslash_op)
@@ -408,6 +416,8 @@ main(int argc, char *argv[])
       break;
     }
   qpb_rng_init(seed);
+  problem_params.timebc = timebc;
+
   /* allocate gauge field */
   qpb_gauge_field gauge = qpb_gauge_field_init();
 

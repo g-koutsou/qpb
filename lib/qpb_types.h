@@ -117,6 +117,7 @@ typedef struct{
   unsigned short int par_dir[ND];
   unsigned int proc_neigh[2*ND];
   unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs, proc_id;
+  qpb_double timebc;
   MPI_Comm mpi_comm_cart;
 } qpb_problem_params;
 
