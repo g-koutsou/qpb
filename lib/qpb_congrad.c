@@ -56,13 +56,23 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
 
   /* set boundary condition in time
      !!! currently not implemented for diagonal links !!! */
-  qpb_gauge_field gauge_bc = qpb_gauge_field_init();
-  qpb_timebc_set_gauge_field(gauge_bc, *(qpb_gauge_field *)gauge, problem_params.timebc);
+  void * gauge_bc_ptr;
+  qpb_gauge_field gauge_bc;
+  if(which_dslash_op == QPB_DSLASH_STANDARD)
+    {
+      gauge_bc = qpb_gauge_field_init();
+      qpb_timebc_set_gauge_field(gauge_bc, *(qpb_gauge_field *)gauge, problem_params.timebc);
+      gauge_bc_ptr = (void *)&gauge_bc;
+    }
+  else
+    {
+      gauge_bc_ptr = gauge;
+    }
 
 
   void *dslash_args[] = 
     {
-      &gauge_bc,
+      gauge_bc_ptr,
       &mass,
       &clover,
       &c_sw
