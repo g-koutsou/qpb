@@ -157,7 +157,10 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   print(" After %d iterrations CG converged\n", iters);
   print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
   
-  qpb_gauge_field_finalize(gauge_bc);
+  if(which_dslash_op == QPB_DSLASH_STANDARD)
+    {
+      qpb_gauge_field_finalize(gauge_bc);
+    }
 
   return iters;
 }
