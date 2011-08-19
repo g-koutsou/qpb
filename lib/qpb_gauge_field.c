@@ -94,7 +94,6 @@ qpb_gauge_field_init()
   	    bnd_offset += bvol;
 	  }
       }
-
   return gauge_field;
 };
 

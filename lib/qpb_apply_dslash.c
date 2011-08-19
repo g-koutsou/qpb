@@ -37,7 +37,7 @@ qpb_apply_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 
   qpb_comm_halo_spinor_field_wait(spinor_in);
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       {
 #ifdef OPENMP
@@ -106,7 +106,7 @@ qpb_apply_gamma5_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 
   qpb_comm_halo_spinor_field_wait(spinor_in);
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       {
 #ifdef OPENMP

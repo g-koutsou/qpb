@@ -39,7 +39,7 @@ qpb_apply_clover_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 
   qpb_comm_halo_spinor_field_wait(spinor_in);
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       {
 #ifdef OPENMP
@@ -97,9 +97,8 @@ qpb_apply_gamma5_clover_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spi
 			       qpb_clover_term clover_term, qpb_double c_sw)
 {
   qpb_gauge_field gauge = *(qpb_gauge_field *)U;
-
-  int lvol = problem_params.l_vol;
   qpb_comm_halo_spinor_field_start(spinor_in);
+  int lvol = problem_params.l_vol;
   unsigned short int *y = problem_params.par_dir;
   unsigned short int *l_dim = problem_params.l_dim;
   int x[ND];
@@ -118,9 +117,10 @@ qpb_apply_gamma5_clover_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spi
 
 	    qpb_apply_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
 	  }
+
   qpb_comm_halo_spinor_field_wait(spinor_in);
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       {
 #ifdef OPENMP

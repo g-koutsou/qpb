@@ -352,6 +352,13 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     }
   
+  if(timebc != 1 && which_dslash_op == QPB_DSLASH_BRILLOUIN)
+    {
+      error("\n WARNING: Arbitrary boundary conditions in time are only implemented for Standard Operator\n");
+      error(" WARNING: overriding to periodic (setting BC in time = 1)\n\n");
+      timebc = 1;
+    }
+
   qpb_finalize_parser();
 
   /* initialize cartesian grid and index tables */

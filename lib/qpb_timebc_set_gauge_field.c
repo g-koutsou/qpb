@@ -29,15 +29,9 @@ qpb_timebc_set_gauge_field(qpb_gauge_field gauge_field_out, qpb_gauge_field gaug
       x[1] = Z_INDEX(bv, dims);
       x[2] = Y_INDEX(bv, dims);
       x[3] = X_INDEX(bv, dims);
+      x[0] = ldim[0]-1;
 
-      x[0] = 0;
       int iv = LEXICO(x, edim);
-      u = (qpb_complex *)(((qpb_link *)gauge_field_in.index[iv])+0);
-      v = (qpb_complex *)(((qpb_link *)gauge_field_out.index[iv])+0);
-      sun_mul_au(v, z, u);
-
-      x[0] = edim[0]-2;
-      iv = LEXICO(x, edim);
       u = (qpb_complex *)(((qpb_link *)gauge_field_in.index[iv])+0);
       v = (qpb_complex *)(((qpb_link *)gauge_field_out.index[iv])+0);
       sun_uequ(v, u);

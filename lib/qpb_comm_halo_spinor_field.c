@@ -24,7 +24,7 @@ qpb_comm_halo_spinor_field_init()
       ldim[d] = problem_params.l_dim[d];
     }
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       {
 	int dims[ND];
@@ -59,7 +59,7 @@ qpb_comm_halo_spinor_field_init()
 void
 qpb_comm_halo_spinor_field_finalize()
 {
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       for(int sign=0; sign<2; sign++)
 	{
@@ -90,7 +90,7 @@ qpb_comm_halo_spinor_field_start(qpb_spinor_field spinor_field)
       par_dir[d] = problem_params.par_dir[d];
     }
 
-  for(int dir=0; dir<ND; dir++)
+  for(int dir=1; dir<ND; dir++)
     {
       if(par_dir[dir])
 	{
