@@ -370,6 +370,12 @@ main(int argc, char *argv[])
 	problem_params.g_dim[2], 
 	problem_params.g_dim[3]);
   print(" Processes = (1,%2d,%2d,%2d)\n", procs[0], procs[1], procs[2]);
+  int nthreads = 1;
+#ifdef OPENMP
+#pragma omp parallel
+  nthreads = omp_get_num_threads();
+#endif
+  print(" Threads per process = %2d\n", nthreads);
   switch(conf_opt)
     {
     case QPB_ZERO:

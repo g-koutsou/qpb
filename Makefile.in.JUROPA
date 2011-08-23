@@ -1,6 +1,6 @@
 AR=xiar
 RANLIB=ranlib
 CC=mpicc
-CFLAGS=-O3 -fp-model strict -m64 -std=c99 -I./ -I/usr/include/libxml2/ -I${HOME}/install/include -DHAVE_LONG_DOUBLE -openmp -DOPENMP -I$(GSL_ROOT)/include
+CFLAGS=-O3 -fp-model strict -m64 -std=c99 -I./ -I/usr/include/libxml2/ -I${HOME}/install/include -openmp -DOPENMP -I$(GSL_ROOT)/include -DHAVE_LONG_DOUBLE
 LDFLAGS=-L${HOME}/install/lib -L$(GSL_ROOT)/lib
 LIBS=-lgsl -lgslcblas -llime -lxml2 -lm
