@@ -53,6 +53,7 @@
 #include <qpb_plaquette.h>
 #include <qpb_lanczos.h>
 #include <qpb_bicgstab.h>
+#include <qpb_mscongrad.h>
 #include <qpb_congrad.h>
 #include <qpb_finalize.h>
 #include <qpb_apesmear.h>

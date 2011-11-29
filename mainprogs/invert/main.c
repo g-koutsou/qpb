@@ -13,7 +13,8 @@ enum {
 
 enum {
   BICGSTAB,
-  CG
+  CG,
+  MSCG
 } solver;
 
 void
@@ -268,6 +269,10 @@ main(int argc, char *argv[])
       break;
     }
 
+
+  int numb_shifts;
+  qpb_double *ms_shifts = NULL;
+
   if(sscanf(qpb_parse("Solver"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
@@ -277,18 +282,45 @@ main(int argc, char *argv[])
   if(strcmp(aux_string, "bicgstab") == 0)
     {
       solver = BICGSTAB;
+      numb_shifts = 1;
     }
   else if(strcmp(aux_string, "cg") == 0)
     {
       solver = CG;
+      numb_shifts = 1;
+    }
+  else if(strcmp(aux_string, "mscg") == 0)
+    {
+      solver = MSCG;
+
+      if(sscanf(qpb_parse("Number of shifts"), "%d", &numb_shifts)!=1)
+	{
+	  error("error parsing for %s\n",
+		"Number of shifts");
+	  exit(QPB_PARSER_ERROR);
+	}
+      
+      ms_shifts = malloc(sizeof(qpb_double)*numb_shifts);
+      for(int i=1; i<=numb_shifts; i++)
+	{
+	  sprintf(aux_string, "Shift %d", i);
+	  if(sscanf(qpb_parse(aux_string), "%lf", &ms_shifts[i-1])!=1)
+	    {
+	      error("error parsing for %s\n",
+		    aux_string);
+	      exit(QPB_PARSER_ERROR);
+	    }
+	}
     }
   else
     {
       error("%s: option should be one of: ", "Solver");
       error("%s, ", "bicgstab"); 
-      error("%s\n", "cg"); 
+      error("%s, ", "cg"); 
+      error("%s\n", "mscg"); 
       exit(QPB_PARSER_ERROR);
     };
+
 
   if(sscanf(qpb_parse("Dslash operator"), "%s", aux_string)!=1)
     {
@@ -427,6 +459,13 @@ main(int argc, char *argv[])
     case CG:
       print(" Solver = CG\n");
       break;
+    case MSCG:
+      print(" Solver = msCG\n");
+      for(int i=0; i<numb_shifts; i++)
+	{
+	  print("\tShift %d = %10g\n", i+1, ms_shifts[i]);
+	}
+      break;
     }
   qpb_rng_init(seed);
   problem_params.timebc = timebc;
@@ -488,11 +527,12 @@ main(int argc, char *argv[])
   qpb_spinor_field *source;
   qpb_spinor_field *sol;
   source = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors);
-  sol = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors);
+  sol = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors*numb_shifts);
   for(int i=0; i<n_spinors; i++)
     {
       source[i] = qpb_spinor_field_init();
-      sol[i] = qpb_spinor_field_init();
+      for(int j=0; j<numb_shifts; j++)
+	sol[j+i*numb_shifts] = qpb_spinor_field_init();
     }
   
   switch(source_opt)
@@ -534,7 +574,8 @@ main(int argc, char *argv[])
     }
 
   for(int i=0; i<n_spinors; i++)
-    qpb_spinor_field_set_zero(sol[i]);
+    for(int j=0; j<numb_shifts; j++)
+      qpb_spinor_field_set_zero(sol[j+i*numb_shifts]);
 
   qpb_diagonal_links diagonal_links;
   int iters = -2;
@@ -561,6 +602,9 @@ main(int argc, char *argv[])
     case CG:
       qpb_congrad_init();
       break;
+    case MSCG:
+      qpb_mscongrad_init(numb_shifts);
+      break;
     }
 
   for(int i=0; i<n_spinors; i++)
@@ -574,6 +618,10 @@ main(int argc, char *argv[])
 	case CG:
 	  iters = qpb_congrad(sol[i], source[i], solver_arg_links, clover_term,
 			      kappa, c_sw, epsilon, max_iters);
+	  break;
+	case MSCG:
+	  iters = qpb_mscongrad(sol+i*numb_shifts, source[i], solver_arg_links, clover_term,
+				kappa, numb_shifts, ms_shifts, c_sw, epsilon, max_iters);
 	  break;
 	}
       print(" Done column = %d / %d\n", i+1, n_spinors);
@@ -591,16 +639,32 @@ main(int argc, char *argv[])
       t = qpb_stop_watch(t);
       print(" CG done, %d columns in t = %f sec\n", n_spinors, t);
       break;
+    case MSCG:
+      qpb_mscongrad_finalize(numb_shifts);
+      t = qpb_stop_watch(t);
+      print(" msCG done, %d columns in t = %f sec\n", n_spinors, t);
+      break;
     }
 
   if(which_dslash_op == QPB_DSLASH_BRILLOUIN)
     qpb_diagonal_links_finalize(diagonal_links);
   
-  qpb_write_n_spinor(sol, n_spinors, sol_file);
+  for(int j=0; j<numb_shifts; j++)
+    {
+      qpb_spinor_field *aux = qpb_alloc(sizeof(qpb_spinor_field)*n_spinors);
+      for(int i=0; i<n_spinors; i++)
+	aux[i] = sol[j+i*numb_shifts];
+
+      qpb_write_n_spinor(aux, n_spinors, sol_file);
+
+      free(aux);
+    }
   /* clean up */
   for(int i=0; i<n_spinors; i++)
     {
-      qpb_spinor_field_finalize(sol[i]);
+      for(int j=0; j<numb_shifts; j++)
+	qpb_spinor_field_finalize(sol[j+i*(1+numb_shifts)]);
+
       qpb_spinor_field_finalize(source[i]);
     }
   free(sol);

@@ -48,6 +48,7 @@ SOURCES = qpb_init\
 	qpb_apply_clover_bri_dslash\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
+	qpb_mscongrad\
 	qpb_congrad\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
@@ -55,6 +56,7 @@ SOURCES = qpb_init\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_axpy\
+	qpb_spinor_axpby\
 	qpb_spinor_ax\
 	qpb_spinor_xmy\
 	qpb_spinor_xeqy\
