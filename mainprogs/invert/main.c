@@ -17,6 +17,14 @@ enum {
   MSCG
 } solver;
 
+enum {
+  SOURCE_POINT,
+  SOURCE_ZERO,
+  SOURCE_RAND,
+  SOURCE_FILE,
+  SOURCE_SMEARED  
+} source_opt;
+
 void
 usage(char *argv[])
 {
@@ -199,32 +207,49 @@ main(int argc, char *argv[])
 	    "Source");
       exit(QPB_PARSER_ERROR);
     }
-  enum qpb_field_init_opts source_opt;
+
   if(strcmp(aux_string, "zero") == 0)
-    source_opt = QPB_ZERO;
+    source_opt = SOURCE_ZERO;
   else if(strcmp(aux_string, "point") == 0)
-    source_opt = QPB_UNIT;
+    source_opt = SOURCE_POINT;
   else if(strcmp(aux_string, "file") == 0)
-    source_opt = QPB_FILE;
+    source_opt = SOURCE_FILE;
   else if(strcmp(aux_string, "random") == 0)
-    source_opt = QPB_RAND;
+    source_opt = SOURCE_RAND;
+  else if(strcmp(aux_string, "smeared") == 0)
+    source_opt = SOURCE_SMEARED;
   else
     {
       error("%s: option should be one of: ", "Source");
       error("%s, ", "zero"); 
       error("%s, ", "point"); 
       error("%s, ", "read"); 
+      error("%s, ", "smeared"); 
       error("%s\n", "random"); 
       exit(QPB_PARSER_ERROR);
     };
 
   char source_file[QPB_MAX_STRING];
   int point_source_coords[ND+2];
+  int n_gauss;
+  qpb_double alpha_gauss;
   switch(source_opt)
     {
-    case QPB_ZERO:
-      break;
-    case QPB_UNIT:
+    case SOURCE_SMEARED:
+      if(sscanf(qpb_parse("Gaussian smearing iterations"), "%d", &n_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing iterations");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+
+      if(sscanf(qpb_parse("Gaussian smearing alpha"), "%lf", &alpha_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing alpha");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+    case SOURCE_POINT:
       switch(invert_mode)
 	{
 	case INVERT_COLUMN:
@@ -257,7 +282,7 @@ main(int argc, char *argv[])
 	  break;	  
 	}
       break;
-    case QPB_FILE:
+    case SOURCE_FILE:
       if(sscanf(qpb_parse("Source file"), "%s", source_file)!=1)
 	{
 	  error("error parsing for %s\n", 
@@ -265,7 +290,8 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);
 	}
       break;
-    case QPB_RAND:
+    case SOURCE_RAND:
+    case SOURCE_ZERO:
       break;
     }
 
@@ -434,6 +460,34 @@ main(int argc, char *argv[])
       print(" Gauge field = Random\n");
       break;
     }
+  switch(source_opt)
+    {
+    case SOURCE_SMEARED:
+      printf(" Gaussian smearing = (%g, %d)\n", alpha_gauss, n_gauss);
+    case SOURCE_POINT:
+      switch(invert_mode)
+	{
+	case INVERT_COLUMN:
+	  print(" Point source coords (t, z, y, x, mu, col) = (%d, %d, %d, %d, %d, %d)\n",
+		point_source_coords[0], point_source_coords[1], point_source_coords[2], point_source_coords[3],
+		point_source_coords[4], point_source_coords[5]);
+	  break;
+	case INVERT_PROPAGATOR:
+	  print(" Point source coords (t, z, y, x) = (%d, %d, %d, %d)\n",
+		point_source_coords[0], point_source_coords[1], point_source_coords[2], point_source_coords[3]);
+	  break;	  
+	}
+      break;
+    case SOURCE_FILE:
+      printf(" Will read source from: %s\n", source_file);
+      break;
+    case SOURCE_RAND:
+      printf(" Will generate a random source\n");
+      break;
+    case SOURCE_ZERO:
+      printf(" Will set source to zero\n");      
+      break;
+    }
   print(" APE alpha = %g\n", ape_alpha);
   print(" APE iterations = %d\n", ape_niter);
   print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
@@ -537,11 +591,12 @@ main(int argc, char *argv[])
   
   switch(source_opt)
     {
-    case QPB_ZERO:
+    case SOURCE_ZERO:
       for(int i=0; i<n_spinors; i++)
 	qpb_spinor_field_set_zero(source[i]);
       break;
-    case QPB_UNIT:
+    case SOURCE_POINT:
+    case SOURCE_SMEARED:
       switch(invert_mode)
 	{
 	case INVERT_COLUMN:
@@ -558,7 +613,7 @@ main(int argc, char *argv[])
 	  break;
 	}
       break;
-    case QPB_FILE:
+    case SOURCE_FILE:
       if(n_spinors == 1)
 	qpb_read_spinor(source[0], source_file);
       else
@@ -567,7 +622,7 @@ main(int argc, char *argv[])
 	  exit(QPB_FILE_ERROR);
 	}
       break;
-    case QPB_RAND:
+    case SOURCE_RAND:
       for(int i=0; i<n_spinors; i++)
 	qpb_spinor_field_set_random(source[i]);
       break;
@@ -663,7 +718,7 @@ main(int argc, char *argv[])
   for(int i=0; i<n_spinors; i++)
     {
       for(int j=0; j<numb_shifts; j++)
-	qpb_spinor_field_finalize(sol[j+i*(1+numb_shifts)]);
+	qpb_spinor_field_finalize(sol[j+i*numb_shifts]);
 
       qpb_spinor_field_finalize(source[i]);
     }
