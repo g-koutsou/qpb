@@ -31,19 +31,25 @@ qpb_spinor_xdoty(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_fi
     dot_prod_re,
     dot_prod_im
   };
-  MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_LONG_DOUBLE, 
-		MPI_SUM, MPI_COMM_WORLD);
+  long double dot_prod_sum[2];
+  //MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_LONG_DOUBLE, 
+  //MPI_SUM, MPI_COMM_WORLD);
+  MPI_Reduce(dot_prod_reim, dot_prod_sum, 2, MPI_LONG_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
+  MPI_Bcast(dot_prod_sum, 2, MPI_LONG_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);
 #else
   double dot_prod_reim[2] = {
     dot_prod_re,
     dot_prod_im
   };
-  MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_DOUBLE, 
-		MPI_SUM, MPI_COMM_WORLD);
+  long double dot_prod_sum[2];
+  //MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_DOUBLE, 
+  //MPI_SUM, MPI_COMM_WORLD);
+  MPI_Reduce(dot_prod_reim, dot_prod_sum, 2, MPI_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
+  MPI_Bcast(dot_prod_sum, 2, MPI_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
 #endif /* HAVE_LONG_DOUBLE */
 
-  dot_prod->re = dot_prod_reim[0];
-  dot_prod->im = dot_prod_reim[1];
+  dot_prod->re = dot_prod_sum[0];
+  dot_prod->im = dot_prod_sum[1];
 
   return;
 }
