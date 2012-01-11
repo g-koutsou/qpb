@@ -30,6 +30,7 @@ qpb_write_n_spinor(qpb_spinor_field *spinor_field, int n_spinors, char fname[])
   MPI_File fhandle;
   ierr = MPI_File_open(MPI_COMM_WORLD, fname, MPI_MODE_WRONLY | MPI_MODE_CREATE,
 		       MPI_INFO_NULL, &fhandle);
+  MPI_File_set_size(fhandle, 0);
   if(ierr != MPI_SUCCESS)
     {
       if(am_master)

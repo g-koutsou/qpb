@@ -143,10 +143,6 @@ qpb_comm_halo_spinor_field_start(qpb_spinor_field spinor_field)
 void
 qpb_comm_halo_spinor_field_wait(qpb_spinor_field spinor_field)
 {
-  int par_dir[ND];
-  for(int d=0; d<ND; d++)
-    par_dir[d] = problem_params.par_dir[d];
-  
   for(int dir=0; dir<ND; dir++)
     if(problem_params.par_dir[dir])
       for(int sign=0; sign<2; sign++)
@@ -229,10 +225,6 @@ qpb_comm_halo_spinor_field_x_start(qpb_spinor_field spinor_field)
 void
 qpb_comm_halo_spinor_field_x_wait(qpb_spinor_field spinor_field)
 {
-  int par_dir[ND];
-  for(int d=0; d<ND; d++)
-    par_dir[d] = problem_params.par_dir[d];
-  
   int dir = 3;
   if(problem_params.par_dir[dir])
     for(int sign=0; sign<2; sign++)
@@ -316,10 +308,6 @@ qpb_comm_halo_spinor_field_y_start(qpb_spinor_field spinor_field)
 void
 qpb_comm_halo_spinor_field_y_wait(qpb_spinor_field spinor_field)
 {
-  int par_dir[ND];
-  for(int d=0; d<ND; d++)
-    par_dir[d] = problem_params.par_dir[d];
-  
   int dir = 2;
   if(problem_params.par_dir[dir])
     for(int sign=0; sign<2; sign++)
@@ -403,10 +391,6 @@ qpb_comm_halo_spinor_field_z_start(qpb_spinor_field spinor_field)
 void
 qpb_comm_halo_spinor_field_z_wait(qpb_spinor_field spinor_field)
 {
-  int par_dir[ND];
-  for(int d=0; d<ND; d++)
-    par_dir[d] = problem_params.par_dir[d];
-  
   int dir = 1;
   if(problem_params.par_dir[dir])
     for(int sign=0; sign<2; sign++)

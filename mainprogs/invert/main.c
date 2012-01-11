@@ -1,7 +1,7 @@
 #include <qpb.h>
 
 enum {
-  INVERT_COLUMN,
+  INVERT_VECTORS,
   INVERT_PROPAGATOR
 } invert_mode;
 
@@ -21,10 +21,16 @@ enum {
 enum {
   SOURCE_POINT,
   SOURCE_ZERO,
-  SOURCE_RAND,
+  SOURCE_STOCH,
   SOURCE_FILE,
   SOURCE_SMEARED  
 } source_opt;
+
+enum {
+  STOCH_SOURCE_Z4,
+  STOCH_SOURCE_Z4_T,
+  STOCH_SOURCE_UNIFORM
+} stochastic_source;
 
 void
 usage(char *argv[])
@@ -36,7 +42,6 @@ usage(char *argv[])
 int
 main(int argc, char *argv[])
 {
-  int n_spinors;
   /* calls MPI_Init() */
   qpb_msg_passing_init(&argc, &argv);
 
@@ -72,20 +77,35 @@ main(int argc, char *argv[])
   if(strcmp(aux_string, "propagator") == 0)
     {
       invert_mode = INVERT_PROPAGATOR;  
-      n_spinors = 12;
     }
-  else if(strcmp(aux_string, "column") == 0)
+  else if(strcmp(aux_string, "vectors") == 0)
     {
-      invert_mode = INVERT_COLUMN;
-      n_spinors = 1;
+      invert_mode = INVERT_VECTORS;
     }
   else
     {
       error("%s: option should be one of: ", "Invert mode");
       error("%s, ", "propagator"); 
-      error("%s\n", "column"); 
+      error("%s\n", "vectors"); 
       exit(QPB_PARSER_ERROR);
     };
+
+  int n_spinors;
+  switch(invert_mode)
+    {
+    case INVERT_VECTORS:
+      if(sscanf(qpb_parse("Number of vectors"), "%d", &n_spinors)!=1)
+	{
+	  error("error parsing for %s\n",
+		"Number of vectors");
+	  exit(QPB_PARSER_ERROR);
+	}
+      break;
+    case INVERT_PROPAGATOR:
+	n_spinors = 12;
+      break;
+    }
+
 
   int g_dim[ND];
   if(sscanf(qpb_parse("Dimensions"), "%d %d %d %d",
@@ -215,8 +235,8 @@ main(int argc, char *argv[])
     source_opt = SOURCE_POINT;
   else if(strcmp(aux_string, "file") == 0)
     source_opt = SOURCE_FILE;
-  else if(strcmp(aux_string, "random") == 0)
-    source_opt = SOURCE_RAND;
+  else if(strcmp(aux_string, "stochastic") == 0)
+    source_opt = SOURCE_STOCH;
   else if(strcmp(aux_string, "smeared") == 0)
     source_opt = SOURCE_SMEARED;
   else
@@ -226,12 +246,12 @@ main(int argc, char *argv[])
       error("%s, ", "point"); 
       error("%s, ", "read"); 
       error("%s, ", "smeared"); 
-      error("%s\n", "random"); 
+      error("%s\n", "stochastic"); 
       exit(QPB_PARSER_ERROR);
     };
 
   char source_file[QPB_MAX_STRING];
-  int point_source_coords[ND+2];
+  int source_coords[n_spinors][ND+2];
   int n_gauss;
   qpb_double alpha_gauss;
   switch(source_opt)
@@ -253,32 +273,48 @@ main(int argc, char *argv[])
     case SOURCE_POINT:
       switch(invert_mode)
 	{
-	case INVERT_COLUMN:
-	  if(sscanf(qpb_parse("Point source coords"), /* t, z, y, x, spin, col */
-		    "%d %d %d %d %d %d", 
-		    point_source_coords,
-		    point_source_coords+1,
-		    point_source_coords+2,
-		    point_source_coords+3,
-		    point_source_coords+4,
-		    point_source_coords+5)!=6)
+	case INVERT_VECTORS:
+	  /* Read point-source coords for each spinor */
+	  for(int s=0; s<n_spinors; s++)
 	    {
-	      error("error parsing for %s\n",
-		    "Point source coords");
-	      exit(QPB_PARSER_ERROR);
+	      sprintf(aux_string, "Point source %d coords", s);
+	      if(sscanf(qpb_parse(aux_string), /* t, z, y, x, spin, col */
+			"%d %d %d %d %d %d", 
+			source_coords[s],
+			source_coords[s]+1,
+			source_coords[s]+2,
+			source_coords[s]+3,
+			source_coords[s]+4,
+			source_coords[s]+5)!=6)
+		{
+		  error("error parsing for %s\n",
+			aux_string);
+		  exit(QPB_PARSER_ERROR);
+		}
 	    }
 	  break;
 	case INVERT_PROPAGATOR:
 	  if(sscanf(qpb_parse("Point source coords"), /* t, z, y, x */
 		    "%d %d %d %d", 
-		    point_source_coords,
-		    point_source_coords+1,
-		    point_source_coords+2,
-		    point_source_coords+3)!=4)
+		    source_coords[0],
+		    source_coords[0]+1,
+		    source_coords[0]+2,
+		    source_coords[0]+3)!=4)
 	    {
 	      error("error parsing for %s\n",
 		    "Point source coords");
 	      exit(QPB_PARSER_ERROR);
+	    }
+	  for(int s=0; s<n_spinors; s++) /* n_spinors == 12 in INVERT_PROPAGATOR mode */
+	    {
+	      int col = s%NC;
+	      int sp = s/NC;
+	      source_coords[s][0] = source_coords[0][0];
+	      source_coords[s][1] = source_coords[0][1];
+	      source_coords[s][2] = source_coords[0][2];
+	      source_coords[s][3] = source_coords[0][3];
+	      source_coords[s][4] = sp;
+	      source_coords[s][5] = col;
 	    }
 	  break;	  
 	}
@@ -291,7 +327,40 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);
 	}
       break;
-    case SOURCE_RAND:
+    case SOURCE_STOCH:
+      if(sscanf(qpb_parse("Stochastic source type"), "%s", aux_string)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Stochastic source type");
+	  exit(QPB_PARSER_ERROR);
+	}
+      else if(strcmp(aux_string, "Z4") == 0)
+	{
+	  stochastic_source = STOCH_SOURCE_Z4;  
+	}
+      else if(strcmp(aux_string, "Z4-T") == 0)
+	{
+	  stochastic_source = STOCH_SOURCE_Z4_T;  
+	  if(sscanf(qpb_parse("Z4 source time"), "%d", source_coords[0])!=1)
+	    {
+	      error("error parsing for %s\n",
+		    "Z4 source time");
+	      exit(QPB_PARSER_ERROR);
+	    }
+	}
+      else if(strcmp(aux_string, "uniform") == 0)
+	{
+	  stochastic_source = STOCH_SOURCE_UNIFORM;
+	}
+      else
+	{
+	  error("%s: option should be one of: ", "Stochastic source type");
+	  error("%s, ", "Z4"); 
+	  error("%s, ", "Z4-T"); 
+	  error("%s\n", "uniform"); 
+	  exit(QPB_PARSER_ERROR);
+	}
+      break;      
     case SOURCE_ZERO:
       break;
     }
@@ -470,29 +539,30 @@ main(int argc, char *argv[])
   switch(source_opt)
     {
     case SOURCE_SMEARED:
-      printf(" Gaussian smearing = (%g, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian smearing = (%g, %d)\n", alpha_gauss, n_gauss);
     case SOURCE_POINT:
       switch(invert_mode)
 	{
-	case INVERT_COLUMN:
-	  print(" Point source coords (t, z, y, x, mu, col) = (%d, %d, %d, %d, %d, %d)\n",
-		point_source_coords[0], point_source_coords[1], point_source_coords[2], point_source_coords[3],
-		point_source_coords[4], point_source_coords[5]);
+	case INVERT_VECTORS:
+	  for(int s=0; s<n_spinors; s++)
+	    print(" Point source coords (t, z, y, x, mu, col) = (%d, %d, %d, %d, %d, %d)\n",
+		  source_coords[s][0], source_coords[s][1], source_coords[s][2], source_coords[s][3],
+		  source_coords[s][4], source_coords[s][5]);
 	  break;
 	case INVERT_PROPAGATOR:
 	  print(" Point source coords (t, z, y, x) = (%d, %d, %d, %d)\n",
-		point_source_coords[0], point_source_coords[1], point_source_coords[2], point_source_coords[3]);
+		source_coords[0][0], source_coords[0][1], source_coords[0][2], source_coords[0][3]);
 	  break;	  
 	}
       break;
     case SOURCE_FILE:
-      printf(" Will read source from: %s\n", source_file);
+      print(" Will read source from: %s\n", source_file);
       break;
-    case SOURCE_RAND:
-      printf(" Will generate a random source\n");
+    case SOURCE_STOCH:
+      print(" Will generate a stochastic source\n");
       break;
     case SOURCE_ZERO:
-      printf(" Will set source to zero\n");      
+      print(" Will set source to zero\n");      
       break;
     }
   print(" APE alpha = %g\n", ape_alpha);
@@ -607,21 +677,11 @@ main(int argc, char *argv[])
       break;
     case SOURCE_POINT:
     case SOURCE_SMEARED:
-      switch(invert_mode)
-	{
-	case INVERT_COLUMN:
-	  qpb_spinor_field_set_delta(source[0], 
-				     point_source_coords, 
-				     point_source_coords[4],
-				     point_source_coords[5]);
-	  break;
-	case INVERT_PROPAGATOR:
-	  for(int i=0; i<n_spinors; i++)
-	    qpb_spinor_field_set_delta(source[i], 
-				       point_source_coords, 
-				       i/NC, i%NC);
-	  break;
-	}
+      for(int i=0; i<n_spinors; i++)
+	qpb_spinor_field_set_delta(source[i], 
+				   source_coords[i], 
+				   source_coords[i][4],
+				   source_coords[i][5]);
       break;
     case SOURCE_FILE:
       if(n_spinors == 1)
@@ -632,9 +692,22 @@ main(int argc, char *argv[])
 	  exit(QPB_FILE_ERROR);
 	}
       break;
-    case SOURCE_RAND:
-      for(int i=0; i<n_spinors; i++)
-	qpb_spinor_field_set_random(source[i]);
+    case SOURCE_STOCH:
+      switch(stochastic_source)
+	{
+	case STOCH_SOURCE_UNIFORM:
+	  for(int i=0; i<n_spinors; i++)
+	    qpb_spinor_field_set_random(source[i]);
+	  break;
+	case STOCH_SOURCE_Z4:
+	  for(int i=0; i<n_spinors; i++)
+	    qpb_spinor_field_set_z4(source[i]);
+	  break;
+	case STOCH_SOURCE_Z4_T:
+	  for(int i=0; i<n_spinors; i++)
+	    qpb_spinor_field_set_z4t(source[i], source_coords[0][0]);
+	  break;
+	}
       break;
     }
 
@@ -696,7 +769,7 @@ main(int argc, char *argv[])
 				kappa, numb_shifts, ms_shifts, c_sw, epsilon, max_iters);
 	  break;
 	}
-      print(" Done column = %d / %d\n", i+1, n_spinors);
+      print(" Done vector = %d / %d, iters = %d\n", i+1, n_spinors, iters);
     }
 
   switch(solver)             
@@ -704,22 +777,22 @@ main(int argc, char *argv[])
     case BICGSTAB:           
       qpb_bicgstab_finalize();
       t = qpb_stop_watch(t);
-      print(" BiCGStab done, %d columns in t = %f sec\n", n_spinors, t);
+      print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
     case CG:
       qpb_congrad_finalize();
       t = qpb_stop_watch(t);
-      print(" CG done, %d columns in t = %f sec\n", n_spinors, t);
+      print(" CG done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
     case BICGGAMMA5:
       qpb_bicgg5_finalize();
       t = qpb_stop_watch(t);
-      print(" BiCGγ5 done, %d columns in t = %f sec\n", n_spinors, t);
+      print(" BiCGγ5 done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
     case MSCG:
       qpb_mscongrad_finalize(numb_shifts);
       t = qpb_stop_watch(t);
-      print(" msCG done, %d columns in t = %f sec\n", n_spinors, t);
+      print(" msCG done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
     }
 

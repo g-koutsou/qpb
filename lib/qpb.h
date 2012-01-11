@@ -32,6 +32,8 @@
 #include <qpb_spinor_field_set_delta.h>
 #include <qpb_spinor_field_set_zero.h>
 #include <qpb_spinor_field_set_random.h>
+#include <qpb_spinor_field_set_z4.h>
+#include <qpb_spinor_field_set_z4t.h>
 #include <qpb_diagonal_links.h>
 #include <qpb_diagonal_links_get.h>
 #include <qpb_gauge_field_set_unit.h>
@@ -61,4 +63,5 @@
 #include <qpb_gauge_field_copy.h>
 #include <qpb_gauge_field_shift.h>
 #include <qpb_meson_2pt_corr.h>
+#include <qpb_meson_2pt_stoch.h>
 #endif /* _QPB_H */

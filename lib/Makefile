@@ -25,6 +25,8 @@ SOURCES = qpb_init\
 	qpb_spinor_field_set_delta\
 	qpb_spinor_field_set_zero\
 	qpb_spinor_field_set_random\
+	qpb_spinor_field_set_z4\
+	qpb_spinor_field_set_z4t\
 	qpb_gauge_field_set_unit\
 	qpb_gauge_field\
 	qpb_comm_halo_spinor_field\
@@ -54,6 +56,7 @@ SOURCES = qpb_init\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
 	qpb_meson_2pt_corr\
+	qpb_meson_2pt_stoch\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_xdotg5y\

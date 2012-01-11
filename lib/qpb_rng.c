@@ -31,3 +31,11 @@ qpb_get_rand()
   return (2.*rand - 1.);  
 }
 
+/* Random number in {0, 1, 2, 3} */
+int 
+qpb_get_rand4()
+{
+  int rand = gsl_rng_uniform_int(rng_state.gsl_rng_state[0], 4);
+  return rand;
+}
+
