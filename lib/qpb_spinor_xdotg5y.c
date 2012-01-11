@@ -5,7 +5,7 @@
 #include <qpb_spinor_linalg.h>
 
 void
-qpb_spinor_xdoty(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_field y)
+qpb_spinor_xdotg5y(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_field y)
 {
 #ifdef HAVE_LONG_DOUBLE
   long double dot_prod_re = 0.0;
@@ -22,8 +22,8 @@ qpb_spinor_xdoty(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_fi
   for(int v=0; v<lvol; v++)
     for(int cs=0; cs<NS*NC; cs++)
       {
-	dot_prod_re += x.bulk[v][cs].re*y.bulk[v][cs].re + x.bulk[v][cs].im*y.bulk[v][cs].im;
-	dot_prod_im += x.bulk[v][cs].re*y.bulk[v][cs].im - x.bulk[v][cs].im*y.bulk[v][cs].re;
+	dot_prod_re += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re + x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im;
+	dot_prod_im += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im - x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re;
       }
 
 #ifdef HAVE_LONG_DOUBLE

@@ -4,6 +4,7 @@
 #include <qpb_spinor_blas.h>
 #include <qpb_spinor_xdotx.h>
 #include <qpb_spinor_xdoty.h>
+#include <qpb_spinor_xdotg5y.h>
 #include <qpb_spinor_xeqy.h>
 #include <qpb_spinor_xmy.h>
 #include <qpb_spinor_axpy.h>

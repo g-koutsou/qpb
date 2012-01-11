@@ -50,11 +50,13 @@ SOURCES = qpb_init\
 	qpb_bicgstab\
 	qpb_mscongrad\
 	qpb_congrad\
+	qpb_bicgg5\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
 	qpb_meson_2pt_corr\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
+	qpb_spinor_xdotg5y\
 	qpb_spinor_axpy\
 	qpb_spinor_axpby\
 	qpb_spinor_ax\

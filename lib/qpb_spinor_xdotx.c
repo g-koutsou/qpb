@@ -25,14 +25,18 @@ qpb_spinor_xdotx(qpb_double *dot_prod, qpb_spinor_field x)
       }
 
 #ifdef HAVE_LONG_DOUBLE
-  MPI_Allreduce(MPI_IN_PLACE, &accum, 1, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  long double accum_sum;
+  //MPI_Allreduce(MPI_IN_PLACE, &accum, 1, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Reduce(&accum, &accum_sum, 1, MPI_LONG_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
+  MPI_Bcast(&accum_sum, 1, MPI_LONG_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
 #else
-  double accum_dbl = accum;
-  MPI_Allreduce(MPI_IN_PLACE, &accum_dbl, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  accum = accum_dbl;
+  double accum_sum;
+  //MPI_Allreduce(MPI_IN_PLACE, &accum_dbl, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Reduce(&accum, &accum_sum, 1, MPI_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
+  MPI_Bcast(&accum_sum, 1, MPI_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
 #endif /* HAVE_LONG_DOUBLE */
   
-  *dot_prod = accum;
+  *dot_prod = accum_sum;
   return;
 }
 

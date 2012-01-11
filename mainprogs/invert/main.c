@@ -14,7 +14,8 @@ enum {
 enum {
   BICGSTAB,
   CG,
-  MSCG
+  MSCG,
+  BICGGAMMA5
 } solver;
 
 enum {
@@ -315,6 +316,11 @@ main(int argc, char *argv[])
       solver = CG;
       numb_shifts = 1;
     }
+  else if(strcmp(aux_string, "bicgg5") == 0)
+    {
+      solver = BICGGAMMA5;
+      numb_shifts = 1;
+    }
   else if(strcmp(aux_string, "mscg") == 0)
     {
       solver = MSCG;
@@ -343,6 +349,7 @@ main(int argc, char *argv[])
       error("%s: option should be one of: ", "Solver");
       error("%s, ", "bicgstab"); 
       error("%s, ", "cg"); 
+      error("%s, ", "bicgg5");
       error("%s\n", "mscg"); 
       exit(QPB_PARSER_ERROR);
     };
@@ -479,13 +486,13 @@ main(int argc, char *argv[])
 	}
       break;
     case SOURCE_FILE:
-      printf(" Will read source from: %s\n", source_file);
+      print(" Will read source from: %s\n", source_file);
       break;
     case SOURCE_RAND:
-      printf(" Will generate a random source\n");
+      print(" Will generate a random source\n");
       break;
     case SOURCE_ZERO:
-      printf(" Will set source to zero\n");      
+      print(" Will set source to zero\n");      
       break;
     }
   print(" APE alpha = %g\n", ape_alpha);
@@ -512,6 +519,9 @@ main(int argc, char *argv[])
       break;
     case CG:
       print(" Solver = CG\n");
+      break;
+    case BICGGAMMA5:
+      print(" Solver = BiCGγ5\n");
       break;
     case MSCG:
       print(" Solver = msCG\n");
@@ -657,6 +667,9 @@ main(int argc, char *argv[])
     case CG:
       qpb_congrad_init();
       break;
+    case BICGGAMMA5:
+      qpb_bicgg5_init();
+      break;
     case MSCG:
       qpb_mscongrad_init(numb_shifts);
       break;
@@ -673,6 +686,10 @@ main(int argc, char *argv[])
 	case CG:
 	  iters = qpb_congrad(sol[i], source[i], solver_arg_links, clover_term,
 			      kappa, c_sw, epsilon, max_iters);
+	  break;
+	case BICGGAMMA5:
+	  iters = qpb_bicgg5(sol[i], source[i], solver_arg_links, clover_term,
+			     kappa, c_sw, epsilon, max_iters);
 	  break;
 	case MSCG:
 	  iters = qpb_mscongrad(sol+i*numb_shifts, source[i], solver_arg_links, clover_term,
@@ -693,6 +710,11 @@ main(int argc, char *argv[])
       qpb_congrad_finalize();
       t = qpb_stop_watch(t);
       print(" CG done, %d columns in t = %f sec\n", n_spinors, t);
+      break;
+    case BICGGAMMA5:
+      qpb_bicgg5_finalize();
+      t = qpb_stop_watch(t);
+      print(" BiCGγ5 done, %d columns in t = %f sec\n", n_spinors, t);
       break;
     case MSCG:
       qpb_mscongrad_finalize(numb_shifts);
