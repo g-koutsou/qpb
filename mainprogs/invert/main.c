@@ -789,11 +789,6 @@ main(int argc, char *argv[])
       t = qpb_stop_watch(t);
       print(" BiCGγ5 done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
-    case BICGGAMMA5:
-      qpb_bicgg5_finalize();
-      t = qpb_stop_watch(t);
-      print(" BiCGγ5 done, %d columns in t = %f sec\n", n_spinors, t);
-      break;
     case MSCG:
       qpb_mscongrad_finalize(numb_shifts);
       t = qpb_stop_watch(t);
