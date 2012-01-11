@@ -1,6 +1,7 @@
 Makefile.in
 mainprogs/invert/invert
 mainprogs/mesons/mesons
+mainprogs/eigens/eigens
 *.dat
 *.a
 *.o
