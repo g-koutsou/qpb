@@ -252,8 +252,8 @@ main(int argc, char *argv[])
 
   char source_file[QPB_MAX_STRING];
   int source_coords[n_spinors][ND+2];
-  int n_gauss;
-  qpb_double alpha_gauss;
+  int n_gauss, n_ape_gauss;
+  qpb_double alpha_gauss, alpha_ape_gauss;
   switch(source_opt)
     {
     case SOURCE_SMEARED:
@@ -270,6 +270,21 @@ main(int argc, char *argv[])
 		"Gaussian smearing alpha");
 	  exit(QPB_PARSER_ERROR);	  
 	}
+
+      if(sscanf(qpb_parse("Gaussian smearing APE iterations"), "%d", &n_ape_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing APE iterations");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+
+      if(sscanf(qpb_parse("Gaussian smearing APE alpha"), "%lf", &alpha_ape_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing APE alpha");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+      
     case SOURCE_POINT:
       switch(invert_mode)
 	{
@@ -540,6 +555,7 @@ main(int argc, char *argv[])
     {
     case SOURCE_SMEARED:
       print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian source APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
     case SOURCE_POINT:
       switch(invert_mode)
 	{
@@ -641,6 +657,7 @@ main(int argc, char *argv[])
   if(ape_niter != 0)
     {
       qpb_gauge_field apegauge = qpb_gauge_field_init();
+
       print(" APE smear gauge field...\n");
       qpb_apesmear_niter(apegauge, gauge, ape_alpha, ape_niter);
       qpb_gauge_field_copy(gauge, apegauge);
@@ -689,14 +706,30 @@ main(int argc, char *argv[])
 				   source_coords[i][4],
 				   source_coords[i][5]);
 
+      qpb_gauge_field gauss_gauge = qpb_gauge_field_init();
+      qpb_gauge_field_copy(gauss_gauge, gauge);
+      /* 3D-APE smear the gauge field for gaussian source */
+      if(n_ape_gauss != 0)
+	{
+	  qpb_gauge_field apegauge = qpb_gauge_field_init();
+	  print(" 3D-APE smear gauge field...\n");
+	  qpb_apesmear_3d_niter(apegauge, gauss_gauge, alpha_ape_gauss, n_ape_gauss);
+	  qpb_gauge_field_copy(gauss_gauge, apegauge);
+	  qpb_gauge_field_finalize(apegauge);
+	  
+	  plaquette = qpb_plaquette(gauss_gauge);
+	  print(" [Gaussian source gauge field] Plaquette = %12.8f\n", plaquette);
+	}
+
       qpb_gauss_smear_init();
       qpb_spinor_field aux = qpb_spinor_field_init();
       for(int i=0; i<n_spinors; i++)
 	{
 	  qpb_spinor_xeqy(aux, source[i]);
-	  qpb_gauss_smear_niter(source[i], aux, gauge, alpha_gauss, n_gauss);
+	  qpb_gauss_smear_niter(source[i], aux, gauss_gauge, alpha_gauss, n_gauss);
 	}
       qpb_gauss_smear_finalize();
+      qpb_gauge_field_finalize(gauss_gauge);
 
       for(int i=0; i<n_spinors; i++)
 	qpb_write_n_spinor(source, n_spinors, "src");
