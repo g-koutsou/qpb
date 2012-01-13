@@ -46,6 +46,7 @@
 #include <qpb_read_n_spinor.h>
 #include <qpb_write_spinor.h>
 #include <qpb_write_n_spinor.h>
+#include <qpb_gauss_smear.h>
 #include <qpb_apply_clover_term.h>
 #include <qpb_clover_term.h>
 #include <qpb_clover_term_get.h>

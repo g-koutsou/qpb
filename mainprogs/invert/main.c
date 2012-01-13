@@ -539,7 +539,7 @@ main(int argc, char *argv[])
   switch(source_opt)
     {
     case SOURCE_SMEARED:
-      print(" Gaussian smearing = (%g, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
     case SOURCE_POINT:
       switch(invert_mode)
 	{
@@ -676,12 +676,32 @@ main(int argc, char *argv[])
 	qpb_spinor_field_set_zero(source[i]);
       break;
     case SOURCE_POINT:
+      for(int i=0; i<n_spinors; i++)
+	qpb_spinor_field_set_delta(source[i], 
+				   source_coords[i], 
+				   source_coords[i][4],
+				   source_coords[i][5]);
+      break;
     case SOURCE_SMEARED:
       for(int i=0; i<n_spinors; i++)
 	qpb_spinor_field_set_delta(source[i], 
 				   source_coords[i], 
 				   source_coords[i][4],
 				   source_coords[i][5]);
+
+      qpb_gauss_smear_init();
+      qpb_spinor_field aux = qpb_spinor_field_init();
+      for(int i=0; i<n_spinors; i++)
+	{
+	  qpb_spinor_xeqy(aux, source[i]);
+	  qpb_gauss_smear_niter(source[i], aux, gauge, alpha_gauss, n_gauss);
+	}
+      qpb_gauss_smear_finalize();
+
+      for(int i=0; i<n_spinors; i++)
+	qpb_write_n_spinor(source, n_spinors, "src");
+
+      qpb_spinor_field_finalize(aux);
       break;
     case SOURCE_FILE:
       if(n_spinors == 1)

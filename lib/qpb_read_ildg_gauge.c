@@ -5,10 +5,12 @@
 
 #include <lime.h>
 #include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_byte_order.h>
+#include <qpb_parser.h>
 #include <qpb_alloc.h>
 #include <qpb_errors.h>
 #include <qpb_read_gauge.h>
@@ -20,12 +22,17 @@ xpath_get(xmlXPathContextPtr ctx, unsigned char *search_path)
 {
   xmlXPathObjectPtr obj;
   obj = xmlXPathEvalExpression(search_path, ctx);
-  if(obj->nodesetval->nodeNr == 0)
+  if(obj == NULL)
+    {
+      fprintf(stderr, " %s: error evaluating xpath\n", search_path);
+      MPI_Abort(MPI_COMM_WORLD, QPB_FILE_ERROR);
+    }
+  int len = (obj->nodesetval) ? obj->nodesetval->nodeNr : 0;
+  if(len == 0)
     {
       fprintf(stderr, " %s: xpath has no elements\n", search_path);
       MPI_Abort(MPI_COMM_WORLD, QPB_FILE_ERROR);
     }
-  
   return obj->nodesetval->nodeTab[0]->xmlChildrenNode->content;
 }
 
@@ -95,7 +102,7 @@ qpb_read_ildg_gauge(qpb_gauge_field gauge_field, char fname[])
 		  fprintf(stderr, " error reading ildg-format data\n");
 		  MPI_Abort(MPI_COMM_WORLD, QPB_FILE_ERROR);
 		}
-	      ildg_format_len = bytes_read;
+	      ildg_format_len = bytes_read+1;
 	    }
       
 	  if(strncmp(lime_type, "ildg-binary-data", strlen("ildg-binary-data")) == 0)
@@ -130,11 +137,15 @@ qpb_read_ildg_gauge(qpb_gauge_field gauge_field, char fname[])
 	  MPI_Abort(MPI_COMM_WORLD, QPB_FILE_ERROR);
 	}
 
+      /* newer ildg files use the namespase xmlns="http://www.lqcd.org/ildg";
+	 older files define no namespace;
+	 the local-name()= construct allows matching to any namespace */      
+      precision = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='precision']"));
       int ildg_file_dims[ND];
-      ildg_file_dims[3] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/lx"));
-      ildg_file_dims[2] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/ly"));
-      ildg_file_dims[1] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/lz"));
-      ildg_file_dims[0] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/lt"));
+      ildg_file_dims[3] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='lx']"));
+      ildg_file_dims[2] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='ly']"));
+      ildg_file_dims[1] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='lz']"));
+      ildg_file_dims[0] = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='lt']"));
       
       int bool = 1;
       for(int i=0; i<ND; i++)
@@ -146,9 +157,8 @@ qpb_read_ildg_gauge(qpb_gauge_field gauge_field, char fname[])
 	  MPI_Abort(MPI_COMM_WORLD, QPB_FILE_ERROR);
 	}
 
-      precision = atoi((char *)xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/precision"));
-
-      unsigned char *field = xpath_get(xpathCtx, (unsigned char *)"/ildgFormat/field");
+      unsigned char *field = xpath_get(xpathCtx, (unsigned char *)"/*[local-name()='ildgFormat']/*[local-name()='field']");
+      trim((char *)field, strlen((char *)field));
       if(strncmp((char *)field, "su3gauge", strlen("su3gauge")) != 0)
 	{
 	  fprintf(stderr, " %s: ildg file is not of \"su3gauge\" type\n", fname);
