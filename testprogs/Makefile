@@ -1,13 +1,9 @@
-include ./Makefile.in
+include ../Makefile.in
 
-DIRS = mainprogs lib
-TESTSDIR = testprogs lib
+DIRS = ape_3d source_rms
 
 all: 
 	-for d in $(DIRS); do (cd $$d && $(MAKE)); done
-
-testprogs:
-	-for d in $(TESTSDIR); do (cd $$d && $(MAKE)); done
 
 debug: 
 	-for d in $(DIRS); do (cd $$d && $(MAKE) debug); done
