@@ -2,6 +2,7 @@ include ./Makefile.in
 
 DIRS = mainprogs lib
 TESTSDIR = testprogs lib
+.PHONY: testprogs
 
 all: 
 	-for d in $(DIRS); do (cd $$d && $(MAKE)); done
