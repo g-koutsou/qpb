@@ -50,8 +50,8 @@ qpb_spinor_field_set_z4t(qpb_spinor_field spinor_field, int t)
 	  if(problem_params.proc_id == id)
 	    {
 	      int v = blk_to_ext[lv];
-	      for(int isp=0; isp<NC*NS; isp++)
-		(*((qpb_spinor *)spinor_field.index[v]))[isp] =  sp[isp];
+	      qpb_spinor *q = (qpb_spinor *)spinor_field.index[v];
+	      memcpy(q, sp, sizeof(qpb_spinor));
 	    }
 	}
   

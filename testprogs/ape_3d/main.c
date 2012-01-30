@@ -240,8 +240,9 @@ main(int argc, char *argv[])
       for(int iter=0; iter<n_ape_3d; iter++)
 	{
 	  qpb_apesmear_3d_niter(gauge_aux[(iter+1)%2], gauge_aux[iter%2], alpha_ape_3d, 1);
-	  plaquette = qpb_plaquette_3d(gauge_aux[(iter+1)%2]);
-	  print(" Iter = %4d, plaquette = %12.8f\n", iter, plaquette);
+	  qpb_double p4d = qpb_plaquette(gauge_aux[(iter+1)%2]);
+	  qpb_double p3d = qpb_plaquette_3d(gauge_aux[(iter+1)%2]);
+	  print(" Iter = %4d, plaquette (3D) = %10.8f (%10.8f)\n", iter, p4d, p3d);
 	}
     }
   

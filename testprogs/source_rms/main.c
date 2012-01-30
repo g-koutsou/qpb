@@ -298,7 +298,7 @@ main(int argc, char *argv[])
 
   /* Calculate plaquette */
   qpb_double plaquette = qpb_plaquette(gauge);
-  print(" Plaquette = %12.8f\n", plaquette);
+  print(" Plaquette = %10.8f\n", plaquette);
 
   /* APE smear the gauge field */
   if(ape_niter != 0)
@@ -311,7 +311,7 @@ main(int argc, char *argv[])
       qpb_gauge_field_finalize(apegauge);
 
       plaquette = qpb_plaquette(gauge);
-      print(" Plaquette = %12.8f\n", plaquette);
+      print(" Plaquette = %10.8f\n", plaquette);
     }
 
   /* Allocate source and solution spinor */
@@ -331,7 +331,8 @@ main(int argc, char *argv[])
       qpb_gauge_field_finalize(apegauge);
       
       plaquette = qpb_plaquette(gauss_gauge);
-      print(" [Gaussian source gauge field] Plaquette = %12.8f\n", plaquette);
+      qpb_double p3d = qpb_plaquette_3d(gauss_gauge);
+      print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
     }
   
   qpb_gauss_smear_init();

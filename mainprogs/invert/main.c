@@ -22,9 +22,13 @@ enum {
   SOURCE_POINT,
   SOURCE_ZERO,
   SOURCE_STOCH,
-  SOURCE_FILE,
-  SOURCE_SMEARED  
+  SOURCE_FILE
 } source_opt;
+
+enum {
+  SOURCE_NOT_SMEARED,
+  SOURCE_SMEARED
+} source_smearing;
 
 enum {
   STOCH_SOURCE_Z4,
@@ -222,13 +226,13 @@ main(int argc, char *argv[])
 	    "Random seed");
       exit(QPB_PARSER_ERROR);
     }  
+
   if(sscanf(qpb_parse("Source"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
 	    "Source");
       exit(QPB_PARSER_ERROR);
     }
-
   if(strcmp(aux_string, "zero") == 0)
     source_opt = SOURCE_ZERO;
   else if(strcmp(aux_string, "point") == 0)
@@ -250,11 +254,28 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
-  char source_file[QPB_MAX_STRING];
-  int source_coords[n_spinors][ND+2];
+  if(sscanf(qpb_parse("Source smearing"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Source smearing");
+      exit(QPB_PARSER_ERROR);
+    }
+
+  if(strcmp(aux_string, "yes") == 0)
+    source_smearing = SOURCE_SMEARED;
+  else if(strcmp(aux_string, "no") == 0)
+    source_smearing = SOURCE_NOT_SMEARED;
+  else
+    {
+      error("%s: option should be one of: ", "Source smearing");
+      error("%s, ", "yes"); 
+      error("%s\n", "no"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
   int n_gauss, n_ape_gauss;
   qpb_double alpha_gauss, alpha_ape_gauss;
-  switch(source_opt)
+  switch(source_smearing)
     {
     case SOURCE_SMEARED:
       if(sscanf(qpb_parse("Gaussian smearing iterations"), "%d", &n_gauss)!=1)
@@ -284,7 +305,16 @@ main(int argc, char *argv[])
 		"Gaussian smearing APE alpha");
 	  exit(QPB_PARSER_ERROR);	  
 	}
-      
+      break;
+
+    case SOURCE_NOT_SMEARED:
+      break;
+    }
+
+  char source_file[QPB_MAX_STRING];
+  int source_coords[n_spinors][ND+2];
+  switch(source_opt)
+    {      
     case SOURCE_POINT:
       switch(invert_mode)
 	{
@@ -551,11 +581,20 @@ main(int argc, char *argv[])
       print(" Gauge field = Random\n");
       break;
     }
-  switch(source_opt)
+  switch(source_smearing)
     {
     case SOURCE_SMEARED:
+      print(" Will smear source\n");
       print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
       print(" Gaussian source APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
+      break;
+      
+    case SOURCE_NOT_SMEARED:
+      break;
+    }
+
+  switch(source_opt)
+    {
     case SOURCE_POINT:
       switch(invert_mode)
 	{
@@ -654,25 +693,28 @@ main(int argc, char *argv[])
   print(" Plaquette = %12.8f\n", plaquette);
 
   /* APE smear the gauge field */
+  qpb_gauge_field apegauge = qpb_gauge_field_init();
   if(ape_niter != 0)
     {
-      qpb_gauge_field apegauge = qpb_gauge_field_init();
 
       print(" APE smear gauge field...\n");
       qpb_apesmear_niter(apegauge, gauge, ape_alpha, ape_niter);
-      qpb_gauge_field_copy(gauge, apegauge);
-      qpb_gauge_field_finalize(apegauge);
 
-      plaquette = qpb_plaquette(gauge);
+      plaquette = qpb_plaquette(apegauge);
       print(" Plaquette = %12.8f\n", plaquette);
+    }
+  else
+    {
+      qpb_gauge_field_copy(apegauge, gauge);
     }
 
   /* Shift it */
+  qpb_gauge_field_shift(apegauge, shifts);
   qpb_gauge_field_shift(gauge, shifts);
 
   /* Clover term */
   qpb_clover_term clover_term = qpb_clover_term_init();
-  qpb_clover_term_get(clover_term, gauge);
+  qpb_clover_term_get(clover_term, apegauge);
 
   /* Allocate source and solution spinor */
   qpb_spinor_field *source;
@@ -699,46 +741,11 @@ main(int argc, char *argv[])
 				   source_coords[i][4],
 				   source_coords[i][5]);
       break;
-    case SOURCE_SMEARED:
-      for(int i=0; i<n_spinors; i++)
-	qpb_spinor_field_set_delta(source[i], 
-				   source_coords[i], 
-				   source_coords[i][4],
-				   source_coords[i][5]);
-
-      qpb_gauge_field gauss_gauge = qpb_gauge_field_init();
-      qpb_gauge_field_copy(gauss_gauge, gauge);
-      /* 3D-APE smear the gauge field for gaussian source */
-      if(n_ape_gauss != 0)
-	{
-	  qpb_gauge_field apegauge = qpb_gauge_field_init();
-	  print(" 3D-APE smear gauge field...\n");
-	  qpb_apesmear_3d_niter(apegauge, gauss_gauge, alpha_ape_gauss, n_ape_gauss);
-	  qpb_gauge_field_copy(gauss_gauge, apegauge);
-	  qpb_gauge_field_finalize(apegauge);
-	  
-	  plaquette = qpb_plaquette(gauss_gauge);
-	  print(" [Gaussian source gauge field] Plaquette = %12.8f\n", plaquette);
-	}
-
-      qpb_gauss_smear_init();
-      qpb_spinor_field aux = qpb_spinor_field_init();
-      for(int i=0; i<n_spinors; i++)
-	{
-	  qpb_spinor_xeqy(aux, source[i]);
-	  qpb_gauss_smear_niter(source[i], aux, gauss_gauge, alpha_gauss, n_gauss);
-	}
-      qpb_gauss_smear_finalize();
-      qpb_gauge_field_finalize(gauss_gauge);
-
-      for(int i=0; i<n_spinors; i++)
-	qpb_write_n_spinor(source, n_spinors, "src");
-
-      qpb_spinor_field_finalize(aux);
-      break;
     case SOURCE_FILE:
       if(n_spinors == 1)
-	qpb_read_spinor(source[0], source_file);
+	{
+	  qpb_read_spinor(source[0], source_file);
+	}
       else
 	{
 	  error(" reading spinors in propagator mode not implemented\n");
@@ -764,6 +771,52 @@ main(int argc, char *argv[])
       break;
     }
 
+  switch(source_smearing)
+    {
+    case SOURCE_SMEARED:
+      /* for(int i=0; i<n_spinors; i++) */
+      /* 	qpb_spinor_field_set_delta(source[i],  */
+      /* 				   source_coords[i],  */
+      /* 				   source_coords[i][4], */
+      /* 				   source_coords[i][5]); */
+      {
+      qpb_gauge_field gauss_gauge = qpb_gauge_field_init();
+      qpb_gauge_field_copy(gauss_gauge, gauge);
+      /* 3D-APE smear the gauge field for gaussian source */
+      if(n_ape_gauss != 0)
+	{
+	  qpb_gauge_field ape3dgauge = qpb_gauge_field_init();
+	  print(" 3D-APE smear gauge field...\n");
+	  qpb_apesmear_3d_niter(ape3dgauge, gauss_gauge, alpha_ape_gauss, n_ape_gauss);
+	  qpb_gauge_field_copy(gauss_gauge, ape3dgauge);
+	  qpb_gauge_field_finalize(ape3dgauge);
+	  
+	  plaquette = qpb_plaquette(gauss_gauge);
+	  qpb_double p3d = qpb_plaquette_3d(gauss_gauge);
+	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
+	}
+
+      qpb_gauss_smear_init();
+      qpb_spinor_field aux = qpb_spinor_field_init();
+      for(int i=0; i<n_spinors; i++)
+	{
+	  qpb_spinor_xeqy(aux, source[i]);
+	  qpb_gauss_smear_niter(source[i], aux, gauss_gauge, alpha_gauss, n_gauss);
+	}
+      qpb_gauss_smear_finalize();
+      qpb_gauge_field_finalize(gauss_gauge);
+
+      qpb_spinor_field_finalize(aux);
+      }
+      break;
+
+    case SOURCE_NOT_SMEARED:
+      break;
+    }
+
+  /* for(int i=0; i<n_spinors; i++) */
+  /*   qpb_write_n_spinor(source, n_spinors, "src"); */
+  
   for(int i=0; i<n_spinors; i++)
     for(int j=0; j<numb_shifts; j++)
       qpb_spinor_field_set_zero(sol[j+i*numb_shifts]);
@@ -776,11 +829,11 @@ main(int argc, char *argv[])
     {
     case QPB_DSLASH_BRILLOUIN:
       diagonal_links = qpb_diagonal_links_init();
-      qpb_diagonal_links_get(diagonal_links, gauge);
+      qpb_diagonal_links_get(diagonal_links, apegauge);
       solver_arg_links = &diagonal_links;
       break;
     case QPB_DSLASH_STANDARD:
-      solver_arg_links = &gauge;
+      solver_arg_links = &apegauge;
       break;
     }
 
@@ -873,6 +926,7 @@ main(int argc, char *argv[])
   free(sol);
   free(source);
   qpb_gauge_field_finalize(gauge);
+  qpb_gauge_field_finalize(apegauge);
   qpb_clover_term_finalize(clover_term);
   qpb_rng_finalize();
   qpb_finalize();

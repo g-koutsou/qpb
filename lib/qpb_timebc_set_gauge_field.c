@@ -5,6 +5,7 @@
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_sun_linalg.h>
+#include <qpb_gauge_field_copy.h>
 
 void
 qpb_timebc_set_gauge_field(qpb_gauge_field gauge_field_out, qpb_gauge_field gauge_field_in, qpb_double bc)

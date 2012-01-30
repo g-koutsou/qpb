@@ -5,6 +5,16 @@ enum {
   TWOP_FULL
 } twop_mode;
 
+enum {
+  CONF_ILDG,
+  CONF_RAW_32,
+  CONF_RAW_64,
+} conf_format;
+
+enum {
+  SINK_NOT_SMEARED,
+  SINK_SMEARED
+} sink_smearing;
 
 void
 usage(char *argv[])
@@ -126,6 +136,152 @@ main(int argc, char *argv[])
 	}
     }
 
+  if(sscanf(qpb_parse("Sink smearing"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Sink smearing");
+      exit(QPB_PARSER_ERROR);
+    }
+
+  if(strcmp(aux_string, "yes") == 0)
+    sink_smearing = SINK_SMEARED;
+  else if(strcmp(aux_string, "no") == 0)
+    sink_smearing = SINK_NOT_SMEARED;
+  else
+    {
+      error("%s: option should be one of: ", "Sink smearing");
+      error("%s, ", "yes"); 
+      error("%s\n", "no"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
+  enum qpb_field_init_opts conf_opt = 0;
+  char conf_file[QPB_MAX_STRING];
+  int shifts[ND];
+  unsigned int seed;
+  int n_gauss, n_ape_gauss;
+  qpb_double alpha_gauss, alpha_ape_gauss;
+  if(sink_smearing == SINK_SMEARED)
+    {
+      if(sscanf(qpb_parse("Conf"), "%s", aux_string)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Conf");
+	  exit(QPB_PARSER_ERROR);
+	}
+
+      if(strcmp(aux_string, "file") == 0)
+	conf_opt = QPB_FILE;
+      else if(strcmp(aux_string, "unit") == 0)
+	conf_opt = QPB_UNIT;
+      else
+	{
+	  error("%s: option should be one of: ", "Conf");
+	  error("%s, ", "unit"); 
+	  error("%s\n", "file"); 
+	  exit(QPB_PARSER_ERROR);
+	};
+
+      switch(conf_opt)
+	{
+	case QPB_ZERO:
+	  break;
+	case QPB_UNIT:
+	  break;
+	case QPB_FILE:
+	  if(sscanf(qpb_parse("Conf file"), "%s",
+		    conf_file)!=1)
+	    {
+	      error("error parsing for %s\n", 
+		    "Conf file");
+	      exit(QPB_PARSER_ERROR);
+	    }  
+	  if(sscanf(qpb_parse("Conf format"), "%s",
+		    aux_string)!=1)
+	    {
+	      error("error parsing for %s\n", 
+		    "Conf format");
+	      exit(QPB_PARSER_ERROR);
+	    }  
+	  if(strcmp(aux_string, "ildg") == 0)
+	    conf_format = CONF_ILDG;
+	  else if(strcmp(aux_string, "raw_32") == 0)
+	    conf_format = CONF_RAW_32;
+	  else if(strcmp(aux_string, "raw_64") == 0)
+	    conf_format = CONF_RAW_64;
+	  else
+	    {
+	      error("%s: option should be one of: ", "Conf format");
+	      error("%s, ", "raw"); 
+	      error("%s\n", "ildg"); 
+	      exit(QPB_PARSER_ERROR);
+	    }
+	  break;
+	case QPB_RAND:
+	  break;
+	}
+
+      if(sscanf(qpb_parse("Gauge shifts"), "%d %d %d %d",
+		shifts, shifts+1, shifts+2, shifts+3)!=ND)
+	{
+	  error("error parsing for %s\n", 
+		"Shifts");
+	  exit(QPB_PARSER_ERROR);
+	}
+      if(shifts[0]<0 ||
+	 shifts[1]<0 ||
+	 shifts[2]<0 ||
+	 shifts[3]<0)
+	{
+	  error("only provide positive shifts, quiting\n");
+	  exit(QPB_PARAMETERS_ERROR);
+	}
+      
+      if(shifts[0] > g_dim[0]-1 ||
+	 shifts[1] > g_dim[1]-1 ||
+	 shifts[2] > g_dim[2]-1 ||
+	 shifts[3] > g_dim[3]-1)
+	{
+	  error("shift(s) go beyond lattice length(s), quiting\n");
+	  exit(QPB_PARAMETERS_ERROR);
+	}
+      
+      if(sscanf(qpb_parse("Random seed"), "%u", &seed)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Random seed");
+	  exit(QPB_PARSER_ERROR);
+	}  
+
+      if(sscanf(qpb_parse("Gaussian smearing iterations"), "%d", &n_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing iterations");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+
+      if(sscanf(qpb_parse("Gaussian smearing alpha"), "%lf", &alpha_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing alpha");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+
+      if(sscanf(qpb_parse("Gaussian smearing APE iterations"), "%d", &n_ape_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing APE iterations");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+
+      if(sscanf(qpb_parse("Gaussian smearing APE alpha"), "%lf", &alpha_ape_gauss)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Gaussian smearing APE alpha");
+	  exit(QPB_PARSER_ERROR);	  
+	}
+      
+    }
   char corr_file[QPB_MAX_STRING];
   if(sscanf(qpb_parse("Output file"), "%s", corr_file)!=1)
     {
@@ -153,6 +309,12 @@ main(int argc, char *argv[])
 	problem_params.g_dim[2], 
 	problem_params.g_dim[3]);  
   print(" Processes = (1,%2d,%2d,%2d)\n", procs[0], procs[1], procs[2]);
+  int nthreads = 1;
+#ifdef OPENMP
+#pragma omp parallel
+  nthreads = omp_get_num_threads();
+#endif
+  print(" Threads per process = %2d\n", nthreads);
   print(" N quarks = %d\n", n_quarks);
   switch(twop_mode)
     {
@@ -165,6 +327,40 @@ main(int argc, char *argv[])
   print(" Prop file light = %s\n", prop_file_light);
   if(n_quarks == 2)
     print(" Prop file heavy = %s\n", prop_file_heavy);
+
+  if(sink_smearing == SINK_SMEARED)
+    {
+      switch(conf_opt)
+	{
+	case QPB_ZERO:
+	  print(" Gauge field = Zeros\n");
+	  break;
+	case QPB_UNIT:
+	  print(" Gauge field = Unit\n");
+	  break;
+	case QPB_FILE:
+	  if(conf_format == CONF_ILDG)
+	    {
+	      print(" Gauge field (ildg) = %s\n", conf_file);
+	    }
+	  else if(conf_format == CONF_RAW_32)
+	    {
+	      print(" Gauge field (raw_32) = %s\n", conf_file);
+	    }
+	  else if(conf_format == CONF_RAW_64)
+	    {
+	      print(" Gauge field (raw_64) = %s\n", conf_file);
+	    }
+	  break;
+	case QPB_RAND:
+	  print(" Gauge field = Random\n");
+	  break;
+	}
+      print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
+      print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian sink APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
+    }
+
   print(" Output file = %s\n", corr_file);
 
   /* Allocate propagator structs (as 12 spinor structs) */
@@ -185,6 +381,78 @@ main(int argc, char *argv[])
   qpb_read_n_spinor(prop_light, n_vec, prop_file_light);
   if(n_quarks == 2)
     qpb_read_n_spinor(prop_heavy, n_vec, prop_file_heavy);
+
+  qpb_gauge_field gauge;
+  qpb_double plaquette;
+  if(sink_smearing == SINK_SMEARED)
+    {
+      /* allocate gauge field */
+      gauge = qpb_gauge_field_init();
+
+      /* read in configuration */
+      switch(conf_opt)
+	{
+	case QPB_ZERO:
+	  break;
+	case QPB_UNIT:
+	  qpb_gauge_field_set_unit(gauge);
+	  break;
+	case QPB_FILE:
+	  if(conf_format == CONF_RAW_32)
+	    {
+	      qpb_read_raw32_gauge(gauge, conf_file);
+	    }
+	  else if(conf_format == CONF_RAW_64)
+	    {
+	      qpb_read_raw64_gauge(gauge, conf_file);
+	    }
+	  else if(conf_format == CONF_ILDG)
+	    {
+	      qpb_read_ildg_gauge(gauge, conf_file);
+	    }
+	  break;
+	case QPB_RAND:
+	  break;
+	}
+
+      /* Calculate plaquette */
+      plaquette = qpb_plaquette(gauge);
+      print(" Plaquette = %12.8f\n", plaquette);
+
+      /* 3D-APE smear the gauge field for gaussian source */
+      if(n_ape_gauss != 0)
+	{
+	  qpb_gauge_field ape3dgauge = qpb_gauge_field_init();
+	  print(" 3D-APE smear gauge field...\n");
+	  qpb_apesmear_3d_niter(ape3dgauge, gauge, alpha_ape_gauss, n_ape_gauss);
+	  qpb_gauge_field_copy(gauge, ape3dgauge);
+	  qpb_gauge_field_finalize(ape3dgauge);
+	  
+	  plaquette = qpb_plaquette(gauge);
+	  qpb_double p3d = qpb_plaquette_3d(gauge);
+	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
+	}
+      qpb_gauge_field_shift(gauge, shifts);
+
+      qpb_gauss_smear_init();
+      qpb_spinor_field aux = qpb_spinor_field_init();
+      for(int i=0; i<n_vec; i++)
+	{
+	  qpb_spinor_xeqy(aux, prop_light[i]);
+	  qpb_gauss_smear_niter(prop_light[i], aux, gauge, alpha_gauss, n_gauss);
+	}
+
+      if(n_quarks == 2)
+	for(int i=0; i<n_vec; i++)
+	  {
+	    qpb_spinor_xeqy(aux, prop_heavy[i]);
+	    qpb_gauss_smear_niter(prop_heavy[i], aux, gauge, alpha_gauss, n_gauss);
+	  }
+
+      qpb_gauss_smear_finalize();
+      qpb_spinor_field_finalize(aux);      
+      qpb_gauge_field_finalize(gauge);      
+    }
 
   switch(twop_mode)
     {
