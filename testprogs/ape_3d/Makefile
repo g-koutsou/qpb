@@ -29,7 +29,7 @@ lib:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) *.o && cd $(LIBDIR) && $(MAKE) clean
+	$(RM) *.o
 
 cleanall: clean
 	$(RM) $(TARGET) && cd $(LIBDIR) && $(MAKE) cleanall
