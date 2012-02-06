@@ -1,6 +1,24 @@
 include ../Makefile.in
 
+PWD := $(shell pwd)
+ifndef V
+       V = 0
+endif
+
+ifeq ($(V), 1) 
+	E = @echo > /dev/null
+	C = 
+else
+	E = @echo
+	C = @
+endif
+
+ifndef DSLASH_CFLAGS
+DSLASH_CFLAGS = $(CFLAGS)
+endif
+
 all: libqpb.a
+	@:
 
 debug: CC += $(DEBUGFLAGS)
 debug: all
@@ -83,25 +101,37 @@ py: ${addsuffix .h, $(PYTARGETS)}
 include $(wildcard *.d)
 
 libqpb.a: ${addsuffix .h, $(PYTARGETS)} ${addsuffix .o, $(SOURCES)}
-	$(AR) cr $@  ${addsuffix .o, $(SOURCES)} &&\
-	$(RANLIB) $@
+	$(E) LD $@
+	$(C)$(AR) cr $@  ${addsuffix .o, $(SOURCES)}
+	$(C)$(RANLIB) $@
+
+%_dslash.o: %_dslash.c
+	$(E) CC $<
+	$(C)$(CC) $(DSLASH_CFLAGS) -c $< -o $@
+	$(C)$(CC) -MM $(DSLASH_CFLAGS) $< > $*_dslash.d
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-	$(CC) -MM $(CFLAGS) $< > $*.d
+	$(E) CC $<
+	$(C)$(CC) $(CFLAGS) -c $< -o $@
+	$(C)$(CC) -MM $(CFLAGS) $< > $*.d
 
 # Assumes missing .h and .c files should be python-generated
 %.h: ../python/%.py
-	python2 $< > $@
+	$(E) PY $<
+	$(C)python2 $< > $@
 
 %.c: ../python/%.py
-	python2 $< > $@
+	$(E) PY $<
+	$(C)python2 $< > $@
 
 pyclean:
-	$(RM) ${addsuffix .h, $(PYTARGETS)}
+	$(E) PYCLEAN
+	$(C)$(RM) ${addsuffix .h, $(PYTARGETS)}
 
 clean:
-	$(RM) *.o *.d
+	$(E) CLEAN in $(PWD)
+	$(C)$(RM) *.o *.d
 
 cleanall: clean
-	$(RM) libqpb.a
+	$(E) CLEANALL in $(PWD)
+	$(C)$(RM) libqpb.a

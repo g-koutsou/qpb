@@ -1,23 +1,36 @@
 include ./Makefile.in
 
+ifndef V
+       V = 0
+endif
+
+ifeq ($(V), 1) 
+	E = @echo > /dev/null
+	C = 
+else
+	E = @echo
+	C = @
+	MAKE += --no-print-directory
+endif
+
 DIRS = mainprogs lib
 TESTSDIR = testprogs lib
 .PHONY: testprogs
 
 all: 
-	-for d in $(DIRS); do (cd $$d && $(MAKE)); done
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done
 
 testprogs:
-	-for d in $(TESTSDIR); do (cd $$d && $(MAKE)); done
+	-$(C)for d in $(TESTSDIR); do ($(MAKE) -C $$d); done
 
 debug: 
-	-for d in $(DIRS); do (cd $$d && $(MAKE) debug); done
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d debug); done
 
 prof: 
-	-for d in $(DIRS); do (cd $$d && $(MAKE) prof); done
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d prof); done
 
 clean:
-	-for d in $(DIRS); do (cd $$d && $(MAKE) clean); done
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d clean); done
 
 cleanall: clean
-	-for d in $(DIRS); do (cd $$d && $(MAKE) cleanall); done
+	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d cleanall); done
