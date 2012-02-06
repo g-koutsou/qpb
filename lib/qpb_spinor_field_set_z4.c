@@ -20,6 +20,12 @@ qpb_spinor_field_set_z4(qpb_spinor_field spinor_field)
       procs[d] = problem_params.procs[d];
     }
 
+  /*
+    Goes over the GLOBAL volume
+
+    Time consuming, but guarantees that for any process geometry and/or number of processe
+    exactly the same source shall be generated if given the same seed is used
+   */
   int x[ND];
   for(x[0]=0; x[0]<gdim[0]; x[0]++)
     for(x[1]=0; x[1]<gdim[1]; x[1]++)

@@ -7,12 +7,11 @@ void
 qpb_rng_init(unsigned int seed)
 {
   rng_state.gsl_rng_state[0] = gsl_rng_alloc(gsl_rng_ranlux389);
-  unsigned int process_seed = seed;
-
-  srand(seed);
-  for (int i=0; i<problem_params.proc_id; i++)
-    process_seed = rand();
-
+  /* 
+     Every process initialized THE SAME random number generator with THE SAME seed
+     This means care should be taken when drawing random numbers, as the same sequence wil be generated
+     See e.g. qpb_spinor_field_set_z4() on how this is overcome
+  */
   gsl_rng_set(rng_state.gsl_rng_state[0], seed);
   return;
 }
