@@ -241,15 +241,12 @@ main(int argc, char *argv[])
     source_opt = SOURCE_FILE;
   else if(strcmp(aux_string, "stochastic") == 0)
     source_opt = SOURCE_STOCH;
-  else if(strcmp(aux_string, "smeared") == 0)
-    source_opt = SOURCE_SMEARED;
   else
     {
       error("%s: option should be one of: ", "Source");
       error("%s, ", "zero"); 
       error("%s, ", "point"); 
       error("%s, ", "read"); 
-      error("%s, ", "smeared"); 
       error("%s\n", "stochastic"); 
       exit(QPB_PARSER_ERROR);
     };
@@ -781,21 +778,22 @@ main(int argc, char *argv[])
       /* 				   source_coords[i][5]); */
       {
       qpb_gauge_field gauss_gauge = qpb_gauge_field_init();
-      qpb_gauge_field_copy(gauss_gauge, gauge);
       /* 3D-APE smear the gauge field for gaussian source */
       if(n_ape_gauss != 0)
 	{
-	  qpb_gauge_field ape3dgauge = qpb_gauge_field_init();
 	  print(" 3D-APE smear gauge field...\n");
-	  qpb_apesmear_3d_niter(ape3dgauge, gauss_gauge, alpha_ape_gauss, n_ape_gauss);
-	  qpb_gauge_field_copy(gauss_gauge, ape3dgauge);
-	  qpb_gauge_field_finalize(ape3dgauge);
+	  qpb_apesmear_3d_niter(gauss_gauge, gauge, alpha_ape_gauss, n_ape_gauss);
 	  
 	  plaquette = qpb_plaquette(gauss_gauge);
 	  qpb_double p3d = qpb_plaquette_3d(gauss_gauge);
+
 	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
 	}
-
+      else
+	{
+	  qpb_gauge_field_copy(gauss_gauge, gauge);
+	}
+      
       qpb_gauss_smear_init();
       qpb_spinor_field aux = qpb_spinor_field_init();
       for(int i=0; i<n_spinors; i++)

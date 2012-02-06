@@ -179,11 +179,13 @@ qpb_apesmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
   for(int lv=0; lv<lvol; lv++)
     {
       int v = blk_to_ext[lv];
-      sun_uequ(out.index[v] + 0, in.index[v] + 0);
+      qpb_complex *u = (qpb_complex *)((qpb_link *) in.index[v] + 0);
+      qpb_complex *w = (qpb_complex *)((qpb_link *) out.index[v] + 0);
+      sun_uequ(w, u);
       for(int mu=1; mu<ND; mu++)
 	{
-	  qpb_complex *u = (qpb_complex *)((qpb_link *) in.index[v] + mu);
-	  qpb_complex *w = (qpb_complex *)((qpb_link *) out.index[v] + mu);
+	  u = (qpb_complex *)((qpb_link *) in.index[v] + mu);
+	  w = (qpb_complex *)((qpb_link *) out.index[v] + mu);
 	  
 	  sun_mul_uu(u0, w, u);
 	  sun_uequ(w, u0);
@@ -201,10 +203,10 @@ qpb_apesmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
 void
 qpb_apesmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha, int niter)
 {
-  qpb_gauge_field aux = qpb_gauge_field_init();
-  qpb_gauge_field_copy(aux, in);
-  qpb_gauge_field U[2] = {aux, out};
+  qpb_gauge_field U[2] = {qpb_gauge_field_init(),
+			  qpb_gauge_field_init()};
 
+  qpb_gauge_field_copy(U[0], in);
   for(int i=0; i<niter; i++)
     {      
       qpb_comm_halo_gauge_field(U[i%2]);
@@ -216,6 +218,8 @@ qpb_apesmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha,
     }
 
   qpb_gauge_field_copy(out, U[niter%2]);
-  qpb_gauge_field_finalize(aux);
+  qpb_comm_halo_gauge_field(out);
+  qpb_gauge_field_finalize(U[0]);
+  qpb_gauge_field_finalize(U[1]);
   return;
 };
