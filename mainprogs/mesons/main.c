@@ -162,7 +162,7 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
-  enum qpb_field_init_opts conf_opt;
+  enum qpb_field_init_opts conf_opt = 0;
   char conf_file[QPB_MAX_STRING];
   int shifts[ND];
   unsigned int seed;

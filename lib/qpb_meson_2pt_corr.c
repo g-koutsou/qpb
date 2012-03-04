@@ -277,7 +277,8 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2,
 	}
 
       for(int t=0; t<lt; t++)
-	corr[ich][t] = (qpb_complex){0., 0.};
+	for(int p=0; p<nmom; p++)
+	  corr[ich][p][t] = (qpb_complex){0., 0.};
 
 #ifdef OPENMP
 #	pragma omp parallel for
