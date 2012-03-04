@@ -155,7 +155,7 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
-  enum qpb_field_init_opts conf_opt = 0;
+  enum qpb_field_init_opts conf_opt;
   char conf_file[QPB_MAX_STRING];
   int shifts[ND];
   unsigned int seed;
@@ -438,6 +438,7 @@ main(int argc, char *argv[])
       qpb_spinor_field aux = qpb_spinor_field_init();
       for(int i=0; i<n_vec; i++)
 	{
+	  print(" Smearing light vec: %3d\n", i);
 	  qpb_spinor_xeqy(aux, prop_light[i]);
 	  qpb_gauss_smear_niter(prop_light[i], aux, gauge, alpha_gauss, n_gauss);
 	}
@@ -445,6 +446,7 @@ main(int argc, char *argv[])
       if(n_quarks == 2)
 	for(int i=0; i<n_vec; i++)
 	  {
+	    print(" Smearing heavy vec: %3d\n", i);
 	    qpb_spinor_xeqy(aux, prop_heavy[i]);
 	    qpb_gauss_smear_niter(prop_heavy[i], aux, gauge, alpha_gauss, n_gauss);
 	  }
@@ -454,6 +456,7 @@ main(int argc, char *argv[])
       qpb_gauge_field_finalize(gauge);      
     }
 
+  print(" Two-point contractions...\n");
   switch(twop_mode)
     {
     case TWOP_STOCHASTIC:
@@ -463,7 +466,8 @@ main(int argc, char *argv[])
       qpb_meson_2pt_corr(prop_light, prop_heavy, corr_file);
       break;
     }
-  
+  print(" Done: %s\n", corr_file);
+
   free(prop_light);
   if(n_quarks == 2)
     free(prop_heavy);
