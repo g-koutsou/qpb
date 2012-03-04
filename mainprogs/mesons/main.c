@@ -85,10 +85,17 @@ main(int argc, char *argv[])
     };
 
   int n_vec = -1;
+  int max_q2;
   switch(twop_mode)
     {
     case TWOP_FULL:
       n_vec = 12;
+      if(sscanf(qpb_parse("Max momentum squared"), "%d", &max_q2)!=1)
+	{
+	  error("error parsing for %s\n",
+		"Max momentum squared");
+	  exit(QPB_PARSER_ERROR);
+	}
       break;
     case TWOP_STOCHASTIC:
       if(sscanf(qpb_parse("Number of vectors"), "%d", &n_vec)!=1)
@@ -160,7 +167,7 @@ main(int argc, char *argv[])
   int shifts[ND];
   unsigned int seed;
   int n_gauss, n_ape_gauss;
-  qpb_double alpha_gauss, alpha_ape_gauss;
+  qpb_double delta_gauss, alpha_ape_gauss;
   if(sink_smearing == SINK_SMEARED)
     {
       if(sscanf(qpb_parse("Conf"), "%s", aux_string)!=1)
@@ -260,10 +267,10 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing alpha"), "%lf", &alpha_gauss)!=1)
+      if(sscanf(qpb_parse("Gaussian smearing delta"), "%lf", &delta_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing alpha");
+		"Gaussian smearing delta");
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
@@ -322,6 +329,7 @@ main(int argc, char *argv[])
       print(" %d vectors for stochastic two-point function\n", n_vec);
       break;
     case TWOP_FULL:
+      print(" Max momentum squared = %d\n", max_q2);
       break;
     }
   print(" Prop file light = %s\n", prop_file_light);
@@ -357,7 +365,7 @@ main(int argc, char *argv[])
 	  break;
 	}
       print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
-      print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian smearing = (%f, %d)\n", delta_gauss, n_gauss);
       print(" Gaussian sink APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
     }
 
@@ -422,6 +430,7 @@ main(int argc, char *argv[])
       /* 3D-APE smear the gauge field for gaussian source */
       if(n_ape_gauss != 0)
 	{
+	  double t = qpb_stop_watch(0);
 	  qpb_gauge_field ape3dgauge = qpb_gauge_field_init();
 	  print(" 3D-APE smear gauge field...\n");
 	  qpb_apesmear_3d_niter(ape3dgauge, gauge, alpha_ape_gauss, n_ape_gauss);
@@ -431,39 +440,43 @@ main(int argc, char *argv[])
 	  plaquette = qpb_plaquette(gauge);
 	  qpb_double p3d = qpb_plaquette_3d(gauge);
 	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
+	  print(" Done APE 3D in %g sec\n", qpb_stop_watch(t));
 	}
       qpb_gauge_field_shift(gauge, shifts);
-
+      
+      double t = qpb_stop_watch(0);
       qpb_gauss_smear_init();
       qpb_spinor_field aux = qpb_spinor_field_init();
       for(int i=0; i<n_vec; i++)
 	{
 	  qpb_spinor_xeqy(aux, prop_light[i]);
-	  qpb_gauss_smear_niter(prop_light[i], aux, gauge, alpha_gauss, n_gauss);
+	  qpb_gauss_smear_niter(prop_light[i], aux, gauge, delta_gauss, n_gauss);
 	}
-
+      
       if(n_quarks == 2)
 	for(int i=0; i<n_vec; i++)
 	  {
 	    qpb_spinor_xeqy(aux, prop_heavy[i]);
-	    qpb_gauss_smear_niter(prop_heavy[i], aux, gauge, alpha_gauss, n_gauss);
+	    qpb_gauss_smear_niter(prop_heavy[i], aux, gauge, delta_gauss, n_gauss);
 	  }
-
+      qpb_spinor_field_finalize(aux);       
       qpb_gauss_smear_finalize();
-      qpb_spinor_field_finalize(aux);      
-      qpb_gauge_field_finalize(gauge);      
+      qpb_gauge_field_finalize(gauge);
+      print(" Done gaussian smearing in %g sec\n", qpb_stop_watch(t));
     }
 
+  double t = qpb_stop_watch(0);
   switch(twop_mode)
     {
     case TWOP_STOCHASTIC:
       qpb_meson_2pt_stoch(prop_light, prop_heavy, n_vec, corr_file);
       break;
     case TWOP_FULL:
-      qpb_meson_2pt_corr(prop_light, prop_heavy, corr_file);
+      qpb_meson_2pt_corr(prop_light, prop_heavy, max_q2, corr_file);
       break;
     }
-  
+  print(" Done correlators in %g sec\n", qpb_stop_watch(t));
+
   free(prop_light);
   if(n_quarks == 2)
     free(prop_heavy);

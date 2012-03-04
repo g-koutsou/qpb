@@ -24,14 +24,18 @@ enum qpb_meson_2pt_channels {
  *
  *  The function does not return anything. It writes the correlation functions
  *  to a file (as ascii).
+ *
+ *  Updated for non-zero momentum correlator. Correlator calculated explicitely
+ *  for all momentum vectors (i.e. non-FFT)
+ *  
  */  
 void
-qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfile[])
+qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, char outfile[])
 {
   if(heavy == NULL)
     heavy = light;
 
-  /* This should never happen. The while package is built so that
+  /* This should never happen. For now the package is built so that
      only x, y and z are parallelized accross MPI and t along OpenMP */
   if(problem_params.par_dir[0] == 1)
     {
@@ -42,7 +46,7 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfil
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
   int lvol3d = lvol/lt;
-  qpb_complex *corr[QPB_N_MESON_2PT_CHANNELS];
+  qpb_complex **corr[QPB_N_MESON_2PT_CHANNELS];
   int N = (NS*NS*NS*NS);
   qpb_complex prod[N];
   int ndirac = 0;
@@ -50,12 +54,67 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfil
   qpb_complex gamma_5x[NS][NS];
   qpb_complex gamma_5y[NS][NS];
   qpb_complex gamma_5z[NS][NS];
+  int nmom = 0, nq = (int)sqrt(max_q2)+1;
+  int (*mom)[4];
+  double pi = atan(1.0)*4.0;
+  /*
+    Count momentum vectors <= max_q2
+   */
+  for(int z=-nq; z<nq; z++)
+    for(int y=-nq; y<nq; y++)
+      for(int x=-nq; x<nq; x++)
+	{
+	  double q2 = x*x+y*y+z*z;
+	  if(q2 <= max_q2)
+	    nmom++;
+	}
   
+  mom = qpb_alloc(sizeof(int)*4*nmom);
+  nmom = 0;
+
+  /*
+    Store momentum vectors <= max_q2
+   */
+  for(int z=-nq; z<nq; z++)
+    for(int y=-nq; y<nq; y++)
+      for(int x=-nq; x<nq; x++)
+	{
+	  double q2 = x*x+y*y+z*z;
+	  if(q2 <= max_q2)
+	    {
+	      mom[nmom][3] = x;
+	      mom[nmom][2] = y;
+	      mom[nmom][1] = z;
+	      mom[nmom][0] = q2;
+	      nmom++;
+	    }
+	}
   
+
+  /*
+    Sort in ascending q^2 value
+   */
+  for(int i=0; i<nmom; i++)
+    {
+      int x = mom[i][0]; /* the q^2 value */
+      int k = i;
+      for(int j=i+1; j<nmom; j++)
+	if(mom[j][0] < x)
+	  {
+	    k = j;
+	    x = mom[j][0];
+	  }
+      int swap[] = {mom[k][0], mom[k][1], mom[k][2], mom[k][3]};
+      for(int j=0; j<4; j++) mom[k][j] = mom[i][j];
+      for(int j=0; j<4; j++) mom[i][j] = swap[j];
+    }
+
   for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
     {
       
-      corr[ich] = qpb_alloc(lt * sizeof(qpb_complex));
+      corr[ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
+      for(int p=0; p<nmom; p++)
+	corr[ich][p] = qpb_alloc(lt * sizeof(qpb_complex));
 
       ndirac = 0;
       switch(ich)
@@ -221,38 +280,64 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfil
 #endif
       for(int t=0; t<lt; t++)
 	{
-	  corr[ich][t] = (qpb_complex){0., 0.};
-	  for(int lv=0; lv<lvol3d; lv++)
+	  for(int p=0; p<nmom; p++)
 	    {
-	      int v = blk_to_ext[lv + t*lvol3d];
-	      for(int col0=0; col0<NC; col0++)
-		for(int col1=0; col1<NC; col1++)
-		  for(int id=0; id<ndirac; id++)
-		    {
-		      int i = mu[id];
-		      int j = nu[id];
-		      int k = ku[id];
-		      int l = lu[id];
-		      qpb_complex x = ((qpb_complex *)(light[col0+NC*l].index[v]))[col1+NC*i];
-		      qpb_complex y = ((qpb_complex *)(heavy[col0+NC*k].index[v]))[col1+NC*j];
-		      /* c = x * conj(y) */
-		      qpb_complex c = {x.re*y.re + x.im*y.im, x.im*y.re - x.re*y.im};
-		      /* corr = c*prod */
-		      corr[ich][t].re += CMULR(prod[id], c);
-		      corr[ich][t].im += CMULI(prod[id], c);
-		    }
+	      corr[ich][p][t] = (qpb_complex){0., 0.};
+	      for(int lv=0; lv<lvol3d; lv++)
+		{
+		  unsigned short int *gdim = problem_params.g_dim;
+		  unsigned short int *ldim = problem_params.l_dim;
+		  int lx = X_INDEX(lv, ldim);
+		  int ly = Y_INDEX(lv, ldim);
+		  int lz = Z_INDEX(lv, ldim);
+		  unsigned short int *coords = problem_params.coords;
+
+		  int x = coords[3]*ldim[3]+lx;
+		  int y = coords[2]*ldim[2]+ly;
+		  int z = coords[1]*ldim[1]+lz;
+
+		  qpb_double phi = (double)((double)x*mom[p][3]/gdim[3] + 
+					    (double)y*mom[p][2]/gdim[2] + 
+					    (double)z*mom[p][1]/gdim[1]);
+		  
+		  phi = phi*2*pi;
+		  qpb_complex phase = {cos(phi),
+				       -sin(phi)};
+
+		  int v = blk_to_ext[lv + t*lvol3d];
+		  for(int col0=0; col0<NC; col0++)
+		    for(int col1=0; col1<NC; col1++)
+		      for(int id=0; id<ndirac; id++)
+			{
+			  int i = mu[id];
+			  int j = nu[id];
+			  int k = ku[id];
+			  int l = lu[id];
+			  qpb_complex hp = ((qpb_complex *)(light[col0+NC*l].index[v]))[col1+NC*i];
+			  qpb_complex lp = ((qpb_complex *)(heavy[col0+NC*k].index[v]))[col1+NC*j];
+			  /* c = x * conj(y) */
+			  qpb_complex c = {hp.re*lp.re + hp.im*lp.im, hp.im*lp.re - hp.re*lp.im};
+			  c = CMUL(c, phase);
+			  /* corr = c*prod */
+			  corr[ich][p][t].re += CMULR(prod[id], c);
+			  corr[ich][p][t].im += CMULI(prod[id], c);
+			}
+		}
 	    }
 	}
       /*
        * Do this outside of OpenMP
        */
       for(int t=0; t<lt; t++)
-	{
-	  qpb_complex recv;	  
-	  MPI_Allreduce(&corr[ich][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-	  MPI_Allreduce(&corr[ich][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-	  corr[ich][t] = recv;
-	}
+	for(int p=0; p<nmom; p++)
+	  {
+	    qpb_complex recv;	  
+	    MPI_Reduce(&corr[ich][p][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	    MPI_Reduce(&corr[ich][p][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&recv.re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&recv.im, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	    corr[ich][p][t] = recv;
+	  }
     }
   
   FILE *fp = NULL;
@@ -268,41 +353,47 @@ qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, char outfil
   for(int t=0; t<lt; t++)
     {
       char ctag[QPB_MAX_STRING];
-      for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
-	{
-	  switch(ich)
-	    {
-	    case G5_G5:
-	      strcpy(ctag ,"g5-g5");
-	      break;
-	    case G5_G4G5:
-	      strcpy(ctag ,"g5-g4g5");
-	      break;
-	    case G4G5_G5:
-	      strcpy(ctag ,"g4g5-g5");
-	      break;
-	    case G4G5_G4G5:
-	      strcpy(ctag ,"g4g5-g4g5");
-	      break;
-	    case G1_G1:
-	      strcpy(ctag ,"g1-g1");
-	      break;
-	    case G2_G2:
-	      strcpy(ctag ,"g2-g2");
-	      break;
-	    case G3_G3:
-	      strcpy(ctag ,"g3-g3");
-	      break;
-	    }
-	  if(am_master)
-	    fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %s\n", 0, 0, 0, t, corr[ich][t].re, corr[ich][t].im, ctag);
-	}
+      for(int p=0; p<nmom; p++)
+	for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
+	  {
+	    switch(ich)
+	      {
+	      case G5_G5:
+		strcpy(ctag ,"g5-g5");
+		break;
+	      case G5_G4G5:
+		strcpy(ctag ,"g5-g4g5");
+		break;
+	      case G4G5_G5:
+		strcpy(ctag ,"g4g5-g5");
+		break;
+	      case G4G5_G4G5:
+		strcpy(ctag ,"g4g5-g4g5");
+		break;
+	      case G1_G1:
+		strcpy(ctag ,"g1-g1");
+		break;
+	      case G2_G2:
+		strcpy(ctag ,"g2-g2");
+		break;
+	      case G3_G3:
+		strcpy(ctag ,"g3-g3");
+		break;
+	      }
+	    if(am_master)
+	      fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %s\n", 
+		      mom[p][3], mom[p][2], mom[p][1], t, corr[ich][p][t].re, corr[ich][p][t].im, ctag);
+	  }
     }
   if(am_master)
     fclose(fp);
   
   for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
-    free(corr[ich]);
-
+    {
+      for(int p=0; p<nmom; p++)
+	free(corr[ich][p]);
+      free(corr[ich]);
+    }
+  free(mom);
   return;
 }
