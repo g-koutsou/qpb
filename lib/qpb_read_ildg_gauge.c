@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <string.h>
+#include <strings.h>
 
 #include <lime.h>
 #include <libxml/xpath.h>
@@ -121,7 +122,7 @@ qpb_read_ildg_gauge(qpb_gauge_field gauge_field, char fname[])
       
       /* process ildg-format data */
       xmlDocPtr doc;
-      
+      ildg_format[ildg_format_len-1] = '\0';
       doc = xmlReadMemory(ildg_format, ildg_format_len, "ildg.xml", NULL, 0);
       if(doc == NULL) 
 	{
