@@ -79,12 +79,15 @@ qpb_meson_2pt_stoch(qpb_spinor_field *light, qpb_spinor_field *heavy, int n_vec,
 	      }
 	  break;
 	}
+
+      for(int t=0; t<lt; t++)
+	corr[ich][t] = (qpb_complex){0., 0.};
+
 #ifdef OPENMP
 #	pragma omp parallel for
 #endif
       for(int t=0; t<lt; t++)
 	{
-	  corr[ich][t] = (qpb_complex){0., 0.};
 	  for(int lv=0; lv<lvol3d; lv++)
 	    {
 	      int v = blk_to_ext[lv + t*lvol3d];
@@ -101,7 +104,7 @@ qpb_meson_2pt_stoch(qpb_spinor_field *light, qpb_spinor_field *heavy, int n_vec,
 		      /* corr = c*prod */
 		      corr[ich][t].re += CMULR(prod[id], c);
 		      corr[ich][t].im += CMULI(prod[id], c);
-		    }
+		    }	    
 	    }
 	}
       /*
