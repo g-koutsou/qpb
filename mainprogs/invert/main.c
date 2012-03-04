@@ -271,7 +271,7 @@ main(int argc, char *argv[])
     };
 
   int n_gauss, n_ape_gauss;
-  qpb_double alpha_gauss, alpha_ape_gauss;
+  qpb_double delta_gauss, alpha_ape_gauss;
   switch(source_smearing)
     {
     case SOURCE_SMEARED:
@@ -282,10 +282,10 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing alpha"), "%lf", &alpha_gauss)!=1)
+      if(sscanf(qpb_parse("Gaussian smearing delta"), "%lf", &delta_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing alpha");
+		"Gaussian smearing delta");
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
@@ -582,7 +582,7 @@ main(int argc, char *argv[])
     {
     case SOURCE_SMEARED:
       print(" Will smear source\n");
-      print(" Gaussian smearing = (%f, %d)\n", alpha_gauss, n_gauss);
+      print(" Gaussian smearing = (%f, %d)\n", delta_gauss, n_gauss);
       print(" Gaussian source APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
       break;
       
@@ -799,7 +799,7 @@ main(int argc, char *argv[])
       for(int i=0; i<n_spinors; i++)
 	{
 	  qpb_spinor_xeqy(aux, source[i]);
-	  qpb_gauss_smear_niter(source[i], aux, gauss_gauge, alpha_gauss, n_gauss);
+	  qpb_gauss_smear_niter(source[i], aux, gauss_gauge, delta_gauss, n_gauss);
 	}
       qpb_gauss_smear_finalize();
       qpb_gauge_field_finalize(gauss_gauge);

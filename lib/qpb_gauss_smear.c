@@ -11,13 +11,13 @@
 #include <qpb_comm_halo_gauge_field.h>
 
 __inline__ void
-qpb_apply_gauss_smear_site(qpb_complex *out, void **in, void **gauge, qpb_double alpha, int v)
+qpb_apply_gauss_smear_site(qpb_complex *out, void **in, void **gauge, qpb_double delta, int v)
 {
   qpb_spinor aux_spinor;
   qpb_complex *link;
   qpb_complex *sp = (qpb_complex *)&aux_spinor;
-  qpb_double a = 1./(1.+alpha*(2*(ND-1)));
-  qpb_double b = alpha * a;
+  qpb_double a = 1./(1.+delta*(2*(ND-1)));
+  qpb_double b = delta * a;
   qpb_complex *ptr;
 
   spinor_set_zero(sp);
@@ -38,7 +38,7 @@ qpb_apply_gauss_smear_site(qpb_complex *out, void **in, void **gauge, qpb_double
 
 void 
 qpb_gauss_smear_iter(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
-		     qpb_gauge_field gauge, qpb_double alpha)
+		     qpb_gauge_field gauge, qpb_double delta)
 {
   qpb_comm_halo_spinor_field_z_start(spinor_in);
   qpb_comm_halo_spinor_field_z_wait(spinor_in);
@@ -63,7 +63,7 @@ qpb_gauss_smear_iter(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 	    x[0] = x0;
 	    int v = blk_to_ext[LEXICO(x, l_dim)];
 	    qpb_complex *spinor_ptr = (qpb_complex *)spinor_out.index[v];
-	    qpb_apply_gauss_smear_site(spinor_ptr, spinor_in.index, gauge.index, alpha, v);	    
+	    qpb_apply_gauss_smear_site(spinor_ptr, spinor_in.index, gauge.index, delta, v);	    
 	  }
   
   return;
@@ -71,7 +71,7 @@ qpb_gauss_smear_iter(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 
 void 
 qpb_gauss_smear_niter(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
-		      qpb_gauge_field gauge, qpb_double alpha, int niter)
+		      qpb_gauge_field gauge, qpb_double delta, int niter)
 {
   qpb_spinor_field aux[2] = {
     qpb_spinor_field_init(),
@@ -81,7 +81,7 @@ qpb_gauss_smear_niter(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
   qpb_comm_halo_gauge_field(gauge);
   qpb_spinor_xeqy(aux[0], spinor_in);
   for(int iter=0; iter<niter; iter++)
-    qpb_gauss_smear_iter(aux[(iter+1)%2], aux[iter%2], gauge, alpha);
+    qpb_gauss_smear_iter(aux[(iter+1)%2], aux[iter%2], gauge, delta);
 
   qpb_spinor_xeqy(spinor_out, aux[niter%2]);
 
