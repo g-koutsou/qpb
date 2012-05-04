@@ -10,7 +10,7 @@
 #include <qpb_gamma_matrices.h>
 
 void
-qpb_nucleon_2pt(qpb_complex ***corr_x, qpb_spinor_field *spinor)
+qpb_nucleon_2pt(qpb_complex **corr_x, qpb_spinor_field *spinor)
 {
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
@@ -56,8 +56,7 @@ qpb_nucleon_2pt(qpb_complex ***corr_x, qpb_spinor_field *spinor)
 				     CMUL(q0[a0+mu*NC][a1+nu*NC],
 					  q1[a1+mu*NC][a0+nu*NC]));
 		}
-
-	corr_x[t][lv][0] = CADD(first_term, second_term);
+	corr_x[0*lt + t][lv] = CADD(first_term, second_term);
 
 	/* Negative parity state */
 	prop_G_ProjTm(q1, prop);
@@ -79,7 +78,7 @@ qpb_nucleon_2pt(qpb_complex ***corr_x, qpb_spinor_field *spinor)
 					  q1[a1+mu*NC][a0+nu*NC]));
 		}
 
-	corr_x[t][lv][1] = CADD(first_term, second_term);
+	corr_x[1*lt + t][lv] = CADD(first_term, second_term);
       }
 
   return;

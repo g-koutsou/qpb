@@ -1,9 +1,24 @@
 AR=ar
 RANLIB=ranlib
 CC=mpicc
-DEBUGFLAGS=-ggdb -DDEBUG
+DEBUGFLAGS=-DDEBUG -O2 -gstabs+
 PROFFLAGS=-pg
-CFLAGS=-O2 -Winline -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall -I/usr/include/libxml2 -I./ -I$(HOME)/mit-install/include -DOPENMP -fopenmp -DHAVE_LONG_DOUBLE -msse3
+
+## General
+CFLAGS=-O2 -Winline -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall  -msse3
+
+## Includes
+CFLAGS+=-I/usr/include/libxml2 -I./ -I$(HOME)/mit-install/include
+
+## To compile for openmp
+CFLAGS+=-fopenmp -DOPENMP
+
+## If a long double type is available. Not defining this will drop to using double for certain sums
+CFLAGS+=-DHAVE_LONG_DOUBLE
+
+## To use FFTW for fourier transforms. Not defining this will use an explicit FT (a volume sum for each momentum).
+## CFLAGS+=-DQPB_FT_FFTW
+
 LDFLAGS=-L$(HOME)/mit-install/lib
 LIBS=-llime -lgsl -lgslcblas -lxml2 -lm
 

@@ -20,10 +20,10 @@ endif
 all: libqpb.a
 	@:
 
-debug: CC += $(DEBUGFLAGS)
+debug: CFLAGS += $(DEBUGFLAGS)
 debug: all
 
-prof: CC += $(PROFFLAGS)
+prof: CFLAGS += $(PROFFLAGS)
 prof: all
 
 SOURCES = qpb_init\
@@ -89,6 +89,7 @@ SOURCES = qpb_init\
 	qpb_spinor_xeqy\
 	qpb_spinor_gamma5\
 	qpb_gauss_smear\
+	qpb_ft\
 	qpb_stop_watch\
 	qpb_finalize
 

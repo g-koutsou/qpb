@@ -12,7 +12,7 @@
 #define IDX(col, sp) (col + sp*NC)
 
 void
-qpb_delta_1o2_2pt(qpb_complex ***corr_x, qpb_spinor_field *spinor)
+qpb_delta_1o2_2pt(qpb_complex **corr_x, qpb_spinor_field *spinor)
 {
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
@@ -158,7 +158,7 @@ qpb_delta_1o2_2pt(qpb_complex ***corr_x, qpb_spinor_field *spinor)
 		  E = CADD(E, F);
 
 		  G = CADD(G, H);
-		  corr_x[t][lv][i+k*2] = CSCALE(CADD(CADD(CADD(A, C), E), G), (1.0/3.0));
+		  corr_x[(i+k*2)*lt + t][lv] = CSCALE(CADD(CADD(CADD(A, C), E), G), (1.0/3.0));
 		}
 	    
 	    }

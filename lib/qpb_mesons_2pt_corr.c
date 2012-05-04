@@ -5,6 +5,7 @@
 #include <qpb_globals.h>
 #include <qpb_errors.h>
 #include <qpb_alloc.h>
+#include <qpb_ft.h>
 #include <qpb_gamma_matrices.h>
 
 #define QPB_N_MESON_2PT_CHANNELS 7
@@ -46,6 +47,8 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
   int lvol3d = lvol/lt;
+  qpb_complex **corr_x;
+  qpb_complex **corr_k;
   qpb_complex **corr[QPB_N_MESON_2PT_CHANNELS];
   int N = (NS*NS*NS*NS);
   qpb_complex prod[N];
@@ -56,7 +59,6 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
   qpb_complex gamma_5z[NS][NS];
   int nmom = 0, nq = (int)sqrt(max_q2)+1;
   int (*mom)[4];
-  double pi = atan(1.0)*4.0;
   /*
     Count momentum vectors <= max_q2
    */
@@ -107,6 +109,14 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
       int swap[] = {mom[k][0], mom[k][1], mom[k][2], mom[k][3]};
       for(int j=0; j<4; j++) mom[k][j] = mom[i][j];
       for(int j=0; j<4; j++) mom[i][j] = swap[j];
+    }
+
+  corr_x = qpb_alloc(lt * sizeof(qpb_complex *));
+  corr_k = qpb_alloc(lt * sizeof(qpb_complex *));
+  for(int t=0; t<lt; t++)
+    {
+      corr_x[t] = qpb_alloc(lvol3d * sizeof(qpb_complex));
+      corr_k[t] = qpb_alloc(nmom * sizeof(qpb_complex));
     }
 
   for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
@@ -277,72 +287,38 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
 	}
 
       for(int t=0; t<lt; t++)
-	for(int p=0; p<nmom; p++)
-	  corr[ich][p][t] = (qpb_complex){0., 0.};
+	for(int lv=0; lv<lvol3d; lv++)
+	  corr_x[t][lv] = (qpb_complex){0., 0.};
 
+      for(int col0=0; col0<NC; col0++)
+	for(int col1=0; col1<NC; col1++)
+	  for(int id=0; id<ndirac; id++)
+	    {
+	      int i = mu[id];
+	      int j = nu[id];
+	      int k = ku[id];
+	      int l = lu[id];
 #ifdef OPENMP
 #	pragma omp parallel for
 #endif
-      for(int t=0; t<lt; t++)
-	{
-	  for(int p=0; p<nmom; p++)
-	    {
-	      corr[ich][p][t] = (qpb_complex){0., 0.};
-	      for(int lv=0; lv<lvol3d; lv++)
-		{
-		  unsigned short int *gdim = problem_params.g_dim;
-		  unsigned short int *ldim = problem_params.l_dim;
-		  int lx = X_INDEX(lv, ldim);
-		  int ly = Y_INDEX(lv, ldim);
-		  int lz = Z_INDEX(lv, ldim);
-		  unsigned short int *coords = problem_params.coords;
-
-		  int x = coords[3]*ldim[3]+lx;
-		  int y = coords[2]*ldim[2]+ly;
-		  int z = coords[1]*ldim[1]+lz;
-
-		  qpb_double phi = (double)((double)x*mom[p][3]/gdim[3] + 
-					    (double)y*mom[p][2]/gdim[2] + 
-					    (double)z*mom[p][1]/gdim[1]);
-		  
-		  phi = phi*2*pi;
-		  qpb_complex phase = {cos(phi),
-				       -sin(phi)};
-
-		  int v = blk_to_ext[lv + t*lvol3d];
-		  for(int col0=0; col0<NC; col0++)
-		    for(int col1=0; col1<NC; col1++)
-		      for(int id=0; id<ndirac; id++)
-			{
-			  int i = mu[id];
-			  int j = nu[id];
-			  int k = ku[id];
-			  int l = lu[id];
-			  qpb_complex hp = ((qpb_complex *)(light[col0+NC*l].index[v]))[col1+NC*i];
-			  qpb_complex lp = ((qpb_complex *)(heavy[col0+NC*k].index[v]))[col1+NC*j];
-			  /* c = x * conj(y) */
-			  qpb_complex c = {hp.re*lp.re + hp.im*lp.im, hp.im*lp.re - hp.re*lp.im};
-			  c = CMUL(c, phase);
-			  /* corr = c*prod */
-			  corr[ich][p][t].re += CMULR(prod[id], c);
-			  corr[ich][p][t].im += CMULI(prod[id], c);
-			}
-		}
+	      for(int t=0; t<lt; t++)
+		for(int lv=0; lv<lvol3d; lv++)
+		  {
+		    int v = blk_to_ext[lv + t*lvol3d];
+		    qpb_complex hp = ((qpb_complex *)(light[col0+NC*l].index[v]))[col1+NC*i];
+		    qpb_complex lp = ((qpb_complex *)(heavy[col0+NC*k].index[v]))[col1+NC*j];
+		    /* c = x * conj(y) */
+		    qpb_complex c = {hp.re*lp.re + hp.im*lp.im, hp.im*lp.re - hp.re*lp.im};
+		    corr_x[t][lv].re += CMULR(prod[id], c);
+		    corr_x[t][lv].im += CMULI(prod[id], c);
+		  }
 	    }
-	}
-      /*
-       * Do this outside of OpenMP
-       */
+
+      qpb_ft(corr_k, corr_x, lt, mom, nmom);
       for(int t=0; t<lt; t++)
 	for(int p=0; p<nmom; p++)
-	  {
-	    qpb_complex recv;	  
-	    MPI_Reduce(&corr[ich][p][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	    MPI_Reduce(&corr[ich][p][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	    MPI_Bcast(&recv.re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	    MPI_Bcast(&recv.im, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	    corr[ich][p][t] = recv;
-	  }
+	  corr[ich][p][t] = corr_k[t][p];
+      
     }
   
   FILE *fp = NULL;
@@ -393,6 +369,14 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
   if(am_master)
     fclose(fp);
   
+  for(int t=0; t<lt; t++)
+    {
+      free(corr_x[t]);
+      free(corr_k[t]);
+    }
+  free(corr_x);
+  free(corr_k);
+
   for(int ich=0; ich<QPB_N_MESON_2PT_CHANNELS; ich++)
     {
       for(int p=0; p<nmom; p++)

@@ -10,6 +10,7 @@
 #include <qpb_delta_3o2_2pt.h>
 #include <qpb_gamma_matrices.h>
 #include <qpb_stop_watch.h>
+#include <qpb_ft.h>
 
 #define QPB_N_BARYON_2PT_CHANNELS 13
 enum qpb_baryon_2pt_channels {
@@ -28,6 +29,28 @@ enum qpb_baryon_2pt_channels {
   OMEGA4
 };
 
+void *
+corr_alloc(int n, int lv)
+{
+  qpb_complex **corr = qpb_alloc(sizeof(qpb_complex *)*n);
+  for(int i=0; i<n; i++)
+    {
+      corr[i] = qpb_alloc(sizeof(qpb_complex)*lv);
+      for(int j=0; j<lv; j++)
+	corr[i][j] = (qpb_complex){0., 0.};
+    }
+  return corr;
+}
+
+void
+corr_free(qpb_complex **corr, int n, int lv)
+{
+  for(int i=0; i<n; i++)
+    free(corr[i]);
+
+  free(corr);
+  return;
+}
 /*
  *  Computes baryon 2pt function:
  *
@@ -54,10 +77,8 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
   int lvol3d = lvol/lt;
   qpb_complex **corr_p[QPB_N_BARYON_2PT_CHANNELS];
   qpb_complex **corr_m[QPB_N_BARYON_2PT_CHANNELS];
-  qpb_complex ***corr_x;
   int nmom = 0, nq = (int)sqrt(max_q2)+1;
   int (*mom)[4];
-  double pi = atan(1.0)*4.0;
   /*
     Count momentum vectors <= max_q2
    */
@@ -111,12 +132,6 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
     }
 
   
-  corr_x = qpb_alloc(lt * sizeof(qpb_complex **));
-  for(int t=0; t<lt; t++)
-    {
-      corr_x[t] = qpb_alloc(lvol3d * sizeof(qpb_complex *));
-    }
-
   for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS; ich++)
     {      
       corr_p[ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
@@ -136,15 +151,14 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
   double t0;
   for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS;)
     {      
+      qpb_complex **corr_x;
       int nch = 0;
       switch(ich)
 	{
 	case NUCL:
 	  nch = 1;
-          for(int t=0; t<lt; t++)
-	    for(int v=0; v<lvol3d; v++)
-	      corr_x[t][v] = qpb_alloc(2 * nch * sizeof(qpb_complex));
-	  
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+
 	  t0 = qpb_stop_watch(0);
 	  qpb_nucleon_2pt(corr_x, light);
 	  t0 = qpb_stop_watch(t0);
@@ -156,9 +170,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case DELTA3_1o2:
 	case DELTA4_1o2:
 	  nch = 4;
-          for(int t=0; t<lt; t++)
-	    for(int v=0; v<lvol3d; v++)
-	      corr_x[t][v] = qpb_alloc(2 * nch * sizeof(qpb_complex));
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_1o2_2pt(corr_x, light);
@@ -171,9 +183,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case DELTA3_3o2:
 	case DELTA4_3o2:
 	  nch = 4;
-          for(int t=0; t<lt; t++)
-	    for(int v=0; v<lvol3d; v++)
-	      corr_x[t][v] = qpb_alloc(2 * nch * sizeof(qpb_complex));
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_3o2_2pt(corr_x, light);
@@ -186,9 +196,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case OMEGA3:
 	case OMEGA4:
 	  nch = 4;
-          for(int t=0; t<lt; t++)
-	    for(int v=0; v<lvol3d; v++)
-	      corr_x[t][v] = qpb_alloc(2 * nch * sizeof(qpb_complex));
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_3o2_2pt(corr_x, heavy);
@@ -197,72 +205,20 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  break;
 	}
 
-#ifdef OPENMP
-#	pragma omp parallel for
-#endif
-      for(int t=0; t<lt; t++)
-	{
+      qpb_complex **corr_k = corr_alloc(nch*lt*2, nmom);
+      qpb_ft(corr_k, corr_x, nch*lt*2, mom, nmom);
+      
+      for(int i=0; i<nch; i++)
+	for(int t=0; t<lt; t++)
 	  for(int p=0; p<nmom; p++)
 	    {
-	      for(int lv=0; lv<lvol3d; lv++)
-		{
-		  unsigned short int *gdim = problem_params.g_dim;
-		  unsigned short int *ldim = problem_params.l_dim;
-		  int lx = X_INDEX(lv, ldim);
-		  int ly = Y_INDEX(lv, ldim);
-		  int lz = Z_INDEX(lv, ldim);
-		  unsigned short int *coords = problem_params.coords;
-
-		  int x = coords[3]*ldim[3]+lx;
-		  int y = coords[2]*ldim[2]+ly;
-		  int z = coords[1]*ldim[1]+lz;
-
-		  qpb_double phi = (double)((double)x*mom[p][3]/gdim[3] + 
-					    (double)y*mom[p][2]/gdim[2] + 
-					    (double)z*mom[p][1]/gdim[1]);
-		  
-		  phi = phi*2*pi;
-		  qpb_complex phase = {cos(phi),-sin(phi)};
-
-		  for(int i=0; i<nch; i++)
-		    {
-		      qpb_complex c;
-		      c = CMUL(phase, corr_x[t][lv][0 + i*2]);
-		      corr_p[ich + i][p][t].re += c.re;
-		      corr_p[ich + i][p][t].im += c.im;
-		      
-		      c = CMUL(phase, corr_x[t][lv][1 + i*2]);
-		      corr_m[ich + i][p][t].re += c.re;
-		      corr_m[ich + i][p][t].im += c.im;
-		    }
-		}
+	      corr_p[i+ich][p][t] = corr_k[i*lt*2 + lt*0 + t][p];
+	      corr_m[i+ich][p][t] = corr_k[i*lt*2 + lt*1 + t][p];
 	    }
-	}
-      /*
-       * Do this outside of OpenMP
-       */
-      for(int t=0; t<lt; t++)
-	for(int p=0; p<nmom; p++)
-	  for(int i=0; i<nch; i++)
-	    {
-	      qpb_complex recv;	  
-	      MPI_Reduce(&corr_p[ich + i][p][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	      MPI_Reduce(&corr_p[ich + i][p][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	      MPI_Bcast(&recv.re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	      MPI_Bcast(&recv.im, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	      corr_p[ich + i][p][t] = recv;
-	      
-	      MPI_Reduce(&corr_m[ich + i][p][t].re, &recv.re, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	      MPI_Reduce(&corr_m[ich + i][p][t].im, &recv.im, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-	      MPI_Bcast(&recv.re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	      MPI_Bcast(&recv.im, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	      corr_m[ich + i][p][t] = recv;
-	    }
-      for(int t=0; t<lt; t++)
-	for(int v=0; v<lvol3d; v++)
-	  free(corr_x[t][v]);
 
       ich += nch;
+      corr_free(corr_k, 2*nch*lt, nmom);
+      corr_free(corr_x, 2*nch*lt, lvol3d);
     }
   
   FILE *fp = NULL;
@@ -332,12 +288,6 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
     }
   if(am_master)
     fclose(fp);
-
-  for(int t=0; t<lt; t++)
-    {
-      free(corr_x[t]);
-    }
-  free(corr_x);
   
   for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS; ich++)
     {
