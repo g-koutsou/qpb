@@ -22,7 +22,7 @@ enum qpb_meson_2pt_stoch {
  *  to a file (as ascii).
  */  
 void
-qpb_meson_2pt_stoch(qpb_spinor_field *light, qpb_spinor_field *heavy, int n_vec, char outfile[])
+qpb_mesons_2pt_stoch(qpb_spinor_field *light, qpb_spinor_field *heavy, int n_vec, char outfile[])
 {
   if(heavy == NULL)
     heavy = light;

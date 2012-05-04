@@ -73,8 +73,12 @@ SOURCES = qpb_init\
 	qpb_bicgg5\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
-	qpb_meson_2pt_corr\
-	qpb_meson_2pt_stoch\
+	qpb_mesons_2pt_corr\
+	qpb_mesons_2pt_stoch\
+	qpb_baryons_2pt\
+	qpb_nucleon_2pt\
+	qpb_delta_1o2_2pt\
+	qpb_delta_3o2_2pt\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_xdotg5y\
@@ -89,6 +93,8 @@ SOURCES = qpb_init\
 	qpb_finalize
 
 PYTARGETS = qpb_apply_bri_dslash_site\
+	qpb_prop_ops\
+	qpb_prop_contract\
 	qpb_spinor_gammas\
 	qpb_spinor_sigmas\
 	qpb_spinor_sun_mul\

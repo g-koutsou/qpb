@@ -30,7 +30,7 @@ enum qpb_meson_2pt_channels {
  *  
  */  
 void
-qpb_meson_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, char outfile[])
+qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, char outfile[])
 {
   if(heavy == NULL)
     heavy = light;

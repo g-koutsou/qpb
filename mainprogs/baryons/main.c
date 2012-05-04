@@ -1,11 +1,6 @@
 #include <qpb.h>
 
 enum {
-  TWOP_STOCHASTIC,
-  TWOP_FULL
-} twop_mode;
-
-enum {
   CONF_ILDG,
   CONF_RAW_32,
   CONF_RAW_64,
@@ -62,49 +57,12 @@ main(int argc, char *argv[])
     }
 
   char aux_string[QPB_MAX_STRING];
-  if(sscanf(qpb_parse("Mode"), "%s", aux_string)!=1)
-    {
-      error("error parsing for %s\n", 
-	    "Mode");
-      exit(QPB_PARSER_ERROR);
-    }
-  if(strcmp(aux_string, "stochastic") == 0)
-    {
-      twop_mode = TWOP_STOCHASTIC;  
-    }
-  else if(strcmp(aux_string, "full") == 0)
-    {
-      twop_mode =TWOP_FULL;
-    }
-  else
-    {
-      error("%s: option should be one of: ", "Mode");
-      error("%s, ", "stochastic"); 
-      error("%s\n", "full"); 
-      exit(QPB_PARSER_ERROR);
-    };
-
-  int n_vec = -1;
   int max_q2;
-  switch(twop_mode)
+  if(sscanf(qpb_parse("Max momentum squared"), "%d", &max_q2)!=1)
     {
-    case TWOP_FULL:
-      n_vec = 12;
-      if(sscanf(qpb_parse("Max momentum squared"), "%d", &max_q2)!=1)
-	{
-	  error("error parsing for %s\n",
-		"Max momentum squared");
-	  exit(QPB_PARSER_ERROR);
-	}
-      break;
-    case TWOP_STOCHASTIC:
-      if(sscanf(qpb_parse("Number of vectors"), "%d", &n_vec)!=1)
-	{
-	  error("error parsing for %s\n",
-		"Number of vectors");
-	  exit(QPB_PARSER_ERROR);
-	}
-      break;
+      error("error parsing for %s\n",
+	    "Max momentum squared");
+      exit(QPB_PARSER_ERROR);
     }
 
   /* Heavy - light or degenerate? */
@@ -301,15 +259,6 @@ main(int argc, char *argv[])
   /* initialize cartesian grid and index tables */
   qpb_init(g_dim, procs);
 
-  switch(twop_mode)
-    {
-    case TWOP_STOCHASTIC:
-      print(" Stochastic two-point function\n");
-      break;
-    case TWOP_FULL:
-      print(" Full propagator two-point function\n");
-      break;
-    }
   print(" (Lt, Lz, Ly, Lx) = (%2d,%2d,%2d,%2d)\n", 
 	problem_params.g_dim[0], 
 	problem_params.g_dim[1], 
@@ -323,15 +272,7 @@ main(int argc, char *argv[])
 #endif
   print(" Threads per process = %2d\n", nthreads);
   print(" N quarks = %d\n", n_quarks);
-  switch(twop_mode)
-    {
-    case TWOP_STOCHASTIC:
-      print(" %d vectors for stochastic two-point function\n", n_vec);
-      break;
-    case TWOP_FULL:
-      print(" Max momentum squared = %d\n", max_q2);
-      break;
-    }
+  print(" Max momentum squared = %d\n", max_q2);
   print(" Prop file light = %s\n", prop_file_light);
   if(n_quarks == 2)
     print(" Prop file heavy = %s\n", prop_file_heavy);
@@ -374,6 +315,7 @@ main(int argc, char *argv[])
   /* Allocate propagator structs (as 12 spinor structs) */
   qpb_spinor_field *prop_heavy = NULL;
   qpb_spinor_field *prop_light = NULL;
+  int n_vec = 12;
   prop_light = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);
   
   if(n_quarks == 2)
@@ -469,15 +411,7 @@ main(int argc, char *argv[])
 
   print(" Two-point contractions...\n");
   double t = qpb_stop_watch(0);
-  switch(twop_mode)
-    {
-    case TWOP_STOCHASTIC:
-      qpb_mesons_2pt_stoch(prop_light, prop_heavy, n_vec, corr_file);
-      break;
-    case TWOP_FULL:
-      qpb_mesons_2pt_corr(prop_light, prop_heavy, max_q2, corr_file);
-      break;
-    }
+  qpb_baryons_2pt(prop_light, prop_heavy, max_q2, corr_file);
   print(" Done correlators in %g sec\n", qpb_stop_watch(t));
 
   free(prop_light);

@@ -1,6 +1,7 @@
 Makefile.in
 mainprogs/invert/invert
 mainprogs/mesons/mesons
+mainprogs/baryons/baryons
 mainprogs/eigens/eigens
 testprogs/ape_3d/ape_3d
 testprogs/source_rms/source_rms

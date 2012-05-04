@@ -13,7 +13,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = invert mesons eigens
+DIRS = invert mesons eigens baryons
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done
