@@ -3,14 +3,11 @@
 #	include <omp.h>
 #endif
 #include <qpb_types.h>
+#include <qpb_alloc.h>
 #include <qpb_globals.h>
 
 #ifdef QPB_FT_FFTW
 #include <fftw3.h>
-#endif
-
-
-#ifdef QPB_FT_FFTW
 /*
  *
  * To use FFTW in parallel, the lattice needs to be redistributed;
@@ -22,6 +19,7 @@
 void
 qpb_ft(qpb_complex **out, qpb_complex **in, int n, int mom[][4], int nmom)
 {
+  int rank = problem_params.proc_id;
   int nprocs = problem_params.nprocs;
   int Lz = problem_params.g_dim[1];
   int Ly = problem_params.g_dim[2];
@@ -30,23 +28,89 @@ qpb_ft(qpb_complex **out, qpb_complex **in, int n, int mom[][4], int nmom)
   int lz = problem_params.l_dim[1];
   int ly = problem_params.l_dim[2];
   int lx = problem_params.l_dim[3];
+  int vol3d = Lx*Ly*Lz;
+  int lvol3d = lx*ly*lz;
+  MPI_Comm comm_cart = problem_params.mpi_comm_cart;
 
-  int mn = 0;
+  int nprocs_n = 0;
   for(int i=1; i<nprocs+1; i++)
+    if((n % i) == 0)
+      nprocs_n = i;
+
+  int n_loc = n / nprocs_n;
+
+  fftw_complex *corr[n_loc];
+  qpb_complex *swap = NULL;
+  if(rank < nprocs_n)
+    for(int i=0; i<n_loc; i++)
+      corr[i] = fftw_malloc(sizeof(fftw_complex)*vol3d);
+
+  if(rank < nprocs_n)
+    swap = qpb_alloc(sizeof(qpb_complex)*vol3d);
+
+  for(int i=0; i<n_loc; i++)
+    for(int j=0; j<nprocs_n; j++)
+      {
+	MPI_Gather(in[i+j*n_loc], lvol3d*sizeof(qpb_complex), MPI_BYTE, 
+		   swap, lvol3d*sizeof(qpb_complex), MPI_BYTE, j, MPI_COMM_WORLD);     
+	if(rank == j)
+	  {
+	    for(int p=0; p<nprocs; p++)
+	      {
+		int coords[ND-1];
+		qpb_complex *ptr = swap + p*lvol3d;
+		MPI_Cart_coords(comm_cart, p, ND-1, coords);
+		int zoff = coords[0]*lz;
+		int yoff = coords[1]*ly;
+		int xoff = coords[2]*lx;
+		for(int z=zoff; z<lz+zoff; z++)
+		  for(int y=yoff; y<ly+yoff; y++)
+		    for(int x=xoff; x<lx+xoff; x++)
+		      {
+			corr[i][x + y*Lx + z*Lx*Ly][0] = ptr->re;
+			corr[i][x + y*Lx + z*Lx*Ly][1] = ptr->im;
+			ptr++;
+		      }
+	      } 
+	  }
+	MPI_Barrier(MPI_COMM_WORLD);
+      }
+
+  if(rank < nprocs_n)
+    for(int i=0; i<n_loc; i++)
+      {
+	fftw_plan plan = fftw_plan_dft_3d(Lz, Ly, Lx, corr[i], corr[i], 
+					  FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(plan);
+	fftw_destroy_plan(plan);
+      }
+
+  if(rank < nprocs_n)
+    for(int i=0; i<n_loc; i++)
+      for(int p=0; p<nmom; p++)
+	{
+	  int kx = (Lx + mom[p][3]) % Lx;
+	  int ky = (Ly + mom[p][2]) % Ly;
+	  int kz = (Lz + mom[p][1]) % Lz;
+	  out[i][p] = (qpb_complex){corr[i][kx + ky*Lx + kz*Lx*Ly][0],
+				    corr[i][kx + ky*Lx + kz*Lx*Ly][1]};
+	}
+
+  for(int p=1; p<nprocs_n; p++)
+    for(int i=0; i<n_loc; i++)
+      {
+	if(rank == 0)
+	  MPI_Recv(out[p*n_loc+i], nmom*sizeof(qpb_complex), MPI_BYTE, p, p, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	if(rank == p)
+	  MPI_Send(out[i], nmom*sizeof(qpb_complex), MPI_BYTE, 0, p, MPI_COMM_WORLD);
+      }
+
+  if(rank < nprocs_n)
     {
-      if((n % i) == 0)
-	mn = i;
+      for(int i=0; i<n_loc; i++)
+	fftw_free(corr[i]);
+      free(swap);
     }
-  int mz = 1;
-  for(int i=1; (i<nprocs+1) & (i*mn <= nprocs); i++)
-    if((Lz % i) == 0)
-      mz = i;
-
-  int n_loc = n / mn;
-  int lz_loc = Lz / mz;
-
-  
-  
   return;
 }
 #else

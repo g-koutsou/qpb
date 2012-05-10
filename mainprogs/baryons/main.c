@@ -273,6 +273,9 @@ main(int argc, char *argv[])
   print(" Threads per process = %2d\n", nthreads);
   print(" N quarks = %d\n", n_quarks);
   print(" Max momentum squared = %d\n", max_q2);
+#ifdef QPB_FT_FFTW
+  print(" Compiled with FFTW\n");
+#endif
   print(" Prop file light = %s\n", prop_file_light);
   if(n_quarks == 2)
     print(" Prop file heavy = %s\n", prop_file_heavy);

@@ -7,6 +7,9 @@ PROFFLAGS=-pg
 ## General
 CFLAGS=-O2 -Winline -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall  -msse3
 
+LDFLAGS=-L$(HOME)/mit-install/lib
+LIBS=-llime -lgsl -lgslcblas -lxml2 -lm
+
 ## Includes
 CFLAGS+=-I/usr/include/libxml2 -I./ -I$(HOME)/mit-install/include
 
@@ -17,8 +20,7 @@ CFLAGS+=-fopenmp -DOPENMP
 CFLAGS+=-DHAVE_LONG_DOUBLE
 
 ## To use FFTW for fourier transforms. Not defining this will use an explicit FT (a volume sum for each momentum).
-## CFLAGS+=-DQPB_FT_FFTW
+CFLAGS+=-DQPB_FT_FFTW
+LIBS+=-lfftw3
 
-LDFLAGS=-L$(HOME)/mit-install/lib
-LIBS=-llime -lgsl -lgslcblas -lxml2 -lm
 

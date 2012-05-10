@@ -330,6 +330,9 @@ main(int argc, char *argv[])
       break;
     case TWOP_FULL:
       print(" Max momentum squared = %d\n", max_q2);
+#ifdef QPB_FT_FFTW
+      print(" Compiled with FFTW\n");
+#endif
       break;
     }
   print(" Prop file light = %s\n", prop_file_light);
