@@ -2,17 +2,13 @@
 
 #include <qpb_types.h>
 #include <qpb_globals.h>
+#include <qpb_alloc.h>
 #include <qpb_spinor_linalg.h>
 
 void
 qpb_spinor_xdotx(qpb_double *dot_prod, qpb_spinor_field x)
 {
-
-#ifdef HAVE_LONG_DOUBLE
-  long double accum = 0;
-#else
-  double accum = 0;
-#endif /* HAVE_LONG_DOUBLE */
+  qpb_quad accum = 0;
 
   int lvol = problem_params.l_vol;
 #ifdef OPENMP
@@ -24,19 +20,26 @@ qpb_spinor_xdotx(qpb_double *dot_prod, qpb_spinor_field x)
 	accum += CNORM2(x.bulk[v][cs]);
       }
 
-#ifdef HAVE_LONG_DOUBLE
-  long double accum_sum;
-  //MPI_Allreduce(MPI_IN_PLACE, &accum, 1, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Reduce(&accum, &accum_sum, 1, MPI_LONG_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
-  MPI_Bcast(&accum_sum, 1, MPI_LONG_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
-#else
-  double accum_sum;
-  //MPI_Allreduce(MPI_IN_PLACE, &accum_dbl, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Reduce(&accum, &accum_sum, 1, MPI_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
-  MPI_Bcast(&accum_sum, 1, MPI_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
-#endif /* HAVE_LONG_DOUBLE */
+  MPI_Comm comm = problem_params.mpi_comm_cart;
+  int np = problem_params.nprocs;
+  qpb_quad *accum_v = NULL;
+  if(am_master)
+    accum_v = qpb_alloc(sizeof(qpb_quad)*np);
+
+  MPI_Gather(&accum, sizeof(qpb_quad), MPI_BYTE,
+	     accum_v, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);
   
-  *dot_prod = accum_sum;
+  accum = 0.0;
+  if(am_master)
+    for(int i=0; i<np; i++)
+      accum += accum_v[i];
+    
+  MPI_Bcast(&accum, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);  
+ 
+  if(am_master)
+    free(accum_v);
+
+  *dot_prod = (qpb_double) accum;
   return;
 }
 

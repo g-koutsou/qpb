@@ -3,6 +3,7 @@
 #include <mpi.h>
 #define qpb_float float
 #define qpb_double double
+#define qpb_quad long double
 
 #define MAX_NUM_THREADS 16
 #define QPB_MAX_STRING 256
@@ -38,6 +39,11 @@ typedef struct{
   double re;
   double im;
 } qpb_complex_double;
+
+typedef struct{
+  long double re;
+  long double im;
+} qpb_complex_quad;
 
 typedef qpb_complex_float qpb_link_float[NC*NC];
 typedef qpb_complex_double qpb_link_double[NC*NC];

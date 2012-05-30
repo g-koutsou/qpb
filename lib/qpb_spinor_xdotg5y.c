@@ -2,55 +2,60 @@
 
 #include <qpb_types.h>
 #include <qpb_globals.h>
+#include <qpb_alloc.h>
 #include <qpb_spinor_linalg.h>
 
 void
 qpb_spinor_xdotg5y(qpb_complex_double *dot_prod, qpb_spinor_field x, qpb_spinor_field y)
 {
-#ifdef HAVE_LONG_DOUBLE
-  long double dot_prod_re = 0.0;
-  long double dot_prod_im = 0.0;
-#else
-  double dot_prod_re = 0.0;
-  double dot_prod_im = 0.0;
-#endif /* HAVE_LONG_DOUBLE */
+  qpb_quad accum_re = 0;
+  qpb_quad accum_im = 0;
 
   int lvol = problem_params.l_vol;
 #ifdef OPENMP
-#pragma omp parallel for reduction(+: dot_prod_re, dot_prod_im)
+#pragma omp parallel for reduction(+: accum_im, accum_re)
 #endif
   for(int v=0; v<lvol; v++)
     for(int cs=0; cs<NS*NC; cs++)
       {
-	dot_prod_re += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re + x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im;
-	dot_prod_im += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im - x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re;
+	accum_re += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re + x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im;
+	accum_im += x.bulk[v][cs].re*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].im - x.bulk[v][cs].im*y.bulk[v][(cs+NC*NS/2)%(NC*NS)].re;
       }
 
-#ifdef HAVE_LONG_DOUBLE
-  long double dot_prod_reim[2] = {
-    dot_prod_re,
-    dot_prod_im
-  };
-  long double dot_prod_sum[2];
-  //MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_LONG_DOUBLE, 
-  //MPI_SUM, MPI_COMM_WORLD);
-  MPI_Reduce(dot_prod_reim, dot_prod_sum, 2, MPI_LONG_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
-  MPI_Bcast(dot_prod_sum, 2, MPI_LONG_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);
-#else
-  double dot_prod_reim[2] = {
-    dot_prod_re,
-    dot_prod_im
-  };
-  long double dot_prod_sum[2];
-  //MPI_Allreduce(MPI_IN_PLACE, dot_prod_reim, 2, MPI_DOUBLE, 
-  //MPI_SUM, MPI_COMM_WORLD);
-  MPI_Reduce(dot_prod_reim, dot_prod_sum, 2, MPI_DOUBLE, MPI_SUM, QPB_MASTER_PROC, MPI_COMM_WORLD);
-  MPI_Bcast(dot_prod_sum, 2, MPI_DOUBLE, QPB_MASTER_PROC, MPI_COMM_WORLD);  
-#endif /* HAVE_LONG_DOUBLE */
+  MPI_Comm comm = problem_params.mpi_comm_cart;
+  int np = problem_params.nprocs;
+  qpb_quad *accum_v_re = NULL;
+  qpb_quad *accum_v_im = NULL;
+  if(am_master)
+    {
+      accum_v_re = qpb_alloc(sizeof(qpb_quad)*np);
+      accum_v_im = qpb_alloc(sizeof(qpb_quad)*np);
+    }
 
-  dot_prod->re = dot_prod_sum[0];
-  dot_prod->im = dot_prod_sum[1];
+  MPI_Gather(&accum_re, sizeof(qpb_quad), MPI_BYTE,
+	     accum_v_re, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);
+  MPI_Gather(&accum_im, sizeof(qpb_quad), MPI_BYTE,
+	     accum_v_im, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);
+  
+  accum_re = 0.0;
+  accum_im = 0.0;
+  if(am_master)
+    for(int i=0; i<np; i++)
+      {
+	accum_re += accum_v_re[i];
+	accum_im += accum_v_im[i];
+      }
+    
+  MPI_Bcast(&accum_re, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);  
+  MPI_Bcast(&accum_im, sizeof(qpb_quad), MPI_BYTE, QPB_MASTER_PROC, comm);  
+ 
+  if(am_master)
+    {
+      free(accum_v_re);
+      free(accum_v_im);
+    }
 
+  dot_prod->re = (qpb_double) accum_re;
+  dot_prod->im = (qpb_double) accum_im;
   return;
 }
-
