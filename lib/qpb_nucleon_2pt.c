@@ -87,3 +87,91 @@ qpb_nucleon_2pt(qpb_complex **corr_x, qpb_spinor_field *quark1, qpb_spinor_field
 
   return;
 }
+
+
+void
+qpb_nucleon_star_2pt(qpb_complex **corr_x, qpb_spinor_field *quark1, qpb_spinor_field *quark2)
+{
+  int lvol = problem_params.l_vol;
+  int lt = problem_params.l_dim[0];
+  int lvol3d = lvol/lt;
+
+#ifdef OPENMP
+#	pragma omp parallel for
+#endif  
+  for(int t=0; t<lt; t++)
+    for(int lv=0; lv<lvol3d; lv++)
+      {
+	int v = blk_to_ext[lv+t*lvol3d];
+	qpb_complex prop1[NS*NC][NS*NC];
+	qpb_complex prop2[NS*NC][NS*NC];
+	qpb_complex CqC[NS*NC][NS*NC];
+	qpb_complex q0[NS*NC][NS*NC];
+	qpb_complex g5q1[NS*NC][NS*NC];
+	qpb_complex aux0[NS*NC][NS*NC];
+	qpb_complex aux1[NS*NC][NS*NC];
+	qpb_complex aux2[NS*NC][NS*NC];
+	for(int cs0=0; cs0<NC*NS; cs0++)
+	  for(int cs1=0; cs1<NC*NS; cs1++)
+	    {
+	      prop1[cs0][cs1] = ((qpb_complex *)(quark1[cs1].index[v]))[cs0];
+	      prop2[cs0][cs1] = ((qpb_complex *)(quark2[cs1].index[v]))[cs0];
+	    }
+
+	prop_C_G(q0, prop1);
+	prop_G_C(CqC, q0);
+	prop_contract_13(q0, CqC, prop2);
+	prop_gamma_5_G(g5q1, prop2);
+	
+	/* Positive parity state */
+	qpb_complex first_term;
+	qpb_complex second_term;
+
+	first_term = (qpb_complex){0., 0.};
+	second_term = (qpb_complex){0., 0.};
+
+	prop_G_ProjTp(aux0, g5q1);
+	prop_G_gamma_5(aux1, aux0);
+	prop_G_gamma_5(aux2, q0);
+
+	for(int mu=0; mu<NS; mu++)
+	  for(int nu=0; nu<NS; nu++)
+	    for(int a0=0; a0<NC; a0++)
+	      for(int a1=0; a1<NC; a1++)
+		{
+		  first_term = CADD(first_term, 
+				    CMUL(aux1[a0+mu*NC][a1+mu*NC],
+					 q0[a1+nu*NC][a0+nu*NC]));
+
+		  second_term = CADD(second_term, 
+				     CMUL(aux0[a0+mu*NC][a1+nu*NC],
+					  aux2[a1+nu*NC][a0+mu*NC]));
+		}
+	corr_x[0*lt + t][lv] = CNEGATE(CADD(first_term, second_term));
+
+	first_term = (qpb_complex){0., 0.};
+	second_term = (qpb_complex){0., 0.};
+
+	prop_G_ProjTm(aux0, g5q1);
+	prop_G_gamma_5(aux1, aux0);
+	prop_G_gamma_5(aux2, q0);
+
+	for(int mu=0; mu<NS; mu++)
+	  for(int nu=0; nu<NS; nu++)
+	    for(int a0=0; a0<NC; a0++)
+	      for(int a1=0; a1<NC; a1++)
+		{
+		  first_term = CADD(first_term, 
+				    CMUL(aux1[a0+mu*NC][a1+mu*NC],
+					 q0[a1+nu*NC][a0+nu*NC]));
+
+		  second_term = CADD(second_term, 
+				     CMUL(aux0[a0+mu*NC][a1+nu*NC],
+					  aux2[a1+nu*NC][a0+mu*NC]));
+		}
+	corr_x[1*lt + t][lv] = CNEGATE(CADD(first_term, second_term));
+
+      }
+
+  return;
+}

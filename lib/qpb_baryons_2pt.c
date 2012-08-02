@@ -12,9 +12,10 @@
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
 
-#define QPB_N_BARYON_2PT_CHANNELS 15
+#define QPB_N_BARYON_2PT_CHANNELS 16
 enum qpb_baryon_2pt_channels {
   NUCL,			// 1 state
+  NUCL_STAR,		// 1 state
   SIGMA_PLUS_MINUS,	// 1 state
   XI_ZERO_MINUS,	// 1 state
   DELTA1_1o2,		// 4 states [one for each C\gamma_\mu]
@@ -167,6 +168,16 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  print(" Nucleon contractions done in: %g sec\n", t0);	  
 	  break;
 
+	case NUCL_STAR:
+	  nch = 1;
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+
+	  t0 = qpb_stop_watch(0);
+	  qpb_nucleon_star_2pt(corr_x, light, light);
+	  t0 = qpb_stop_watch(t0);
+	  print(" Nucleon* contractions done in: %g sec\n", t0);	  
+	  break;
+
 	case SIGMA_PLUS_MINUS:
 	  nch = 1;
 	  corr_x = corr_alloc(nch*2*lt, lvol3d);
@@ -263,6 +274,9 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	      {
 	      case NUCL:
 		strcpy(ctag ,"NUCLEON");
+		break;
+	      case NUCL_STAR:
+		strcpy(ctag ,"NUCLEON*");
 		break;
 	      case SIGMA_PLUS_MINUS:
 		strcpy(ctag ,"SIGMA+/-");
