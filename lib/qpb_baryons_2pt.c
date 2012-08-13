@@ -12,16 +12,21 @@
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
 
-#define QPB_N_BARYON_2PT_CHANNELS 16
+#define QPB_N_BARYON_2PT_CHANNELS 21
 enum qpb_baryon_2pt_channels {
   NUCL,			// 1 state
   NUCL_STAR,		// 1 state
   SIGMA_PLUS_MINUS,	// 1 state
   XI_ZERO_MINUS,	// 1 state
-  DELTA1_1o2,		// 4 states [one for each C\gamma_\mu]
-  DELTA2_1o2,
-  DELTA3_1o2,
-  DELTA4_1o2,
+  DELTA11_1o2,		// 9 states [one for each C\gamma_j x C\gamma_k, k,j=x,y,z]
+  DELTA12_1o2,
+  DELTA13_1o2,
+  DELTA21_1o2,
+  DELTA22_1o2,
+  DELTA23_1o2,
+  DELTA31_1o2,
+  DELTA32_1o2,
+  DELTA33_1o2,
   DELTA1_3o2,		// 4 states [one for each C\gamma_\mu]
   DELTA2_3o2,
   DELTA3_3o2,
@@ -198,15 +203,23 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  print(" Xi 0/- contractions done in: %g sec\n", t0);	  
 	  break;
 
-	case DELTA1_1o2:
-	case DELTA2_1o2:
-	case DELTA3_1o2:
-	case DELTA4_1o2:
-	  nch = 4;
+	case DELTA11_1o2:
+	case DELTA12_1o2:
+	case DELTA13_1o2:
+
+	case DELTA21_1o2:
+	case DELTA22_1o2:
+	case DELTA23_1o2:
+
+	case DELTA31_1o2:
+	case DELTA32_1o2:
+	case DELTA33_1o2:
+
+	  nch = 9;
 	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
-	  qpb_delta_1o2_2pt(corr_x, light);
+	  qpb_delta_1o2_2pt(corr_x, light, light);
 	  t0 = qpb_stop_watch(t0);
 	  print(" Delta Iz = 1/2 contractions done in: %g sec\n", t0);	  
 	  break;
@@ -284,18 +297,37 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	      case XI_ZERO_MINUS:
 		strcpy(ctag ,"XI0/-");
 		break;
-	      case DELTA1_1o2:
-		strcpy(ctag ,"DELTA1+/0");
+
+	      case DELTA11_1o2:
+		strcpy(ctag ,"DELTA11+/0");
 		break;
-	      case DELTA2_1o2:
-		strcpy(ctag ,"DELTA2+/0");
+	      case DELTA12_1o2:
+		strcpy(ctag ,"DELTA12+/0");
 		break;
-	      case DELTA3_1o2:
-		strcpy(ctag ,"DELTA3+/0");
+	      case DELTA13_1o2:
+		strcpy(ctag ,"DELTA13+/0");
 		break;
-	      case DELTA4_1o2:
-		strcpy(ctag ,"DELTA4+/0");
+
+	      case DELTA21_1o2:
+		strcpy(ctag ,"DELTA21+/0");
 		break;
+	      case DELTA22_1o2:
+		strcpy(ctag ,"DELTA22+/0");
+		break;
+	      case DELTA23_1o2:
+		strcpy(ctag ,"DELTA23+/0");
+		break;
+
+	      case DELTA31_1o2:
+		strcpy(ctag ,"DELTA31+/0");
+		break;
+	      case DELTA32_1o2:
+		strcpy(ctag ,"DELTA32+/0");
+		break;
+	      case DELTA33_1o2:
+		strcpy(ctag ,"DELTA33+/0");
+		break;
+
 	      case DELTA1_3o2:
 		strcpy(ctag ,"DELTA1++/-");
 		break;
