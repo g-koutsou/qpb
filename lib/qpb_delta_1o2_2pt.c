@@ -210,11 +210,12 @@ qpb_delta_1o2_2pt(qpb_complex **corr_x, qpb_spinor_field *spinor0, qpb_spinor_fi
 		      AB0 = CADD(AB0, AB1);
 		      BA0 = CADD(BA0, BA1);
 
-		      AA0 = CSCALE(AA0, 4.0);
-		      AB0 = CSCALE(AB0, 2.0);
-		      BA0 = CSCALE(BA0, 2.0);
+		      AA0 = CSCALE(AA0, (4.0/3.0));
+		      AB0 = CSCALE(AB0, (2.0/3.0));
+		      BA0 = CSCALE(BA0, (2.0/3.0));
+		      BB0 = CSCALE(BB0, (1.0/3.0));
 
-		      corr_x[(i+k*2+j*3*2)*lt + t][lv] = CSCALE(CADD(CADD(CADD(AA0, BB0), AB0), BA0), (1.0/3.0));
+		      corr_x[(i+k*2+j*3*2)*lt + t][lv] = CADD(CADD(CADD(AA0, BB0), AB0), BA0);
 		    }
 	    
 		}
