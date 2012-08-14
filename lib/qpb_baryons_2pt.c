@@ -12,29 +12,49 @@
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
 
-#define QPB_N_BARYON_2PT_CHANNELS 21
+#define QPB_N_BARYON_2PT_CHANNELS 39
 enum qpb_baryon_2pt_channels {
-  NUCL,			// 1 state
-  NUCL_STAR,		// 1 state
-  SIGMA_PLUS_MINUS,	// 1 state
-  XI_ZERO_MINUS,	// 1 state
-  DELTA11_1o2,		// 9 states [one for each C\gamma_j x C\gamma_k, k,j=x,y,z]
-  DELTA12_1o2,
-  DELTA13_1o2,
-  DELTA21_1o2,
-  DELTA22_1o2,
-  DELTA23_1o2,
-  DELTA31_1o2,
-  DELTA32_1o2,
-  DELTA33_1o2,
-  DELTA1_3o2,		// 4 states [one for each C\gamma_\mu]
-  DELTA2_3o2,
-  DELTA3_3o2,
-  DELTA4_3o2,
-  OMEGA1,		// 4 states [one for each C\gamma_\mu]
-  OMEGA2,
-  OMEGA3,
-  OMEGA4
+  /* Octet baryons */
+  NUCL,				// 1 state
+  NUCL_STAR,			// 1 state
+  SIGMA_PLUS_MINUS,		// 1 state
+  XI_ZERO_MINUS,		// 1 state
+  /* Decuplet baryons */
+  DELTA_PLUS_ZERO_11,		// 9 states [one for each C\gamma_j x C\gamma_k, k,j=x,y,z]
+  DELTA_PLUS_ZERO_12,
+  DELTA_PLUS_ZERO_13,
+  DELTA_PLUS_ZERO_21,
+  DELTA_PLUS_ZERO_22,
+  DELTA_PLUS_ZERO_23,
+  DELTA_PLUS_ZERO_31,
+  DELTA_PLUS_ZERO_32,
+  DELTA_PLUS_ZERO_33,
+  SIGMA_STAR_PLUS_MINUS_11,	// 9 states [one for each C\gamma_j x C\gamma_k, k,j=x,y,z]
+  SIGMA_STAR_PLUS_MINUS_12,
+  SIGMA_STAR_PLUS_MINUS_13,
+  SIGMA_STAR_PLUS_MINUS_21,
+  SIGMA_STAR_PLUS_MINUS_22,
+  SIGMA_STAR_PLUS_MINUS_23,
+  SIGMA_STAR_PLUS_MINUS_31,
+  SIGMA_STAR_PLUS_MINUS_32,
+  SIGMA_STAR_PLUS_MINUS_33,
+  XI_STAR_ZERO_MINUS_11,	// 9 states [one for each C\gamma_j x C\gamma_k, k,j=x,y,z]
+  XI_STAR_ZERO_MINUS_12,
+  XI_STAR_ZERO_MINUS_13,
+  XI_STAR_ZERO_MINUS_21,
+  XI_STAR_ZERO_MINUS_22,
+  XI_STAR_ZERO_MINUS_23,
+  XI_STAR_ZERO_MINUS_31,
+  XI_STAR_ZERO_MINUS_32,
+  XI_STAR_ZERO_MINUS_33,
+  DELTA_PLUSPLUS_MINUS_11,	// 4 states [one for each C\gamma_\mu]
+  DELTA_PLUSPLUS_MINUS_22,
+  DELTA_PLUSPLUS_MINUS_33,
+  DELTA_PLUSPLUS_MINUS_44,
+  OMEGA_11,			// 4 states [one for each C\gamma_\mu]
+  OMEGA_22,
+  OMEGA_33,
+  OMEGA_44
 };
 
 void *
@@ -203,44 +223,84 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  print(" Xi 0/- contractions done in: %g sec\n", t0);	  
 	  break;
 
-	case DELTA11_1o2:
-	case DELTA12_1o2:
-	case DELTA13_1o2:
+	case DELTA_PLUS_ZERO_11:
+	case DELTA_PLUS_ZERO_12:
+	case DELTA_PLUS_ZERO_13:
 
-	case DELTA21_1o2:
-	case DELTA22_1o2:
-	case DELTA23_1o2:
+	case DELTA_PLUS_ZERO_21:
+	case DELTA_PLUS_ZERO_22:
+	case DELTA_PLUS_ZERO_23:
 
-	case DELTA31_1o2:
-	case DELTA32_1o2:
-	case DELTA33_1o2:
-
+	case DELTA_PLUS_ZERO_31:
+	case DELTA_PLUS_ZERO_32:
+	case DELTA_PLUS_ZERO_33:
 	  nch = 9;
 	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_1o2_2pt(corr_x, light, light);
 	  t0 = qpb_stop_watch(t0);
-	  print(" Delta Iz = 1/2 contractions done in: %g sec\n", t0);	  
+	  print(" Delta +/0 contractions done in: %g sec\n", t0);	  
 	  break;
 
-	case DELTA1_3o2:
-	case DELTA2_3o2:
-	case DELTA3_3o2:
-	case DELTA4_3o2:
+	case SIGMA_STAR_PLUS_MINUS_11:
+	case SIGMA_STAR_PLUS_MINUS_12:
+	case SIGMA_STAR_PLUS_MINUS_13:
+
+	case SIGMA_STAR_PLUS_MINUS_21:
+	case SIGMA_STAR_PLUS_MINUS_22:
+	case SIGMA_STAR_PLUS_MINUS_23:
+
+	case SIGMA_STAR_PLUS_MINUS_31:
+	case SIGMA_STAR_PLUS_MINUS_32:
+	case SIGMA_STAR_PLUS_MINUS_33:
+	  nch = 9;
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+
+	  t0 = qpb_stop_watch(0);
+	  qpb_delta_1o2_2pt(corr_x, light, heavy);
+	  t0 = qpb_stop_watch(t0);
+	  print(" Sigma* +/- contractions done in: %g sec\n", t0);	  
+	  break;
+
+
+	case XI_STAR_ZERO_MINUS_11:
+	case XI_STAR_ZERO_MINUS_12:
+	case XI_STAR_ZERO_MINUS_13:
+
+	case XI_STAR_ZERO_MINUS_21:
+	case XI_STAR_ZERO_MINUS_22:
+	case XI_STAR_ZERO_MINUS_23:
+
+	case XI_STAR_ZERO_MINUS_31:
+	case XI_STAR_ZERO_MINUS_32:
+	case XI_STAR_ZERO_MINUS_33:
+	  nch = 9;
+	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+
+	  t0 = qpb_stop_watch(0);
+	  qpb_delta_1o2_2pt(corr_x, heavy, light);
+	  t0 = qpb_stop_watch(t0);
+	  print(" Xi* 0/- contractions done in: %g sec\n", t0);	  
+	  break;
+
+	case DELTA_PLUSPLUS_MINUS_11:
+	case DELTA_PLUSPLUS_MINUS_22:
+	case DELTA_PLUSPLUS_MINUS_33:
+	case DELTA_PLUSPLUS_MINUS_44:
 	  nch = 4;
 	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_3o2_2pt(corr_x, light);
 	  t0 = qpb_stop_watch(t0);
-	  print(" Delta Iz = 3/2 contractions done in: %g sec\n", t0);	  
+	  print(" Delta ++/- contractions done in: %g sec\n", t0);	  
 	  break;
 
-	case OMEGA1:
-	case OMEGA2:
-	case OMEGA3:
-	case OMEGA4:
+	case OMEGA_11:
+	case OMEGA_22:
+	case OMEGA_33:
+	case OMEGA_44:
 	  nch = 4;
 	  corr_x = corr_alloc(nch*2*lt, lvol3d);
 
@@ -286,75 +346,136 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	    switch(ich)
 	      {
 	      case NUCL:
-		strcpy(ctag ,"NUCLEON");
+		strcpy(ctag ,"NUCLEON_[+/0]");
 		break;
 	      case NUCL_STAR:
-		strcpy(ctag ,"NUCLEON*");
+		strcpy(ctag ,"NUCLEON*_[+/0]");
 		break;
 	      case SIGMA_PLUS_MINUS:
-		strcpy(ctag ,"SIGMA+/-");
+		strcpy(ctag ,"SIGMA_[+/-]");
 		break;
 	      case XI_ZERO_MINUS:
-		strcpy(ctag ,"XI0/-");
+		strcpy(ctag ,"XI_[0/-]");
 		break;
 
-	      case DELTA11_1o2:
-		strcpy(ctag ,"DELTA11+/0");
+	      case DELTA_PLUS_ZERO_11:
+		strcpy(ctag ,"DELTA_11_[+/0]");
 		break;
-	      case DELTA12_1o2:
-		strcpy(ctag ,"DELTA12+/0");
+	      case DELTA_PLUS_ZERO_12:
+		strcpy(ctag ,"DELTA_12_[+/0]");
 		break;
-	      case DELTA13_1o2:
-		strcpy(ctag ,"DELTA13+/0");
-		break;
-
-	      case DELTA21_1o2:
-		strcpy(ctag ,"DELTA21+/0");
-		break;
-	      case DELTA22_1o2:
-		strcpy(ctag ,"DELTA22+/0");
-		break;
-	      case DELTA23_1o2:
-		strcpy(ctag ,"DELTA23+/0");
+	      case DELTA_PLUS_ZERO_13:
+		strcpy(ctag ,"DELTA_13_[+/0]");
 		break;
 
-	      case DELTA31_1o2:
-		strcpy(ctag ,"DELTA31+/0");
+	      case DELTA_PLUS_ZERO_21:
+		strcpy(ctag ,"DELTA_21_[+/0]");
 		break;
-	      case DELTA32_1o2:
-		strcpy(ctag ,"DELTA32+/0");
+	      case DELTA_PLUS_ZERO_22:
+		strcpy(ctag ,"DELTA_22_[+/0]");
 		break;
-	      case DELTA33_1o2:
-		strcpy(ctag ,"DELTA33+/0");
+	      case DELTA_PLUS_ZERO_23:
+		strcpy(ctag ,"DELTA_23_[+/0]");
 		break;
 
-	      case DELTA1_3o2:
-		strcpy(ctag ,"DELTA1++/-");
+	      case DELTA_PLUS_ZERO_31:
+		strcpy(ctag ,"DELTA_31_[+/0]");
 		break;
-	      case DELTA2_3o2:
-		strcpy(ctag ,"DELTA2++/-");
+	      case DELTA_PLUS_ZERO_32:
+		strcpy(ctag ,"DELTA_32_[+/0]");
 		break;
-	      case DELTA3_3o2:
-		strcpy(ctag ,"DELTA3++/-");
+	      case DELTA_PLUS_ZERO_33:
+		strcpy(ctag ,"DELTA_33_[+/0]");
 		break;
-	      case DELTA4_3o2:
-		strcpy(ctag ,"DELTA4++/-");
+
+	      case SIGMA_STAR_PLUS_MINUS_11:
+		strcpy(ctag ,"SIGMA*_11_[+/-]");
 		break;
-	      case OMEGA1:
-		strcpy(ctag ,"OMEGA1");
+	      case SIGMA_STAR_PLUS_MINUS_12:
+		strcpy(ctag ,"SIGMA*_12_[+/-]");
 		break;
-	      case OMEGA2:
-		strcpy(ctag ,"OMEGA2");
+	      case SIGMA_STAR_PLUS_MINUS_13:
+		strcpy(ctag ,"SIGMA*_13_[+/-]");
 		break;
-	      case OMEGA3:
-		strcpy(ctag ,"OMEGA3");
+
+	      case SIGMA_STAR_PLUS_MINUS_21:
+		strcpy(ctag ,"SIGMA*_21_[+/-]");
 		break;
-	      case OMEGA4:
-		strcpy(ctag ,"OMEGA4");
+	      case SIGMA_STAR_PLUS_MINUS_22:
+		strcpy(ctag ,"SIGMA*_22_[+/-]");
+		break;
+	      case SIGMA_STAR_PLUS_MINUS_23:
+		strcpy(ctag ,"SIGMA*_23_[+/-]");
+		break;
+
+	      case SIGMA_STAR_PLUS_MINUS_31:
+		strcpy(ctag ,"SIGMA*_31_[+/-]");
+		break;
+	      case SIGMA_STAR_PLUS_MINUS_32:
+		strcpy(ctag ,"SIGMA*_32_[+/-]");
+		break;
+	      case SIGMA_STAR_PLUS_MINUS_33:
+		strcpy(ctag ,"SIGMA*_33_[+/-]");
+		break;
+
+	      case XI_STAR_ZERO_MINUS_11:
+		strcpy(ctag ,"XI*_11_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_12:
+		strcpy(ctag ,"XI*_12_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_13:
+		strcpy(ctag ,"XI*_13_[0/-]");
+		break;
+
+	      case XI_STAR_ZERO_MINUS_21:
+		strcpy(ctag ,"XI*_21_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_22:
+		strcpy(ctag ,"XI*_22_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_23:
+		strcpy(ctag ,"XI*_23_[0/-]");
+		break;
+
+	      case XI_STAR_ZERO_MINUS_31:
+		strcpy(ctag ,"XI*_31_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_32:
+		strcpy(ctag ,"XI*_32_[0/-]");
+		break;
+	      case XI_STAR_ZERO_MINUS_33:
+		strcpy(ctag ,"XI*_33_[0/-]");
+		break;
+
+	      case DELTA_PLUSPLUS_MINUS_11:
+		strcpy(ctag ,"DELTA_11_[++/-]");
+		break;
+	      case DELTA_PLUSPLUS_MINUS_22:
+		strcpy(ctag ,"DELTA_22_[++/-]");
+		break;
+	      case DELTA_PLUSPLUS_MINUS_33:
+		strcpy(ctag ,"DELTA_33_[++/-]");
+		break;
+	      case DELTA_PLUSPLUS_MINUS_44:
+		strcpy(ctag ,"DELTA_44_[++/-]");
+		break;
+
+	      case OMEGA_11:
+		strcpy(ctag ,"OMEGA_11");
+		break;
+	      case OMEGA_22:
+		strcpy(ctag ,"OMEGA_22");
+		break;
+	      case OMEGA_33:
+		strcpy(ctag ,"OMEGA_33");
+		break;
+	      case OMEGA_44:
+		strcpy(ctag ,"OMEGA_44");
 		break;
 	      }
 	    if(am_master)
-	      fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %+e %+e %15s\n", 
+	      fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %+e %+e %20s\n", 
 		      mom[p][3], mom[p][2], mom[p][1], t, 
 		      corr_p[ich][p][t].re, corr_p[ich][p][t].im, 
 		      corr_m[ich][p][t].re, corr_m[ich][p][t].im, ctag);
