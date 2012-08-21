@@ -103,8 +103,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
   int lvol3d = lvol/lt;
-  qpb_complex **corr_p[QPB_N_BARYON_2PT_CHANNELS];
-  qpb_complex **corr_m[QPB_N_BARYON_2PT_CHANNELS];
+  qpb_complex **corr_p[QPB_N_BARYON_2PT_CHANNELS*16];
   int nmom = 0, nq = (int)sqrt(max_q2)+1;
   int (*mom)[4];
   /*
@@ -160,19 +159,14 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
     }
 
   
-  for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS; ich++)
+  for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS*16; ich++)
     {      
       corr_p[ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
-      corr_m[ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
       for(int p=0; p<nmom; p++)
 	{
 	  corr_p[ich][p] = qpb_alloc(lt * sizeof(qpb_complex));
-	  corr_m[ich][p] = qpb_alloc(lt * sizeof(qpb_complex));
 	  for(int t=0; t<lt; t++)
-	    {
-	      corr_p[ich][p][t] = (qpb_complex){0., 0.};
-	      corr_m[ich][p][t] = (qpb_complex){0., 0.};
-	    }
+	    corr_p[ich][p][t] = (qpb_complex){0., 0.};
 	}
     }
 
@@ -185,7 +179,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	{
 	case NUCL:
 	  nch = 1;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(16*nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_nucleon_2pt(corr_x, light, light);
@@ -195,7 +189,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 
 	case NUCL_STAR:
 	  nch = 1;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(16*nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_nucleon_star_2pt(corr_x, light, light);
@@ -205,7 +199,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 
 	case SIGMA_PLUS_MINUS:
 	  nch = 1;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(16*nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_nucleon_2pt(corr_x, heavy, light);
@@ -215,7 +209,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 
 	case XI_ZERO_MINUS:
 	  nch = 1;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(16*nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_nucleon_2pt(corr_x, light, heavy);
@@ -235,7 +229,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case DELTA_PLUS_ZERO_32:
 	case DELTA_PLUS_ZERO_33:
 	  nch = 9;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(nch*16*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_1o2_2pt(corr_x, light, light);
@@ -255,14 +249,13 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case SIGMA_STAR_PLUS_MINUS_32:
 	case SIGMA_STAR_PLUS_MINUS_33:
 	  nch = 9;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(nch*16*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_1o2_2pt(corr_x, light, heavy);
 	  t0 = qpb_stop_watch(t0);
 	  print(" Sigma* +/- contractions done in: %g sec\n", t0);	  
 	  break;
-
 
 	case XI_STAR_ZERO_MINUS_11:
 	case XI_STAR_ZERO_MINUS_12:
@@ -276,7 +269,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case XI_STAR_ZERO_MINUS_32:
 	case XI_STAR_ZERO_MINUS_33:
 	  nch = 9;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(nch*16*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_1o2_2pt(corr_x, heavy, light);
@@ -289,7 +282,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case DELTA_PLUSPLUS_MINUS_33:
 	case DELTA_PLUSPLUS_MINUS_44:
 	  nch = 4;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(nch*16*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_3o2_2pt(corr_x, light);
@@ -302,7 +295,7 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	case OMEGA_33:
 	case OMEGA_44:
 	  nch = 4;
-	  corr_x = corr_alloc(nch*2*lt, lvol3d);
+	  corr_x = corr_alloc(nch*16*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
 	  qpb_delta_3o2_2pt(corr_x, heavy);
@@ -311,20 +304,20 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  break;
 	}
 
-      qpb_complex **corr_k = corr_alloc(nch*lt*2, nmom);
-      qpb_ft(corr_k, corr_x, nch*lt*2, mom, nmom);
+      qpb_complex **corr_k = corr_alloc(16*nch*lt, nmom);
+      qpb_ft(corr_k, corr_x, 16*nch*lt, mom, nmom);
       
       for(int i=0; i<nch; i++)
-	for(int t=0; t<lt; t++)
-	  for(int p=0; p<nmom; p++)
-	    {
-	      corr_p[i+ich][p][t] = corr_k[i*lt*2 + lt*0 + t][p];
-	      corr_m[i+ich][p][t] = corr_k[i*lt*2 + lt*1 + t][p];
-	    }
-
+	for(int munu=0; munu<16; munu++)
+	  for(int t=0; t<lt; t++)
+	    for(int p=0; p<nmom; p++)
+	      {
+		corr_p[(i+ich)*16+munu][p][t] = corr_k[i*lt*16 + munu*lt + t][p];
+	      }
+      
       ich += nch;
-      corr_free(corr_k, 2*nch*lt, nmom);
-      corr_free(corr_x, 2*nch*lt, lvol3d);
+      corr_free(corr_k, 16*nch*lt, nmom);
+      corr_free(corr_x, 16*nch*lt, lvol3d);
     }
   
   FILE *fp = NULL;
@@ -475,24 +468,30 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 		break;
 	      }
 	    if(am_master)
-	      fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %+e %+e %20s\n", 
-		      mom[p][3], mom[p][2], mom[p][1], t, 
-		      corr_p[ich][p][t].re, corr_p[ich][p][t].im, 
-		      corr_m[ich][p][t].re, corr_m[ich][p][t].im, ctag);
+	      {
+		for(int mu=0; mu<NS; mu++)
+		  {
+		    fprintf(fp, " %+2d %+2d %+2d %3d ",
+			    mom[p][3], mom[p][2], mom[p][1], t);
+		    
+		    for(int nu=0; nu<NS; nu++)
+		      fprintf(fp, " %+e %+e ", corr_p[ich*16 + mu*4 + nu][p][t].re, corr_p[ich*16 + mu*4 + nu][p][t].im);
+		    
+		    fprintf(fp, " %20s\n", ctag);
+		  }
+	      }
 	  }
     }
+
   if(am_master)
     fclose(fp);
   
-  for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS; ich++)
+  for(int ich=0; ich<QPB_N_BARYON_2PT_CHANNELS*16; ich++)
     {
       for(int p=0; p<nmom; p++)
-	{
-	  free(corr_p[ich][p]);
-	  free(corr_m[ich][p]);
-	}
+	free(corr_p[ich][p]);
+
       free(corr_p[ich]);
-      free(corr_m[ich]);
     }
   free(mom);
   return;

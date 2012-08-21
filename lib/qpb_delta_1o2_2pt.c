@@ -133,92 +133,75 @@ qpb_delta_1o2_2pt(qpb_complex **corr_x, qpb_spinor_field *spinor0, qpb_spinor_fi
 		  prop_contract_13(ContrAB, q0Cgk, q0);		 // Needed in term AB
 		  prop_contract_02(ContrBA, Cgjq0, q0); 	 // Needed in term BA
 
+		  qpb_complex AA0[NS][NS], AA1[NS][NS];
+		  qpb_complex BB0[NS][NS], BB1[NS][NS];
+		  qpb_complex AB0[NS][NS], AB1[NS][NS];
+		  qpb_complex BA0[NS][NS], BA1[NS][NS];
+		  for(int mu=0; mu<NS; mu++)
+		    for(int nu=0; nu<NS; nu++)
+		      {
+			AA0[mu][nu] = (qpb_complex){0.,0.};
+			AA1[mu][nu] = (qpb_complex){0.,0.};
+
+			BA0[mu][nu] = (qpb_complex){0.,0.};
+			BA1[mu][nu] = (qpb_complex){0.,0.};
+
+			AB0[mu][nu] = (qpb_complex){0.,0.};
+			AB1[mu][nu] = (qpb_complex){0.,0.};
+
+			BB0[mu][nu] = (qpb_complex){0.,0.};
+			BB1[mu][nu] = (qpb_complex){0.,0.};
+		      }
 	    
-		  qpb_complex Pq0[NS*NC][NS*NC];
-		  qpb_complex Pq1[NS*NC][NS*NC];
 
-		  qpb_complex Cgjq1P[NS*NC][NS*NC];
-		  qpb_complex Pq1Cgk[NS*NC][NS*NC];
-
-		  qpb_complex AA0, AA1;
-		  qpb_complex BB0, BB1;
-		  qpb_complex AB0, AB1;
-		  qpb_complex BA0, BA1;
-	    
-		  /* Positive/Negative parity state */
-		  for(int i=0; i<2; i++)
-		    {
-		      switch(i)
-			{
-			case 0:
-			  prop_ProjTp_G(Pq0, q0);
-			  prop_ProjTp_G(Pq1, q1);
-
-			  prop_ProjTp_G(Pq1Cgk, q1Cgk);
-			  prop_G_ProjTp(Cgjq1P, Cgjq1);
-			  break;
-			case 1:
-			  prop_ProjTm_G(Pq0, q0);
-			  prop_ProjTm_G(Pq1, q1);
-
-			  prop_ProjTm_G(Pq1Cgk, q1Cgk);
-			  prop_G_ProjTm(Cgjq1P, Cgjq1);
-			  break;
-			}
-		
-		      AA0 = (qpb_complex){0., 0.};
-		      AA1 = (qpb_complex){0., 0.};
-		      BB0 = (qpb_complex){0., 0.};
-		      BB1 = (qpb_complex){0., 0.};
-		      AB0 = (qpb_complex){0., 0.};
-		      AB1 = (qpb_complex){0., 0.};
-		      BA0 = (qpb_complex){0., 0.};
-		      BA1 = (qpb_complex){0., 0.};
-
-		      for(int a0=0; a0<NC; a0++)
-			for(int a1=0; a1<NC; a1++)
-			  for(int mu=0; mu<NS; mu++)
-			    for(int nu=0; nu<NS; nu++)
-			      {
-				AA0.re += CMULR( Pq0[IDX(a0, mu)][IDX(a1, mu)] , ContrAA[IDX(a1, nu)][IDX(a0, nu)] );
-				AA0.im += CMULI( Pq0[IDX(a0, mu)][IDX(a1, mu)] , ContrAA[IDX(a1, nu)][IDX(a0, nu)] );
-
-				AA1.re += CMULR( Pq0[IDX(a0, mu)][IDX(a1, nu)] , ContrAA[IDX(a1, nu)][IDX(a0, mu)] );
-				AA1.im += CMULI( Pq0[IDX(a0, mu)][IDX(a1, nu)] , ContrAA[IDX(a1, nu)][IDX(a0, mu)] );
-
-				BB0.re += CMULR( Pq1[IDX(a0, mu)][IDX(a1, mu)] ,  ContrBB0[IDX(a1, nu)][IDX(a0, nu)] );
-				BB0.im += CMULI( Pq1[IDX(a0, mu)][IDX(a1, mu)] ,  ContrBB0[IDX(a1, nu)][IDX(a0, nu)] );
-
-				BB1.re += CMULR( Pq1[IDX(a0, mu)][IDX(a1, mu)] ,  ContrBB1[IDX(a1, nu)][IDX(a0, nu)] );
-				BB1.im += CMULI( Pq1[IDX(a0, mu)][IDX(a1, mu)] ,  ContrBB1[IDX(a1, nu)][IDX(a0, nu)] );
-				
-				AB0.re += CMULR( Cgjq1P[IDX(a0, mu)][IDX(a1, nu)] , ContrAB[IDX(a1, mu)][IDX(a0, nu)] );
-				AB0.im += CMULI( Cgjq1P[IDX(a0, mu)][IDX(a1, nu)] , ContrAB[IDX(a1, mu)][IDX(a0, nu)] );
-				
-				AB1.re += CMULR( Cgjq1P[IDX(a0, mu)][IDX(a1, nu)] , ContrAB[IDX(a1, nu)][IDX(a0, mu)] );
-				AB1.im += CMULI( Cgjq1P[IDX(a0, mu)][IDX(a1, nu)] , ContrAB[IDX(a1, nu)][IDX(a0, mu)] );
-				
-				BA0.re += CMULR( Pq1Cgk[IDX(a0, mu)][IDX(a1, nu)] , ContrBA[IDX(a1, mu)][IDX(a0, nu)] );
-				BA0.im += CMULI( Pq1Cgk[IDX(a0, mu)][IDX(a1, nu)] , ContrBA[IDX(a1, mu)][IDX(a0, nu)] );
-				
-				BA1.re += CMULR( Pq1Cgk[IDX(a0, mu)][IDX(a1, nu)] , ContrBA[IDX(a1, nu)][IDX(a0, mu)] );
-				BA1.im += CMULI( Pq1Cgk[IDX(a0, mu)][IDX(a1, nu)] , ContrBA[IDX(a1, nu)][IDX(a0, mu)] );
-			      }
-		      
-		      AA0 = CADD(AA0, AA1);
-		      BB0 = CADD(BB0, BB1);
-		      AB0 = CADD(AB0, AB1);
-		      BA0 = CADD(BA0, BA1);
-
-		      AA0 = CSCALE(AA0, (4.0/3.0));
-		      AB0 = CSCALE(AB0, (2.0/3.0));
-		      BA0 = CSCALE(BA0, (2.0/3.0));
-		      BB0 = CSCALE(BB0, (1.0/3.0));
-
-		      corr_x[(i+k*2+j*3*2)*lt + t][lv] = CADD(CADD(CADD(AA0, BB0), AB0), BA0);
-		    }
-	    
+		  for(int a0=0; a0<NC; a0++)
+		    for(int a1=0; a1<NC; a1++)
+		      for(int mu=0; mu<NS; mu++)
+			for(int nu=0; nu<NS; nu++)
+			  for(int ku=0; ku<NS; ku++)
+			    {
+			      AA0[mu][nu].re += CMULR( q0[IDX(a0, mu)][IDX(a1, nu)] , ContrAA[IDX(a1, ku)][IDX(a0, ku)] );
+			      AA0[mu][nu].im += CMULI( q0[IDX(a0, mu)][IDX(a1, nu)] , ContrAA[IDX(a1, ku)][IDX(a0, ku)] );
+			      
+			      AA1[mu][nu].re += CMULR( q0[IDX(a0, mu)][IDX(a1, ku)] , ContrAA[IDX(a1, ku)][IDX(a0, nu)] );
+			      AA1[mu][nu].im += CMULI( q0[IDX(a0, mu)][IDX(a1, ku)] , ContrAA[IDX(a1, ku)][IDX(a0, nu)] );
+			      
+			      BB0[mu][nu].re += CMULR( q1[IDX(a0, mu)][IDX(a1, nu)] ,  ContrBB0[IDX(a1, ku)][IDX(a0, ku)] );
+			      BB0[mu][nu].im += CMULI( q1[IDX(a0, mu)][IDX(a1, nu)] ,  ContrBB0[IDX(a1, ku)][IDX(a0, ku)] );
+			      
+			      BB1[mu][nu].re += CMULR( q1[IDX(a0, mu)][IDX(a1, nu)] ,  ContrBB1[IDX(a1, ku)][IDX(a0, ku)] );
+			      BB1[mu][nu].im += CMULI( q1[IDX(a0, mu)][IDX(a1, nu)] ,  ContrBB1[IDX(a1, ku)][IDX(a0, ku)] );
+			      
+			      AB0[mu][nu].re += CMULR( Cgjq1[IDX(a0, ku)][IDX(a1, mu)] , ContrAB[IDX(a1, ku)][IDX(a0, nu)] );
+			      AB0[mu][nu].im += CMULI( Cgjq1[IDX(a0, ku)][IDX(a1, mu)] , ContrAB[IDX(a1, ku)][IDX(a0, nu)] );
+			      
+			      AB1[mu][nu].re += CMULR( Cgjq1[IDX(a0, ku)][IDX(a1, mu)] , ContrAB[IDX(a1, nu)][IDX(a0, ku)] );
+			      AB1[mu][nu].im += CMULI( Cgjq1[IDX(a0, ku)][IDX(a1, mu)] , ContrAB[IDX(a1, nu)][IDX(a0, ku)] );
+			      
+			      BA0[mu][nu].re += CMULR( q1Cgk[IDX(a0, mu)][IDX(a1, ku)] , ContrBA[IDX(a1, ku)][IDX(a0, nu)] );
+			      BA0[mu][nu].im += CMULI( q1Cgk[IDX(a0, mu)][IDX(a1, ku)] , ContrBA[IDX(a1, ku)][IDX(a0, nu)] );
+			      
+			      BA1[mu][nu].re += CMULR( q1Cgk[IDX(a0, mu)][IDX(a1, ku)] , ContrBA[IDX(a1, nu)][IDX(a0, ku)] );
+			      BA1[mu][nu].im += CMULI( q1Cgk[IDX(a0, mu)][IDX(a1, ku)] , ContrBA[IDX(a1, nu)][IDX(a0, ku)] );
+			    }
+		  
+		  for(int mu=0; mu<NS; mu++)
+		    for(int nu=0; nu<NS; nu++)
+		      {
+			AA0[mu][nu] = CADD(AA0[mu][nu], AA1[mu][nu]);
+			BB0[mu][nu] = CADD(BB0[mu][nu], BB1[mu][nu]);
+			AB0[mu][nu] = CADD(AB0[mu][nu], AB1[mu][nu]);
+			BA0[mu][nu] = CADD(BA0[mu][nu], BA1[mu][nu]);
+			
+			AA0[mu][nu] = CSCALE(AA0[mu][nu], (4.0/3.0));
+			AB0[mu][nu] = CSCALE(AB0[mu][nu], (2.0/3.0));
+			BA0[mu][nu] = CSCALE(BA0[mu][nu], (2.0/3.0));
+			BB0[mu][nu] = CSCALE(BB0[mu][nu], (1.0/3.0));
+			
+			corr_x[(k+j*3)*16*lt + (mu*4 + nu)*lt + t][lv] = CADD(CADD(CADD(AA0[mu][nu], BB0[mu][nu]), AB0[mu][nu]), BA0[mu][nu]);
+		      }
 		}
+	      
 	    }
 	}
     }
