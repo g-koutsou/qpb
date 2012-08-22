@@ -12,11 +12,13 @@
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
 
-#define QPB_N_BARYON_2PT_CHANNELS 39
+#define QPB_N_BARYON_2PT_CHANNELS 4//41
 enum qpb_baryon_2pt_channels {
   /* Octet baryons */
-  NUCL,				// 1 state
-  NUCL_STAR,			// 1 state
+  NUCL_TO_NUCL,		        // 4 states
+  NUCL_TO_NUCL_STAR,			
+  NUCL_STAR_TO_NUCL,
+  NUCL_STAR_TO_NUCL_STAR,
   SIGMA_PLUS_MINUS,		// 1 state
   XI_ZERO_MINUS,		// 1 state
   /* Decuplet baryons */
@@ -177,24 +179,17 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
       int nch = 0;
       switch(ich)
 	{
-	case NUCL:
-	  nch = 1;
+	case NUCL_TO_NUCL:
+	case NUCL_TO_NUCL_STAR:
+	case NUCL_STAR_TO_NUCL:
+	case NUCL_STAR_TO_NUCL_STAR:
+	  nch = 4;
 	  corr_x = corr_alloc(16*nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
-	  qpb_nucleon_2pt(corr_x, light, light);
+	  qpb_nucleon_2x2_2pt(corr_x, light, light);
 	  t0 = qpb_stop_watch(t0);
-	  print(" Nucleon contractions done in: %g sec\n", t0);	  
-	  break;
-
-	case NUCL_STAR:
-	  nch = 1;
-	  corr_x = corr_alloc(16*nch*lt, lvol3d);
-
-	  t0 = qpb_stop_watch(0);
-	  qpb_nucleon_star_2pt(corr_x, light, light);
-	  t0 = qpb_stop_watch(t0);
-	  print(" Nucleon* contractions done in: %g sec\n", t0);	  
+	  print(" Nucleon/Nucleon* contractions done in: %g sec\n", t0);	  
 	  break;
 
 	case SIGMA_PLUS_MINUS:
@@ -338,12 +333,19 @@ qpb_baryons_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, ch
 	  {
 	    switch(ich)
 	      {
-	      case NUCL:
-		strcpy(ctag ,"NUCLEON_[+/0]");
+	      case NUCL_TO_NUCL:
+		strcpy(ctag ,"N-to-N_[+/0]");
 		break;
-	      case NUCL_STAR:
-		strcpy(ctag ,"NUCLEON*_[+/0]");
+	      case NUCL_TO_NUCL_STAR:
+		strcpy(ctag ,"N-to-N*_[+/0]");
 		break;
+	      case NUCL_STAR_TO_NUCL:
+		strcpy(ctag ,"N*-to-N_[+/0]");
+		break;
+	      case NUCL_STAR_TO_NUCL_STAR:
+		strcpy(ctag ,"N*-to-N*_[+/0]");
+		break;
+
 	      case SIGMA_PLUS_MINUS:
 		strcpy(ctag ,"SIGMA_[+/-]");
 		break;
