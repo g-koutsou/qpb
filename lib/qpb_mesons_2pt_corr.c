@@ -8,8 +8,9 @@
 #include <qpb_ft.h>
 #include <qpb_gamma_matrices.h>
 
-#define QPB_N_MESON_2PT_CHANNELS 7
+#define QPB_N_MESON_2PT_CHANNELS 8
 enum qpb_meson_2pt_channels {
+  S_S,
   G5_G5,
   G5_G4G5,
   G4G5_G5,
@@ -129,6 +130,23 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
       ndirac = 0;
       switch(ich)
 	{
+	case S_S:
+	  for(int i=0; i<NS; i++)
+	    for(int j=0; j<NS; j++)
+	      for(int k=0; k<NS; k++)
+		for(int l=0; l<NS; l++)
+		  {
+		    if(CNORM(CMUL(qpb_gamma_5[i][j],qpb_gamma_5[k][l])) > 0.5 )
+		      {
+			mu[ndirac] = i;
+			nu[ndirac] = j;
+			ku[ndirac] = k;
+			lu[ndirac] = l;
+			prod[ndirac] = CMUL(qpb_gamma_5[i][j],qpb_gamma_5[k][l]);
+			ndirac++;
+		      }
+		  }
+	  break;
 	case G5_G5:
 	  for(int i=0; i<NS; i++)
 	    for(int j=0; j<NS; j++)
@@ -339,6 +357,9 @@ qpb_mesons_2pt_corr(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2
 	  {
 	    switch(ich)
 	      {
+	      case S_S:
+		strcpy(ctag ,"1-1");
+		break;
 	      case G5_G5:
 		strcpy(ctag ,"g5-g5");
 		break;
