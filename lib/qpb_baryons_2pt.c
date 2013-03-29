@@ -12,7 +12,7 @@
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
 
-#define QPB_N_BARYON_2PT_CHANNELS 4//41
+#define QPB_N_BARYON_2PT_CHANNELS 41
 enum qpb_baryon_2pt_channels {
   /* Octet baryons */
   NUCL_TO_NUCL,		        // 4 states
