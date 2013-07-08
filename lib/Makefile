@@ -43,6 +43,7 @@ SOURCES = qpb_init\
 	qpb_spinor_field_set_delta\
 	qpb_spinor_field_set_zero\
 	qpb_spinor_field_set_random\
+	qpb_spinor_field_set_gaussian\
 	qpb_spinor_field_set_z4\
 	qpb_spinor_field_set_z4t\
 	qpb_gauge_field_set_unit\
@@ -70,6 +71,7 @@ SOURCES = qpb_init\
 	qpb_bicgstab\
 	qpb_mscongrad\
 	qpb_congrad\
+	qpb_overlap\
 	qpb_bicgg5\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
@@ -86,6 +88,7 @@ SOURCES = qpb_init\
 	qpb_spinor_axpby\
 	qpb_spinor_ax\
 	qpb_spinor_xmy\
+	qpb_spinor_xpy\
 	qpb_spinor_xeqy\
 	qpb_spinor_gamma5\
 	qpb_gauss_smear\

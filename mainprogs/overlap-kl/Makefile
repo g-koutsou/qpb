@@ -1,4 +1,4 @@
-include ../Makefile.in
+include ../../Makefile.in
 
 ifndef V
        V = 0
@@ -13,7 +13,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = invert mesons eigens baryons overlap-kl
+DIRS = ginsparg-wilson-relation
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done

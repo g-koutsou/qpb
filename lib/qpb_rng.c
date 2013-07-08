@@ -1,5 +1,5 @@
 #include <gsl/gsl_rng.h>
-
+#include <gsl/gsl_randist.h>
 #include <qpb_types.h>
 #include <qpb_globals.h>
 
@@ -35,6 +35,14 @@ int
 qpb_get_rand4()
 {
   int rand = gsl_rng_uniform_int(rng_state.gsl_rng_state[0], 4);
+  return rand;
+}
+
+/* Gaussian random number with width sigma */
+qpb_double 
+qpb_get_gaussian(qpb_double sigma)
+{
+  qpb_double rand = gsl_ran_gaussian(rng_state.gsl_rng_state[0], sigma);
   return rand;
 }
 
