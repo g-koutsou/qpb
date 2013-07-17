@@ -1,3 +1,3 @@
 include ../../../Makefile.in
-TARGET = ginsparg-wilson-relation
+TARGET = normality
 include ../common.make
