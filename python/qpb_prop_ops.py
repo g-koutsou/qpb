@@ -84,7 +84,7 @@ for NC in [1, 3]:
                     for sp1 in range(NS):
                         for reim in [0, 1]:
                             s = str(q[sp1+NS*sp0].as_real_imag()[reim])
-                            if s[0] != "-": s = " " + s 
+                            if s[0] != "-": s = " " + s
                             body += "  out[%2d][%2d].%s = %s;\n" % (c0+sp0*NC, c1+sp1*NC, ["re", "im"][reim], s)
                 body += "\n"
         body += "\n  return;\n}\n\n"
@@ -103,7 +103,7 @@ for NC in [1, 3]:
                     for sp1 in range(NS):
                         for reim in [0, 1]:
                             s = str(q[sp1+NS*sp0].as_real_imag()[reim])
-                            if s[0] != "-": s = " " + s 
+                            if s[0] != "-": s = " " + s
                             body += "  out[%2d][%2d].%s = %s;\n" % (c0+sp0*NC, c1+sp1*NC, ["re", "im"][reim], s)
                 body += "\n"
         body += "\n  return;\n}\n\n"
@@ -122,7 +122,7 @@ for NC in [1, 3]:
                     for sp1 in range(NS):
                         for reim in [0, 1]:
                             s = str(q[sp1+NS*sp0].as_real_imag()[reim])
-                            if s[0] != "-": s = " " + s 
+                            if s[0] != "-": s = " " + s
                             body += "  out[%2d][%2d].%s = %s;\n" % (c0+sp0*NC, c1+sp1*NC, ["re", "im"][reim], s)
                 body += "\n"
         body += "\n  return;\n}\n\n"
@@ -141,7 +141,7 @@ for NC in [1, 3]:
                     for sp1 in range(NS):
                         for reim in [0, 1]:
                             s = str(q[sp1+NS*sp0].as_real_imag()[reim])
-                            if s[0] != "-": s = " " + s 
+                            if s[0] != "-": s = " " + s
                             body += "  out[%2d][%2d].%s = %s;\n" % (c0+sp0*NC, c1+sp1*NC, ["re", "im"][reim], s)
                 body += "\n"
         body += "\n  return;\n}\n\n"
@@ -151,7 +151,7 @@ for NC in [1, 3]:
 
     qr = sy.zeros((NS*NC,NS*NC))
     qi = sy.zeros((NS*NC,NS*NC))
-    
+
     x = sy.zeros((NS*NC,NS*NC))
     for c0 in range(NC):
         for c1 in range(NC):
@@ -163,11 +163,32 @@ for NC in [1, 3]:
                     qr[c0+s0*NC, c1+s1*NC] = sy.Symbol('B[%2d][%2d].re' % (c0+s0*NC, c1+s1*NC), real=True)
                     qi[c0+s0*NC, c1+s1*NC] = sy.Symbol('B[%2d][%2d].im' % (c0+s0*NC, c1+s1*NC), real=True)
 
+    #
+    ### G^\dagger
+    #
     p = sy.Matrix(NS*NC, NS*NC, lambda i, j: pr[j+i*NS*NC] + pi[j+i*NS*NC]*I)
-    q = sy.Matrix(NS*NC, NS*NC, lambda i, j: qr[j+i*NS*NC] + qi[j+i*NS*NC]*I)
-    
+    x = sy.zeros((NS*NC,NS*NC))
+
+
     body += "__inline__ void\n"
-    body += "prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])\n{\n" 
+    body += "prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])\n{\n"
+    for csp0 in range(NC*NS):
+        for csp1 in range(NC*NS):
+            x[csp0, csp1] += p[csp1, csp0].conjugate()
+            lines = [x[i, j].expand().as_real_imag() for i, j in itertools.product(range(NS*NC), range(NS*NC))]
+    lines = [(str(x[0]), str(x[1])) for x in lines]
+    lines = [("\n  B[%2d][%2d].re = %s;\n" % (i, j, lines[j+i*NS*NC][0]),
+              "\n  B[%2d][%2d].im = %s;\n" % (i, j, lines[j+i*NS*NC][1]))
+             for i,j in itertools.product(range(NS*NC), range(NS*NC))]
+
+    body += "".join([x[0] + x[1] for x in lines])
+    body += "\n  return;\n}\n\n"
+
+    p = sy.Matrix(NS*NC, NS*NC, lambda i, j: pr[j+i*NS*NC] + pi[j+i*NS*NC]*I)
+    q = sy.Matrix(NS*NC, NS*NC, lambda i, j: qr[j+i*NS*NC] + qi[j+i*NS*NC]*I) 
+    x = sy.zeros((NS*NC,NS*NC))
+    body += "__inline__ void\n"
+    body += "prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])\n{\n"
     for csp0 in range(NC*NS):
         for csp1 in range(NC*NS):
             for col in range(NC):
@@ -176,15 +197,15 @@ for NC in [1, 3]:
 
     lines = [x[i, j].expand().as_real_imag() for i, j in itertools.product(range(NS*NC), range(NS*NC))]
     lines = [(str(x[0]), str(x[1])) for x in lines]
-    lines = [(" "+x[0] if x[0][0] != "-" else x[0], 
+    lines = [(" "+x[0] if x[0][0] != "-" else x[0],
     " "+x[1] if x[1][0] != "-" else x[1]) for x in lines]
     lines = [(str(x[0]).replace(" + ", " \n\t+").replace(" - ", " \n\t-"),
     str(x[1]).replace(" + ", " \n\t+").replace(" - ", " \n\t-")) for x in lines]
-    
+
     lines = [("\n  C[%2d][%2d].re = \n\t%s;\n" % (i, j, lines[j+i*NS*NC][0]),
-              "\n  C[%2d][%2d].im = \n\t%s;\n" % (i, j, lines[j+i*NS*NC][1])) 
+              "\n  C[%2d][%2d].im = \n\t%s;\n" % (i, j, lines[j+i*NS*NC][1]))
              for i,j in itertools.product(range(NS*NC), range(NS*NC))]
-    
+
     body += "".join([x[0] + x[1] for x in lines])
     body += "\n  return;\n}\n\n"
     body += "#endif /* NC == %d */\n" % NC

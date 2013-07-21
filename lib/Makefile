@@ -81,6 +81,8 @@ SOURCES = qpb_init\
 	qpb_nucleon_2pt\
 	qpb_delta_1o2_2pt\
 	qpb_delta_3o2_2pt\
+	qpb_multiq_2pt\
+	qpb_tetraq_mol_2pt\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_xdotg5y\

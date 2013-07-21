@@ -2,6 +2,7 @@ Makefile.in
 mainprogs/invert/invert
 mainprogs/mesons/mesons
 mainprogs/baryons/baryons
+mainprogs/multiq/multiq
 mainprogs/eigens/eigens
 mainprogs/overlap-kl/normality/normality
 mainprogs/overlap-kl/ginsparg-wilson-relation/ginsparg-wilson-relation
