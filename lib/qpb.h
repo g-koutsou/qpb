@@ -17,6 +17,7 @@
 #include <qpb_rng.h>
 #include <qpb_parser.h>
 #include <qpb_errors.h>
+#include <qpb_byte_order.h>
 #include <qpb_msg_passing_init.h>
 #include <qpb_init.h>
 #include <qpb_kl_defs.h>
