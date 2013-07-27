@@ -54,7 +54,8 @@ qpb_tetraq_mol_2pt(qpb_complex **corr_x, qpb_spinor_field *spinor)
 
 	A = CSCALE(CMUL(A,A), 2.0);	
 	B = CSCALE(B, 2.0);
-	corr_x[t][lv] = CSUB(A, B);
+	corr_x[0*lt+t][lv] = CNEGATE(B);
+	corr_x[1*lt+t][lv] = A;
       }
   return;
 }

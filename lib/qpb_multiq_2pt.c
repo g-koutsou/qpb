@@ -10,9 +10,10 @@
 #include <qpb_ft.h>
 #include <qpb_tetraq_mol_2pt.h>
 
-#define QPB_N_MULTIQ_2PT_CHANNELS 1
+#define QPB_N_MULTIQ_2PT_CHANNELS 2
 enum qpb_baryon_2pt_channels {
-  TETRAQ_MOL
+  TETRAQ_MOL_TR,
+  TETRAQ_MOL_TRTR
 };
 
 void *
@@ -135,8 +136,9 @@ qpb_multiq_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, cha
       int nch = 0;
       switch(ich)
 	{
-	case TETRAQ_MOL:
-	  nch = 1;
+	case TETRAQ_MOL_TR:
+	case TETRAQ_MOL_TRTR:
+	  nch = 2;
 	  corr_x = corr_alloc(nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
@@ -179,8 +181,11 @@ qpb_multiq_2pt(qpb_spinor_field *light, qpb_spinor_field *heavy, int max_q2, cha
 	  {
 	    switch(ich)
 	      {
-	      case TETRAQ_MOL:
-		strcpy(ctag ,"MOLECULE");
+	      case TETRAQ_MOL_TR:
+		strcpy(ctag ,"MOLECULE_TR");
+		break;
+	      case TETRAQ_MOL_TRTR:
+		strcpy(ctag ,"MOLECULE_TRTR");
 		break;
 	      }
 	    if(am_master)
