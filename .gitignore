@@ -7,6 +7,7 @@ mainprogs/eigens/eigens
 mainprogs/overlap-kl/normality/normality
 mainprogs/overlap-kl/ginsparg-wilson-relation/ginsparg-wilson-relation
 mainprogs/overlap-kl/locality/locality
+mainprogs/overlap-kl/invert/invert
 testprogs/ape_3d/ape_3d
 testprogs/source_rms/source_rms
 *~

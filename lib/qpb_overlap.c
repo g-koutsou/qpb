@@ -94,7 +94,7 @@ qpb_congrad_kl11_inner(qpb_spinor_field x, qpb_spinor_field b,
 	}
       qpb_spinor_xdotx(&res_norm, r);
       if((iters % n_echo == 0))
-	print(" iters = %8d, res = %e\n", iters, res_norm / b_norm);
+	print(" \t iters = %8d, res = %e\n", iters, res_norm / b_norm);
 
       beta.re = res_norm / gamma.re;
       beta.im = 0.;
@@ -118,7 +118,7 @@ qpb_congrad_kl11_inner(qpb_spinor_field x, qpb_spinor_field b,
       return -1;
     }
 
-  print(" After %d iters, CG converged, res = %e, relative = %e, t = %g secs\n", 
+  print(" \t After %d iters, CG converged, res = %e, relative = %e, t = %g secs\n", 
 	iters, res_norm, res_norm / b_norm, t);
   
   return iters;
@@ -186,7 +186,7 @@ qpb_overlap_apply(qpb_spinor_field y, qpb_spinor_field x, void * gauge,
 
       qpb_spinor_field x_tilde = qpb_spinor_field_init();
       qpb_spinor_field_set_zero(x_tilde);
-      int n_echo = 1e6;
+      int n_echo = 100;
       /* Compute x_tilde = [1+3*A]^-1 x */
       qpb_congrad_kl11_inner(x_tilde, x, clover, -rho, c_sw, epsilon, max_iter, n_echo);
       /* Apply: D(3+A) + (1+m_tilde/rho)(1+3A) on x_tilde */

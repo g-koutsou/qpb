@@ -13,7 +13,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = ginsparg-wilson-relation normality locality
+DIRS = ginsparg-wilson-relation normality locality invert
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done

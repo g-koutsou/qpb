@@ -69,6 +69,7 @@ SOURCES = qpb_init\
 	qpb_apply_clover_bri_dslash\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
+	qpb_bicgstab_overlap_outer\
 	qpb_mscongrad\
 	qpb_congrad\
 	qpb_overlap\
