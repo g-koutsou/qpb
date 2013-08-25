@@ -7,7 +7,7 @@
 #include <qpb_overlap.h>
 #include <qpb_stop_watch.h>
 
-#define QPB_CONGRAD_NUMB_TEMP_VECS 3
+#define QPB_CONGRAD_NUMB_TEMP_VECS 4
 
 qpb_spinor_field congrad_temp_vecs[QPB_CONGRAD_NUMB_TEMP_VECS];
 
@@ -42,9 +42,13 @@ qpb_cg_overlap_outer_finalize()
   return;
 }
 
-#define D(y,x)								\
-  qpb_overlap_apply(y, x, gauge, clover, rho_ov, mass, c_sw, kl_class, kl_iters, epsilon, max_iter); \
-  qpb_spinor_gamma5(y, y);
+#define D(out,in)							\
+  qpb_overlap_apply(out, in, gauge, clover, rho_ov, mass, c_sw, kl_class, kl_iters, epsilon, max_iter); \
+  qpb_spinor_gamma5(out, out);
+
+#define DD(out,in)							\
+  D(y, in);								\
+  D(out, y);
 
 int
 qpb_cg_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
@@ -55,17 +59,19 @@ qpb_cg_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_spinor_field p = congrad_temp_vecs[0];
   qpb_spinor_field r = congrad_temp_vecs[1];
   qpb_spinor_field w = congrad_temp_vecs[2];
+  qpb_spinor_field y = congrad_temp_vecs[3];
 
   int iters = 0;
-  const int n_echo = 1, n_reeval = 10;
+  const int n_echo = 1, n_reeval = 50;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma;
-
-  qpb_spinor_gamma5(b, b);
+  qpb_spinor_field_set_random(x);
+  qpb_spinor_gamma5(w, b);
+  D(b, w);
 
   qpb_spinor_xdotx(&b_norm, b);
-  D(r, x);
+  DD(r, x);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xdotx(&gamma.re, r);
   gamma.im = 0;
@@ -77,13 +83,13 @@ qpb_cg_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       if(res_norm / b_norm <= epsilon)
 	break;
     
-      D(w, p);
+      DD(w, p);
       qpb_spinor_xdoty(&omega, p, w);
       alpha = CDEV(gamma, omega);
       qpb_spinor_axpy(x, alpha, p, x);
       if(iters % n_reeval == 0) 
 	{
-	  D(w, x); 
+	  DD(w, x); 
 	  qpb_spinor_xmy(r, b, w);
 	}
       else
@@ -102,7 +108,7 @@ qpb_cg_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       gamma.im = 0.;
     }
   t = qpb_stop_watch(t);
-  D(w, x);
+  DD(w, x);
   qpb_spinor_xmy(r, b, w);
   qpb_spinor_xdotx(&res_norm, r);
 
