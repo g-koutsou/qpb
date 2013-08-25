@@ -420,7 +420,7 @@ main(int argc, char *argv[])
     }
   else if(strcmp(aux_string, "cg") == 0)
     {
-      solver = BICGSTAB;
+      solver = CG;
       numb_shifts = 1;
     }
   else
