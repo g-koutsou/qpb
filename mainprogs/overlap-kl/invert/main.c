@@ -13,6 +13,7 @@ enum {
 
 enum {
   BICGSTAB,
+  CG,
 } solver;
 
 enum {
@@ -417,9 +418,15 @@ main(int argc, char *argv[])
       solver = BICGSTAB;
       numb_shifts = 1;
     }
+  else if(strcmp(aux_string, "cg") == 0)
+    {
+      solver = BICGSTAB;
+      numb_shifts = 1;
+    }
   else
     {
       error("%s: option should be one of: ", "Solver");
+      error("%s, ", "cg"); 
       error("%s\n", "bicgstab"); 
       exit(QPB_PARSER_ERROR);
     };
@@ -630,12 +637,15 @@ main(int argc, char *argv[])
     }
 
   /*
-    Has been checked above that argument is BiCGStab 
+    Has been checked above that argument is either CG or BiCGStab 
    */
   switch(solver)
     {
     case BICGSTAB:
       print(" Solver = BiCGStab \n");
+      break;
+    case CG:
+      print(" Solver = CG \n");
       break;
     }
   qpb_rng_init(seed);
@@ -826,6 +836,9 @@ main(int argc, char *argv[])
     case BICGSTAB:
       qpb_bicgstab_overlap_outer_init();
       break;
+    case CG:
+      qpb_cg_overlap_outer_init();
+      break;
     }
 
   for(int i=0; i<n_spinors; i++)
@@ -835,6 +848,10 @@ main(int argc, char *argv[])
 	case BICGSTAB:
 	  iters = qpb_bicgstab_overlap_outer(sol[i], source[i], solver_arg_links, clover_term, rho, 
 					     mass, c_sw, kl_class, kl_iters, epsilon, max_iters);
+	  break;
+	case CG:
+	  iters = qpb_cg_overlap_outer(sol[i], source[i], solver_arg_links, clover_term, rho, 
+				       mass, c_sw, kl_class, kl_iters, epsilon, max_iters);
 	  break;
 	}
       print(" Done vector = %d / %d, iters = %d\n", i+1, n_spinors, iters);
@@ -846,6 +863,11 @@ main(int argc, char *argv[])
       qpb_bicgstab_overlap_outer_finalize();
       t = qpb_stop_watch(t);
       print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
+      break;
+    case CG: 
+      qpb_cg_overlap_outer_finalize();
+      t = qpb_stop_watch(t);
+      print(" CG done, %d vectors in t = %f sec\n", n_spinors, t);
       break;
     }
 
