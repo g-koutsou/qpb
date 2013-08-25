@@ -42,8 +42,9 @@ qpb_bicgstab_overlap_outer_finalize()
   return;
 }
 
-#define D(y,x) qpb_overlap_apply(y, x, gauge, clover, rho_ov, mass, \
-				 c_sw, kl_class, kl_iters, epsilon, max_iter)
+#define D(y,x)								\
+  qpb_overlap_apply(y, x, gauge, clover, rho_ov, mass, c_sw, kl_class, kl_iters, epsilon, max_iter); \
+  qpb_spinor_gamma5(y, y);
 
 
 int
@@ -57,7 +58,10 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_spinor_field p = bicgstab_temp_vecs[2];
   qpb_spinor_field u = bicgstab_temp_vecs[3];
   qpb_spinor_field v = bicgstab_temp_vecs[4];
-
+  /* 
+     Solves γ5Dx = γ5b 
+  */
+  qpb_spinor_gamma5(b, b);
   int iters = 0;
   const int n_echo = 1, n_reeval = 10;
   qpb_double res_norm, b_norm;
