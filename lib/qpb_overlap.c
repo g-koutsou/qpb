@@ -83,7 +83,7 @@ qpb_congrad_kl11_inner(qpb_spinor_field x, qpb_spinor_field b,
 	{
 	  dslash_func(y, x, dslash_args); 
 	  dslash_func(w, y, dslash_args); 
-	  qpb_spinor_axpy(y, (qpb_complex){3.0, 0.0}, w, p);
+	  qpb_spinor_axpy(y, (qpb_complex){3.0, 0.0}, w, x);
 	  qpb_spinor_xmy(r, b, y);
 	}
       else
