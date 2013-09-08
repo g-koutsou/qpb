@@ -75,7 +75,7 @@ for NC in [1, 3]:
         doc = elem["doc"]
         mat = elem["mat"]
         body += "/* multiply prop by %s from the left */\n" % doc
-        body += "__inline__ void\n"
+        body += "INLINE void\n"
         body += "prop_%s_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])\n{\n" % name
         for c0 in range(NC):
             for c1 in range(NC):
@@ -94,7 +94,7 @@ for NC in [1, 3]:
         doc = elem["doc"]
         mat = gamma_t * elem["mat"].H * gamma_t
         body += "/* multiply prop by \bar{%s} from the right */\n" % doc
-        body += "__inline__ void\n"
+        body += "INLINE void\n"
         body += "prop_G_%s(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])\n{\n" % name
         for c0 in range(NC):
             for c1 in range(NC):
@@ -113,7 +113,7 @@ for NC in [1, 3]:
         doc = elem["doc"]
         mat = elem["mat"]
         body += "/* multiply prop by %s from the left */\n" % doc
-        body += "__inline__ void\n"
+        body += "INLINE void\n"
         body += "prop_%s_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])\n{\n" % name
         for c0 in range(NC):
             for c1 in range(NC):
@@ -132,7 +132,7 @@ for NC in [1, 3]:
         doc = elem["doc"]
         mat = elem["mat"]
         body += "/* multiply prop by %s from the right */\n" % doc
-        body += "__inline__ void\n"
+        body += "INLINE void\n"
         body += "prop_G_%s(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])\n{\n" % name
         for c0 in range(NC):
             for c1 in range(NC):
@@ -170,7 +170,7 @@ for NC in [1, 3]:
     x = sy.zeros((NS*NC,NS*NC))
 
 
-    body += "__inline__ void\n"
+    body += "INLINE void\n"
     body += "prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])\n{\n"
     for csp0 in range(NC*NS):
         for csp1 in range(NC*NS):
@@ -187,7 +187,7 @@ for NC in [1, 3]:
     p = sy.Matrix(NS*NC, NS*NC, lambda i, j: pr[j+i*NS*NC] + pi[j+i*NS*NC]*I)
     q = sy.Matrix(NS*NC, NS*NC, lambda i, j: qr[j+i*NS*NC] + qi[j+i*NS*NC]*I) 
     x = sy.zeros((NS*NC,NS*NC))
-    body += "__inline__ void\n"
+    body += "INLINE void\n"
     body += "prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])\n{\n"
     for csp0 in range(NC*NS):
         for csp1 in range(NC*NS):

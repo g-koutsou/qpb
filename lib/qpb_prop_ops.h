@@ -5,7 +5,7 @@
 /* BEGIN python generated segment */
 #if NC == 1
 /* multiply prop by \gamma_x from the left */
-__inline__ void
+INLINE void
 prop_gamma_x_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 3][ 0].im;
@@ -46,7 +46,7 @@ prop_gamma_x_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_y from the left */
-__inline__ void
+INLINE void
 prop_gamma_y_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 3][ 0].re;
@@ -87,7 +87,7 @@ prop_gamma_y_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_z from the left */
-__inline__ void
+INLINE void
 prop_gamma_z_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 2][ 0].im;
@@ -128,7 +128,7 @@ prop_gamma_z_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_t from the left */
-__inline__ void
+INLINE void
 prop_gamma_t_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -169,7 +169,7 @@ prop_gamma_t_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5 from the left */
-__inline__ void
+INLINE void
 prop_gamma_5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 2][ 0].re;
@@ -210,7 +210,7 @@ prop_gamma_5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C from the left */
-__inline__ void
+INLINE void
 prop_C_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 3][ 0].re;
@@ -251,7 +251,7 @@ prop_C_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_5 from the left */
-__inline__ void
+INLINE void
 prop_Cg5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 1][ 0].re;
@@ -292,7 +292,7 @@ prop_Cg5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_Cgx_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].im;
@@ -333,7 +333,7 @@ prop_Cgx_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_Cgy_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -374,7 +374,7 @@ prop_Cgy_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_Cgz_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 1][ 0].im;
@@ -415,7 +415,7 @@ prop_Cgz_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_t from the left */
-__inline__ void
+INLINE void
 prop_Cgt_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 3][ 0].re;
@@ -456,7 +456,7 @@ prop_Cgt_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_x} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_x(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 3].im;
@@ -497,7 +497,7 @@ prop_G_gamma_x(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_y} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_y(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 3].re;
@@ -538,7 +538,7 @@ prop_G_gamma_y(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_z} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_z(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 2].im;
@@ -579,7 +579,7 @@ prop_G_gamma_z(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_t} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_t(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -620,7 +620,7 @@ prop_G_gamma_t(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 2].re;
@@ -661,7 +661,7 @@ prop_G_gamma_5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C} from the right */
-__inline__ void
+INLINE void
 prop_G_C(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 3].re;
@@ -702,7 +702,7 @@ prop_G_C(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_5} from the right */
-__inline__ void
+INLINE void
 prop_G_Cg5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 1].re;
@@ -743,7 +743,7 @@ prop_G_Cg5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_x} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgx(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 0].im;
@@ -784,7 +784,7 @@ prop_G_Cgx(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_y} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgy(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -825,7 +825,7 @@ prop_G_Cgy(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_z} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgz(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 1].im;
@@ -866,7 +866,7 @@ prop_G_Cgz(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_t} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgt(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 3].re;
@@ -907,7 +907,7 @@ prop_G_Cgt(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^+ = (1+\gamma_t)/4 from the left */
-__inline__ void
+INLINE void
 prop_ProjTp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -948,7 +948,7 @@ prop_ProjTp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^- = (1-\gamma_t)/4 from the left */
-__inline__ void
+INLINE void
 prop_ProjTm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -989,7 +989,7 @@ prop_ProjTm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_ProjXp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 1][ 0].re;
@@ -1030,7 +1030,7 @@ prop_ProjXp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_ProjXm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1071,7 +1071,7 @@ prop_ProjXm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_ProjYp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 1][ 0].im;
@@ -1112,7 +1112,7 @@ prop_ProjYp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_ProjYm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1153,7 +1153,7 @@ prop_ProjYm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_ProjZp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -1194,7 +1194,7 @@ prop_ProjZp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_ProjZm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1235,7 +1235,7 @@ prop_ProjZm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^+ = (1+\gamma_t)/4 from the right */
-__inline__ void
+INLINE void
 prop_G_ProjTp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -1276,7 +1276,7 @@ prop_G_ProjTp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^- = (1-\gamma_t)/4 from the right */
-__inline__ void
+INLINE void
 prop_G_ProjTm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1317,7 +1317,7 @@ prop_G_ProjTm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_x from the right */
-__inline__ void
+INLINE void
 prop_G_ProjXp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 1].re;
@@ -1358,7 +1358,7 @@ prop_G_ProjXp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_x from the right */
-__inline__ void
+INLINE void
 prop_G_ProjXm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1399,7 +1399,7 @@ prop_G_ProjXm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_y from the right */
-__inline__ void
+INLINE void
 prop_G_ProjYp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -0.5*in[ 0][ 1].im;
@@ -1440,7 +1440,7 @@ prop_G_ProjYp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_y from the right */
-__inline__ void
+INLINE void
 prop_G_ProjYm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1481,7 +1481,7 @@ prop_G_ProjYm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_z from the right */
-__inline__ void
+INLINE void
 prop_G_ProjZp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -1522,7 +1522,7 @@ prop_G_ProjZp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_z from the right */
-__inline__ void
+INLINE void
 prop_G_ProjZm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -1562,7 +1562,7 @@ prop_G_ProjZm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
   return;
 }
 
-__inline__ void
+INLINE void
 prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])
 {
 
@@ -1633,7 +1633,7 @@ prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])
   return;
 }
 
-__inline__ void
+INLINE void
 prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])
 {
 
@@ -1963,7 +1963,7 @@ prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B
 #endif /* NC == 1 */
 #if NC == 3
 /* multiply prop by \gamma_x from the left */
-__inline__ void
+INLINE void
 prop_gamma_x_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 9][ 0].im;
@@ -2268,7 +2268,7 @@ prop_gamma_x_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_y from the left */
-__inline__ void
+INLINE void
 prop_gamma_y_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 9][ 0].re;
@@ -2573,7 +2573,7 @@ prop_gamma_y_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_z from the left */
-__inline__ void
+INLINE void
 prop_gamma_z_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 6][ 0].im;
@@ -2878,7 +2878,7 @@ prop_gamma_z_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_t from the left */
-__inline__ void
+INLINE void
 prop_gamma_t_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -3183,7 +3183,7 @@ prop_gamma_t_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \gamma_5 from the left */
-__inline__ void
+INLINE void
 prop_gamma_5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 6][ 0].re;
@@ -3488,7 +3488,7 @@ prop_gamma_5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C from the left */
-__inline__ void
+INLINE void
 prop_C_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 9][ 0].re;
@@ -3793,7 +3793,7 @@ prop_C_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_5 from the left */
-__inline__ void
+INLINE void
 prop_Cg5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 3][ 0].re;
@@ -4098,7 +4098,7 @@ prop_Cg5_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_Cgx_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].im;
@@ -4403,7 +4403,7 @@ prop_Cgx_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_Cgy_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -4708,7 +4708,7 @@ prop_Cgy_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_Cgz_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 3][ 0].im;
@@ -5013,7 +5013,7 @@ prop_Cgz_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by C\gamma_t from the left */
-__inline__ void
+INLINE void
 prop_Cgt_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 9][ 0].re;
@@ -5318,7 +5318,7 @@ prop_Cgt_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_x} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_x(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 9].im;
@@ -5623,7 +5623,7 @@ prop_G_gamma_x(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_y} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_y(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 9].re;
@@ -5928,7 +5928,7 @@ prop_G_gamma_y(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_z} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_z(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 6].im;
@@ -6233,7 +6233,7 @@ prop_G_gamma_z(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_t} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_t(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -6538,7 +6538,7 @@ prop_G_gamma_t(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{\gamma_5} from the right */
-__inline__ void
+INLINE void
 prop_G_gamma_5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 6].re;
@@ -6843,7 +6843,7 @@ prop_G_gamma_5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C} from the right */
-__inline__ void
+INLINE void
 prop_G_C(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 9].re;
@@ -7148,7 +7148,7 @@ prop_G_C(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_5} from the right */
-__inline__ void
+INLINE void
 prop_G_Cg5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 3].re;
@@ -7453,7 +7453,7 @@ prop_G_Cg5(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_x} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgx(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -in[ 0][ 0].im;
@@ -7758,7 +7758,7 @@ prop_G_Cgx(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_y} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgy(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 0].re;
@@ -8063,7 +8063,7 @@ prop_G_Cgy(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_z} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgz(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 3].im;
@@ -8368,7 +8368,7 @@ prop_G_Cgz(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by ar{C\gamma_t} from the right */
-__inline__ void
+INLINE void
 prop_G_Cgt(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  in[ 0][ 9].re;
@@ -8673,7 +8673,7 @@ prop_G_Cgt(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^+ = (1+\gamma_t)/4 from the left */
-__inline__ void
+INLINE void
 prop_ProjTp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -8978,7 +8978,7 @@ prop_ProjTp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^- = (1-\gamma_t)/4 from the left */
-__inline__ void
+INLINE void
 prop_ProjTm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -9283,7 +9283,7 @@ prop_ProjTm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_ProjXp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 3][ 0].re;
@@ -9588,7 +9588,7 @@ prop_ProjXp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_x from the left */
-__inline__ void
+INLINE void
 prop_ProjXm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -9893,7 +9893,7 @@ prop_ProjXm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_ProjYp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 3][ 0].im;
@@ -10198,7 +10198,7 @@ prop_ProjYp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_y from the left */
-__inline__ void
+INLINE void
 prop_ProjYm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -10503,7 +10503,7 @@ prop_ProjYm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_ProjZp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -10808,7 +10808,7 @@ prop_ProjZp_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_z from the left */
-__inline__ void
+INLINE void
 prop_ProjZm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -11113,7 +11113,7 @@ prop_ProjZm_G(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^+ = (1+\gamma_t)/4 from the right */
-__inline__ void
+INLINE void
 prop_G_ProjTp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -11418,7 +11418,7 @@ prop_G_ProjTp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by \Gamma^- = (1-\gamma_t)/4 from the right */
-__inline__ void
+INLINE void
 prop_G_ProjTm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -11723,7 +11723,7 @@ prop_G_ProjTm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_x from the right */
-__inline__ void
+INLINE void
 prop_G_ProjXp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 3].re;
@@ -12028,7 +12028,7 @@ prop_G_ProjXp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_x from the right */
-__inline__ void
+INLINE void
 prop_G_ProjXm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -12333,7 +12333,7 @@ prop_G_ProjXm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_y from the right */
-__inline__ void
+INLINE void
 prop_G_ProjYp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re = -0.5*in[ 0][ 3].im;
@@ -12638,7 +12638,7 @@ prop_G_ProjYp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_y from the right */
-__inline__ void
+INLINE void
 prop_G_ProjYm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -12943,7 +12943,7 @@ prop_G_ProjYm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^+\gamma_5\gamma_z from the right */
-__inline__ void
+INLINE void
 prop_G_ProjZp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0.5*in[ 0][ 0].re;
@@ -13248,7 +13248,7 @@ prop_G_ProjZp(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 }
 
 /* multiply prop by i\Gamma^-\gamma_5\gamma_z from the right */
-__inline__ void
+INLINE void
 prop_G_ProjZm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
 {
   out[ 0][ 0].re =  0;
@@ -13552,7 +13552,7 @@ prop_G_ProjZm(qpb_complex out[NS*NC][NS*NC], qpb_complex in[NS*NC][NS*NC])
   return;
 }
 
-__inline__ void
+INLINE void
 prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])
 {
 
@@ -14135,7 +14135,7 @@ prop_G_dag(qpb_complex B[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS])
   return;
 }
 
-__inline__ void
+INLINE void
 prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])
 {
 

@@ -4,7 +4,7 @@
 #include <qpb_spinor_linalg.h>
 #include <qpb_gauge_field.h>
 #include <qpb_comm_halo_spinor_field.h>
-#include <qpb_overlap.h>
+#include <qpb_overlap_apply.h>
 #include <qpb_stop_watch.h>
 
 #define QPB_CONGRAD_NUMB_TEMP_VECS 4

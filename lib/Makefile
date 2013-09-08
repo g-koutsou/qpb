@@ -73,7 +73,7 @@ SOURCES = qpb_init\
 	qpb_cg_overlap_outer\
 	qpb_mscongrad\
 	qpb_congrad\
-	qpb_overlap\
+	qpb_overlap_apply\
 	qpb_bicgg5\
 	qpb_lanczos\
 	qpb_dslash_wrappers\

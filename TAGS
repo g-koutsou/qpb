@@ -1,7 +1,4 @@
 
-lib/qpb_overlap.h,29
-#define _QPB_OVERLAP_H 2,23
-
 lib/qpb_parser.h,28
 #define _QPB_PARSER_H 2,22
 
@@ -33,6 +30,9 @@ qpb_ft(118,3004
 
 lib/qpb_bicgstab.h,30
 #define _QPB_BICGSTAB_H 2,24
+
+lib/qpb_cg_overlap_outer.h,38
+#define _QPB_CG_OVERLAP_OUTER_H 2,32
 
 lib/qpb_read_raw_gauge.h,36
 #define _QPB_READ_RAW_GAUGE_H 2,30
@@ -286,86 +286,86 @@ lib/qpb_read_ildg_gauge.h,37
 
 lib/qpb_prop_ops.h,2044
 #define _QPB_PROP_OPS_H 2,24
-prop_gamma_x_G(9,185
-prop_gamma_y_G(50,1460
-prop_gamma_z_G(91,2735
-prop_gamma_t_G(132,4010
-prop_gamma_5_G(173,5285
-prop_C_G(214,6553
-prop_Cg5_G(255,7823
-prop_Cgx_G(296,9095
-prop_Cgy_G(337,10367
-prop_Cgz_G(378,11639
-prop_Cgt_G(419,12911
-prop_G_gamma_x(460,14188
-prop_G_gamma_y(501,15469
-prop_G_gamma_z(542,16750
-prop_G_gamma_t(583,18031
-prop_G_gamma_5(624,19312
-prop_G_C(665,20586
-prop_G_Cg5(706,21862
-prop_G_Cgx(747,23140
-prop_G_Cgy(788,24418
-prop_G_Cgz(829,25696
-prop_G_Cgt(870,26974
-prop_ProjTp_G(911,28262
-prop_ProjTm_G(952,29425
-prop_ProjXp_G(993,30588
-prop_ProjXm_G(1034,31751
-prop_ProjYp_G(1075,32914
-prop_ProjYm_G(1116,34077
-prop_ProjZp_G(1157,35240
-prop_ProjZm_G(1198,36403
-prop_G_ProjTp(1239,37567
-prop_G_ProjTm(1280,38731
-prop_G_ProjXp(1321,39895
-prop_G_ProjXm(1362,41059
-prop_G_ProjYp(1403,42223
-prop_G_ProjYm(1444,43387
-prop_G_ProjZp(1485,44551
-prop_G_ProjZm(1526,45715
-prop_G_dag(1566,46815
-prop_G_G(1637,47956
-prop_gamma_x_G(1967,56195
-prop_gamma_y_G(2272,66438
-prop_gamma_z_G(2577,76681
-prop_gamma_t_G(2882,86924
-prop_gamma_5_G(3187,97167
-prop_C_G(3492,107403
-prop_Cg5_G(3797,117641
-prop_Cgx_G(4102,127881
-prop_Cgy_G(4407,138121
-prop_Cgz_G(4712,148361
-prop_Cgt_G(5017,158601
-prop_G_gamma_x(5322,168846
-prop_G_gamma_y(5627,179095
-prop_G_gamma_z(5932,189344
-prop_G_gamma_t(6237,199593
-prop_G_gamma_5(6542,209842
-prop_G_C(6847,220084
-prop_G_Cg5(7152,230328
-prop_G_Cgx(7457,240574
-prop_G_Cgy(7762,250820
-prop_G_Cgz(8067,261066
-prop_G_Cgt(8372,271312
-prop_ProjTp_G(8677,281568
-prop_ProjTm_G(8982,290675
-prop_ProjXp_G(9287,299782
-prop_ProjXm_G(9592,308889
-prop_ProjYp_G(9897,317996
-prop_ProjYm_G(10202,327103
-prop_ProjZp_G(10507,336210
-prop_ProjZm_G(10812,345317
-prop_G_ProjTp(11117,354425
-prop_G_ProjTm(11422,363533
-prop_G_ProjXp(11727,372641
-prop_G_ProjXm(12032,381749
-prop_G_ProjYp(12337,390857
-prop_G_ProjYm(12642,399965
-prop_G_ProjZp(12947,409073
-prop_G_ProjZm(13252,418181
-prop_G_dag(13556,427225
-prop_G_G(14139,436686
+prop_gamma_x_G(9,181
+prop_gamma_y_G(50,1452
+prop_gamma_z_G(91,2723
+prop_gamma_t_G(132,3994
+prop_gamma_5_G(173,5265
+prop_C_G(214,6529
+prop_Cg5_G(255,7795
+prop_Cgx_G(296,9063
+prop_Cgy_G(337,10331
+prop_Cgz_G(378,11599
+prop_Cgt_G(419,12867
+prop_G_gamma_x(460,14140
+prop_G_gamma_y(501,15417
+prop_G_gamma_z(542,16694
+prop_G_gamma_t(583,17971
+prop_G_gamma_5(624,19248
+prop_G_C(665,20518
+prop_G_Cg5(706,21790
+prop_G_Cgx(747,23064
+prop_G_Cgy(788,24338
+prop_G_Cgz(829,25612
+prop_G_Cgt(870,26886
+prop_ProjTp_G(911,28170
+prop_ProjTm_G(952,29329
+prop_ProjXp_G(993,30488
+prop_ProjXm_G(1034,31647
+prop_ProjYp_G(1075,32806
+prop_ProjYm_G(1116,33965
+prop_ProjZp_G(1157,35124
+prop_ProjZm_G(1198,36283
+prop_G_ProjTp(1239,37443
+prop_G_ProjTm(1280,38603
+prop_G_ProjXp(1321,39763
+prop_G_ProjXm(1362,40923
+prop_G_ProjYp(1403,42083
+prop_G_ProjYm(1444,43243
+prop_G_ProjZp(1485,44403
+prop_G_ProjZm(1526,45563
+prop_G_dag(1566,46659
+prop_G_G(1637,47796
+prop_gamma_x_G(1967,56031
+prop_gamma_y_G(2272,66270
+prop_gamma_z_G(2577,76509
+prop_gamma_t_G(2882,86748
+prop_gamma_5_G(3187,96987
+prop_C_G(3492,107219
+prop_Cg5_G(3797,117453
+prop_Cgx_G(4102,127689
+prop_Cgy_G(4407,137925
+prop_Cgz_G(4712,148161
+prop_Cgt_G(5017,158397
+prop_G_gamma_x(5322,168638
+prop_G_gamma_y(5627,178883
+prop_G_gamma_z(5932,189128
+prop_G_gamma_t(6237,199373
+prop_G_gamma_5(6542,209618
+prop_G_C(6847,219856
+prop_G_Cg5(7152,230096
+prop_G_Cgx(7457,240338
+prop_G_Cgy(7762,250580
+prop_G_Cgz(8067,260822
+prop_G_Cgt(8372,271064
+prop_ProjTp_G(8677,281316
+prop_ProjTm_G(8982,290419
+prop_ProjXp_G(9287,299522
+prop_ProjXm_G(9592,308625
+prop_ProjYp_G(9897,317728
+prop_ProjYm_G(10202,326831
+prop_ProjZp_G(10507,335934
+prop_ProjZm_G(10812,345037
+prop_G_ProjTp(11117,354141
+prop_G_ProjTm(11422,363245
+prop_G_ProjXp(11727,372349
+prop_G_ProjXm(12032,381453
+prop_G_ProjYp(12337,390557
+prop_G_ProjYm(12642,399661
+prop_G_ProjZp(12947,408765
+prop_G_ProjZm(13252,417869
+prop_G_dag(13556,426909
+prop_G_G(14139,436366
 
 lib/qpb_parser.c,182
   int N;10,162
@@ -442,6 +442,18 @@ qpb_spinor_xmy(6,85
 
 lib/qpb_spinor_field_set_random.c,34
 qpb_spinor_field_set_random(8,96
+
+lib/qpb_cg_overlap_outer.c,245
+#define QPB_CONGRAD_NUMB_TEMP_VECS 10,238
+qpb_spinor_field congrad_temp_vecs[congrad_temp_vecs12,276
+qpb_cg_overlap_outer_init(15,346
+qpb_cg_overlap_outer_finalize(31,714
+#define D(45,1027
+#define DD(49,1191
+qpb_cg_overlap_outer(54,1257
+
+lib/qpb_overlap_apply.h,35
+#define _QPB_OVERLAP_APPLY_H 2,29
 
 lib/qpb_spinor_xdoty.c,24
 qpb_spinor_xdoty(9,126
@@ -530,12 +542,6 @@ qpb_comm_halo_spinor_field_y_start(251,5282
 qpb_comm_halo_spinor_field_y_wait(309,6553
 qpb_comm_halo_spinor_field_z_start(334,7066
 qpb_comm_halo_spinor_field_z_wait(392,8337
-
-lib/qpb_overlap.c,146
-static void * gauge_bc_ptr;18,493
-static qpb_spinor_field temp_vecs[temp_vecs19,521
-qpb_congrad_kl11_inner(28,631
-qpb_overlap_apply(128,3381
 
 lib/qpb_sun_project.h,31
 #define _QPB_SUN_PROJECT 2,25
@@ -1256,6 +1262,20 @@ qpb_lanczos(40,801
 lib/qpb_nucleon_2pt.h,33
 #define _QPB_NUCLEON_2PT_H 2,27
 
+lib/qpb_bicgstab_overlap_outer.c,521
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 13,344
+#define QPB_OP_NUMB_TEMP_VECS 14,382
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,415
+static qpb_spinor_field op_temp_vecs[op_temp_vecs17,488
+static  void *gauge_bc_ptr;gauge_bc_ptr21,674
+static  void *dslash_args[dslash_args22,702
+static  qpb_double mass_tilde,23,732
+static  qpb_double mass_tilde, rho_ov;23,732
+Op(26,784
+qpb_bicgstab_overlap_outer_init(45,1340
+qpb_bicgstab_overlap_outer_finalize(63,1762
+qpb_bicgstab_overlap_outer(78,2086
+
 lib/qpb_baryons_2pt.h,33
 #define _QPB_BARYONS_2PT_H 2,27
 
@@ -1270,6 +1290,12 @@ qpb_write_gauge(12,186
 
 lib/qpb_read_n_spinor.c,26
 qpb_read_n_spinor(12,186
+
+lib/qpb_overlap_apply.c,140
+static void * gauge_bc_ptr;18,493
+static qpb_spinor_field temp_vecs[temp_vecs19,521
+qpb_congrad_1p3A(29,632
+qpb_overlap_apply(129,3370
 
 lib/qpb_byte_order.h,32
 #define _QPB_BYTE_ORDER_H 2,26
@@ -1297,6 +1323,9 @@ qpb_spinor_xdotx(9,126
 
 lib/qpb_gauge_field_set_unit.c,31
 qpb_gauge_field_set_unit(7,75
+
+lib/qpb_bicgstab_overlap_outer.h,44
+#define _QPB_BICGSTAB_OVERLAP_OUTER_H 2,38
 
 testprogs/ape_3d/main.c,103
   CONF_ILDG,3,24
@@ -1389,6 +1418,32 @@ mainprogs/overlap-kl/ginsparg-wilson-relation/main.c,104
 } conf_format;7,68
 usage(10,89
 main(17,196
+
+mainprogs/overlap-kl/invert/main.c,528
+  INVERT_VECTORS,4,25
+  INVERT_PROPAGATOR5,43
+} invert_mode;6,63
+  CONF_ILDG,9,86
+  CONF_RAW_32,10,99
+  CONF_RAW_64,11,114
+} conf_format;12,129
+  BICGSTAB,15,152
+  CG,16,164
+} solver;17,170
+  SOURCE_POINT,20,188
+  SOURCE_ZERO,21,204
+  SOURCE_STOCH,22,219
+  SOURCE_FILE23,235
+} source_opt;24,249
+  SOURCE_NOT_SMEARED,27,271
+  SOURCE_SMEARED28,293
+} source_smearing;29,310
+  STOCH_SOURCE_Z4,32,337
+  STOCH_SOURCE_Z4_T,33,356
+  STOCH_SOURCE_UNIFORM34,377
+} stochastic_source;35,400
+usage(38,427
+main(45,534
 
 mainprogs/eigens/main.c,137
 tridiag_eigenv(12,198
