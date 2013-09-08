@@ -95,6 +95,7 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   rho_ov = rho_in;
   qpb_double factor = 1 - mass / (2*rho_ov);
   qpb_gauge_field gauge_bc;
+  qpb_double m_bare = -rho_in;
   mass_tilde = mass / factor;
   
   if(which_dslash_op == QPB_DSLASH_STANDARD)
@@ -109,7 +110,7 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
     }
 
   dslash_args[0] = gauge_bc_ptr;
-  dslash_args[1] = &mass;
+  dslash_args[1] = &m_bare;
   dslash_args[2] = &clover;
   dslash_args[3] = &c_sw;
 
