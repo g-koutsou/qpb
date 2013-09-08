@@ -41,7 +41,7 @@ qpb_congrad_1p3A(qpb_spinor_field x, qpb_spinor_field b,
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma;
-  qpb_double m_bare = rho;
+  qpb_double m_bare = -rho;
 
   void * dslash_args[4];
   dslash_args[0] = gauge_bc_ptr;
@@ -189,7 +189,7 @@ qpb_overlap_apply(qpb_spinor_field y, qpb_spinor_field x, void * gauge,
       qpb_spinor_field_set_zero(x_tilde);
       int n_echo = 100;
       /* Compute x_tilde = [1+3*A]^-1 x */
-      qpb_congrad_1p3A(x_tilde, x, clover, -rho, c_sw, epsilon, max_iter, n_echo);
+      qpb_congrad_1p3A(x_tilde, x, clover, rho, c_sw, epsilon, max_iter, n_echo);
       /* Apply: D(3+A) + (1+m_tilde/rho)(1+3A) on x_tilde */
       qpb_spinor_field oD_3pAx = temp_vecs[0];
       qpb_spinor_field o1p3Ax = temp_vecs[1];
