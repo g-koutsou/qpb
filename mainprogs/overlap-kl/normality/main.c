@@ -426,18 +426,18 @@ main(int argc, char *argv[])
   qpb_double *diffs;
   diffs = qpb_alloc(sizeof(qpb_double)*n_vec);
 
+  qpb_overlap_kl_init(solver_arg_links, clover_term, rho, c_sw, mass);
+
   qpb_double t = qpb_stop_watch(0);
   for(int i=0; i<n_vec; i++)
     {
       qpb_spinor_field g5Dx = temp_vecs[0];
       qpb_spinor_field g5Dg5Dx = temp_vecs[1];
       /* Compute g5D on eta */
-      qpb_overlap_apply(g5Dx, eta[i], solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(g5Dx, eta[i], kl_class, kl_iters, epsilon, max_iters);
       qpb_spinor_gamma5(g5Dx, g5Dx);
       /* Compute g5D on g5D */
-      qpb_overlap_apply(g5Dg5Dx, g5Dx, solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(g5Dg5Dx, g5Dx, kl_class, kl_iters, epsilon, max_iters);
       qpb_spinor_gamma5(g5Dg5Dx, g5Dg5Dx);
 
       qpb_spinor_field g5x = temp_vecs[2];
@@ -445,12 +445,10 @@ main(int argc, char *argv[])
       qpb_spinor_field Dg5Dg5x = temp_vecs[0];
       /* Compute g5Dg5 on eta */
       qpb_spinor_gamma5(g5x, eta[i]);
-      qpb_overlap_apply(g5Dg5x, g5x, solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(g5Dg5x, g5x, kl_class, kl_iters, epsilon, max_iters);
       qpb_spinor_gamma5(g5Dg5x, g5Dg5x);
       /* Compute D on g5Dg5 */
-      qpb_overlap_apply(Dg5Dg5x, g5Dg5x, solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(Dg5Dg5x, g5Dg5x, kl_class, kl_iters, epsilon, max_iters);
       
       qpb_spinor_field x = temp_vecs[2];
       qpb_spinor_xmy(x, Dg5Dg5x, g5Dg5Dx);
@@ -468,6 +466,8 @@ main(int argc, char *argv[])
   for(int i=0; i<n_vec; i++)
     print(" %4d %e\n", i, diffs[i]);
   free(diffs);
+
+  qpb_overlap_kl_finalize();
 
   for(int i=0; i<4; i++)
     qpb_spinor_field_finalize(temp_vecs[i]);
