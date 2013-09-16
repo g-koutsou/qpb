@@ -834,7 +834,8 @@ main(int argc, char *argv[])
   switch(solver)
     {
     case BICGSTAB:
-      qpb_bicgstab_overlap_outer_init();
+      // qpb_bicgstab_overlap_outer_init();
+      qpb_bicgstab_kl11_overlap_init();
       break;
     case CG:
       qpb_cg_overlap_outer_init();
@@ -846,8 +847,10 @@ main(int argc, char *argv[])
       switch(solver)
 	{
 	case BICGSTAB:
-	  iters = qpb_bicgstab_overlap_outer(sol[i], source[i], solver_arg_links, clover_term, rho, 
-					     mass, c_sw, kl_class, kl_iters, epsilon, max_iters);
+	  iters = qpb_bicgstab_kl11_overlap(sol[i], source[i], solver_arg_links, clover_term, rho, 
+					    mass, c_sw, epsilon, max_iters);
+	  /* iters = qpb_bicgstab_overlap_outer(sol[i], source[i], solver_arg_links, clover_term, rho,  */
+	  /* 				     mass, c_sw, kl_class, kl_iters, epsilon, max_iters); */
 	  break;
 	case CG:
 	  iters = qpb_cg_overlap_outer(sol[i], source[i], solver_arg_links, clover_term, rho, 
@@ -860,7 +863,8 @@ main(int argc, char *argv[])
   switch(solver)             
     {                        
     case BICGSTAB:           
-      qpb_bicgstab_overlap_outer_finalize();
+      qpb_bicgstab_kl11_overlap_finalize();
+      /* qpb_bicgstab_overlap_outer_finalize(); */
       t = qpb_stop_watch(t);
       print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
       break;

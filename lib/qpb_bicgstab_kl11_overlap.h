@@ -5,7 +5,6 @@
 void qpb_bicgstab_kl11_overlap_init();
 int qpb_bicgstab_kl11_overlap(qpb_spinor_field, qpb_spinor_field, void *, 
 			      qpb_clover_term, qpb_double, qpb_double, qpb_double, 
-			      enum qpb_kl_classes, int,
 			      qpb_double, int);
 
 void qpb_bicgstab_kl11_overlap_finalize();

@@ -117,7 +117,6 @@ qpb_apply_gamma5_clover_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spi
 
 	    qpb_apply_dslash_site(spinor_ptr, spinor_in.index, gauge.index, v);
 	  }
-
   qpb_comm_halo_spinor_field_wait(spinor_in);
 
   for(int dir=1; dir<ND; dir++)
@@ -153,7 +152,6 @@ qpb_apply_gamma5_clover_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spi
       qpb_spinor aux_spinor;
       qpb_complex *sp = (qpb_complex *)&aux_spinor;
       spinor_set_zero(sp);
-
       qpb_apply_clover_term_xy(sp, spinor_in.index, clover_term.index, v);
       qpb_apply_clover_term_xz(sp, spinor_in.index, clover_term.index, v);
       qpb_apply_clover_term_xt(sp, spinor_in.index, clover_term.index, v);

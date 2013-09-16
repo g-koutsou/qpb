@@ -26,7 +26,7 @@
 #include <qpb_comm_halo_diagonal_links.h>
 #include <qpb_comm_halo_spinor_field.h>
 #include <qpb_gauge_field.h>
-#include <qpb_overlap_apply.h>
+#include <qpb_overlap_kl.h>
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_field_set_delta.h>
 #include <qpb_spinor_field_set_zero.h>
@@ -56,7 +56,7 @@
 #include <qpb_plaquette.h>
 #include <qpb_lanczos.h>
 #include <qpb_bicgstab.h>
-#include <qpb_bicgstab_overlap_outer.h>
+#include <qpb_bicgstab_kl11_overlap.h>
 #include <qpb_cg_overlap_outer.h>
 #include <qpb_bicgg5.h>
 #include <qpb_mscongrad.h>

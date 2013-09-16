@@ -426,6 +426,8 @@ main(int argc, char *argv[])
   qpb_double *diffs;
   diffs = qpb_alloc(sizeof(qpb_double)*n_vec);
 
+  qpb_overlap_kl_init(solver_arg_links, clover_term, rho, c_sw, mass);
+
   qpb_double t = qpb_stop_watch(0);
   for(int i=0; i<n_vec; i++)
     {
@@ -434,18 +436,15 @@ main(int argc, char *argv[])
       qpb_spinor_field Dg5x = temp_vecs[2];
       qpb_spinor_field Dg5Dx = temp_vecs[3];
       /* Compute g5D on eta */
-      qpb_overlap_apply(g5Dx, eta[i], solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(g5Dx, eta[i], kl_class, kl_iters, epsilon, max_iters);
       qpb_spinor_gamma5(g5Dx, g5Dx);
 
       /* Compute Dg5 on eta */
       qpb_spinor_gamma5(g5x, eta[i]);
-      qpb_overlap_apply(Dg5x, g5x, solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(Dg5x, g5x, kl_class, kl_iters, epsilon, max_iters);
 
       /* Compute Dg5D on eta */
-      qpb_overlap_apply(Dg5Dx, g5Dx, solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(Dg5Dx, g5Dx, kl_class, kl_iters, epsilon, max_iters);
       
       qpb_spinor_field x = temp_vecs[0];
       qpb_spinor_xpy(x, Dg5x, g5Dx);
@@ -459,7 +458,8 @@ main(int argc, char *argv[])
 
   t = qpb_stop_watch(t);
   print(" Done, %d vectors in t = %f sec\n", n_vec, t);
-
+  qpb_overlap_kl_finalize();
+    
   print(" GW Diffs (per stochastic source):\n");
   for(int i=0; i<n_vec; i++)
     print(" %4d %e\n", i, diffs[i]);

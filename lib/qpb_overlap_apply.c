@@ -126,10 +126,10 @@ qpb_congrad_1p3A(qpb_spinor_field x, qpb_spinor_field b,
 }
 
 void
-qpb_overlap_apply(qpb_spinor_field y, qpb_spinor_field x, void * gauge, 
-		  qpb_clover_term clover, qpb_double rho, qpb_double mass, qpb_double c_sw, 
-		  enum qpb_kl_classes kl_class, int kl_iters,
-		  qpb_double epsilon, int max_iter)
+qpb_overlap_kl(qpb_spinor_field y, qpb_spinor_field x, void * gauge, 
+	       qpb_clover_term clover, qpb_double rho, qpb_double mass, qpb_double c_sw, 
+	       enum qpb_kl_classes kl_class, int kl_iters,
+	       qpb_double epsilon, int max_iter)
 {
   qpb_gauge_field gauge_bc;
   qpb_comm_halo_spinor_field_init();

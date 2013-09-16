@@ -60,7 +60,7 @@ qpb_bicgstab_kl11_overlap_init()
 }
 
 void
-qpb_bicgstab_kl11_overlap_outer_finalize()
+qpb_bicgstab_kl11_overlap_finalize()
 {
   for(int i=0; i<QPB_BICGSTAB_NUMB_TEMP_VECS; i++)
     {
@@ -77,8 +77,7 @@ qpb_bicgstab_kl11_overlap_outer_finalize()
 int
 qpb_bicgstab_kl11_overlap(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
 			  qpb_clover_term clover, qpb_double rho_in, qpb_double mass,
-			  qpb_double c_sw, enum qpb_kl_classes kl_class, int kl_iters, 
-			  qpb_double epsilon, int max_iter)
+			  qpb_double c_sw, qpb_double epsilon, int max_iter)
 {
   qpb_spinor_field r0 = bicgstab_temp_vecs[0];
   qpb_spinor_field r = bicgstab_temp_vecs[1];

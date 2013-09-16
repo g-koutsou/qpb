@@ -14,7 +14,6 @@ qpb_apply_bri_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 		     void * U, qpb_double mass)
 {
   qpb_diagonal_links gauge = *(qpb_diagonal_links *)U;
-
   qpb_comm_halo_spinor_field_z_start(spinor_in);
   qpb_comm_halo_spinor_field_z_wait(spinor_in);
 
@@ -23,7 +22,6 @@ qpb_apply_bri_dslash(qpb_spinor_field spinor_out, qpb_spinor_field spinor_in,
 
   qpb_comm_halo_spinor_field_x_start(spinor_in);
   qpb_comm_halo_spinor_field_x_wait(spinor_in);
-
   int lvol = problem_params.l_vol;
   unsigned short int *l_dim = problem_params.l_dim;
   int x[ND];
