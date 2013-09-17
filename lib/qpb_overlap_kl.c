@@ -23,59 +23,63 @@ static qpb_overlap_params ov_params;
 void
 qpb_overlap_kl_init(void * gauge, qpb_clover_term clover, qpb_double rho, qpb_double c_sw, qpb_double mass)
 {
-  qpb_comm_halo_spinor_field_init();
-  for(int i=0; i<OVERLAP_NUMB_TEMP_VECS; i++)
+  if(ov_params.initialized != QPB_OVERLAP_INITIALIZED)
     {
-      ov_temp_vecs[i] = qpb_spinor_field_init();
-      qpb_spinor_field_set_zero(ov_temp_vecs[i]);
-    }
+      qpb_comm_halo_spinor_field_init();
+      for(int i=0; i<OVERLAP_NUMB_TEMP_VECS; i++)
+	{
+	  ov_temp_vecs[i] = qpb_spinor_field_init();
+	  qpb_spinor_field_set_zero(ov_temp_vecs[i]);
+	}
 
-  for(int i=0; i<CG_NUMB_TEMP_VECS; i++)
-    {
-      cg_temp_vecs[i] = qpb_spinor_field_init();
-      qpb_spinor_field_set_zero(cg_temp_vecs[i]);
-    }
+      for(int i=0; i<CG_NUMB_TEMP_VECS; i++)
+	{
+	  cg_temp_vecs[i] = qpb_spinor_field_init();
+	  qpb_spinor_field_set_zero(cg_temp_vecs[i]);
+	}
 
-  qpb_gauge_field gauge_bc;
-  if(which_dslash_op == QPB_DSLASH_STANDARD)
-    {
-      gauge_bc = qpb_gauge_field_init();
-      qpb_timebc_set_gauge_field(gauge_bc, *(qpb_gauge_field *)gauge, problem_params.timebc);
-      ov_params.gauge_ptr = qpb_alloc(sizeof(qpb_gauge_field));
-      memcpy(ov_params.gauge_ptr, &gauge_bc, sizeof(qpb_gauge_field));
-    }
-  else
-    {
-      ov_params.gauge_ptr = gauge;
-    }
+      qpb_gauge_field gauge_bc;
+      if(which_dslash_op == QPB_DSLASH_STANDARD)
+	{
+	  gauge_bc = qpb_gauge_field_init();
+	  qpb_timebc_set_gauge_field(gauge_bc, *(qpb_gauge_field *)gauge, problem_params.timebc);
+	  ov_params.gauge_ptr = qpb_alloc(sizeof(qpb_gauge_field));
+	  memcpy(ov_params.gauge_ptr, &gauge_bc, sizeof(qpb_gauge_field));
+	}
+      else
+	{
+	  ov_params.gauge_ptr = gauge;
+	}
 
-  ov_params.c_sw = c_sw;
-  ov_params.rho = rho;
-  ov_params.m_bare = -rho;
-  ov_params.mass = mass;
-  ov_params.clover = clover;
-  switch(which_dslash_op)
-    {
-    case QPB_DSLASH_BRILLOUIN:
-      if(c_sw) {
-	ov_params.g5_dslash_op = &qpb_gamma5_clover_bri_dslash;
-	ov_params.dslash_op = &qpb_clover_bri_dslash;
-      } else {
-	ov_params.g5_dslash_op = &qpb_gamma5_bri_dslash;	
-	ov_params.dslash_op = &qpb_bri_dslash;	
-      }
-      break;
-    case QPB_DSLASH_STANDARD:
-      if(c_sw) {
-	ov_params.g5_dslash_op = &qpb_gamma5_clover_dslash;
-	ov_params.dslash_op = &qpb_clover_dslash;
-      } else {
-	ov_params.g5_dslash_op = &qpb_gamma5_dslash;	
-	ov_params.dslash_op = &qpb_dslash;	
-      }
-      break;
+      ov_params.c_sw = c_sw;
+      ov_params.rho = rho;
+      ov_params.m_bare = -rho;
+      ov_params.mass = mass;
+      ov_params.clover = clover;
+      switch(which_dslash_op)
+	{
+	case QPB_DSLASH_BRILLOUIN:
+	  if(c_sw) {
+	    ov_params.g5_dslash_op = &qpb_gamma5_clover_bri_dslash;
+	    ov_params.dslash_op = &qpb_clover_bri_dslash;
+	  } else {
+	    ov_params.g5_dslash_op = &qpb_gamma5_bri_dslash;	
+	    ov_params.dslash_op = &qpb_bri_dslash;	
+	  }
+	  break;
+	case QPB_DSLASH_STANDARD:
+	  if(c_sw) {
+	    ov_params.g5_dslash_op = &qpb_gamma5_clover_dslash;
+	    ov_params.dslash_op = &qpb_clover_dslash;
+	  } else {
+	    ov_params.g5_dslash_op = &qpb_gamma5_dslash;	
+	    ov_params.dslash_op = &qpb_dslash;	
+	  }
+	  break;
+	}
+      ov_params.initialized = QPB_OVERLAP_INITIALIZED;
     }
-
+	
   return;
 }
 
@@ -96,6 +100,8 @@ qpb_overlap_kl_finalize()
     {
       qpb_gauge_field_finalize(*(qpb_gauge_field *)ov_params.gauge_ptr);
     }
+  
+  ov_params.initialized = 0;
   return;
 }
 
@@ -250,5 +256,14 @@ qpb_overlap_kl(qpb_spinor_field y, qpb_spinor_field x,
       exit(QPB_NOT_IMPLEMENTED_ERROR);
       break;
     }
+  return;
+}
+
+void
+qpb_gamma5_overlap_kl(qpb_spinor_field y, qpb_spinor_field x, 
+		      enum qpb_kl_classes kl_class, int kl_iters, qpb_double epsilon, int max_iter)
+{
+  qpb_overlap_kl(y, x, kl_class, kl_iters, epsilon, max_iter);
+  qpb_spinor_gamma5(y, y);
   return;
 }

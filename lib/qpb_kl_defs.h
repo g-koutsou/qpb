@@ -5,7 +5,10 @@ enum qpb_kl_classes {
   KL_CLASS_11
 };
 
+#define QPB_OVERLAP_INITIALIZED 31726
+
 typedef struct {
+  unsigned int initialized;
   void *gauge_ptr;
   qpb_double m_bare;
   qpb_double rho;
