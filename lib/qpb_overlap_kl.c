@@ -118,9 +118,10 @@ D_op(qpb_spinor_field y, qpb_spinor_field x)
 }
 
 INLINE void
-A_op(qpb_spinor_field y, qpb_spinor_field x)
+A_op(qpb_spinor_field z, qpb_spinor_field x)
 {
-  qpb_spinor_field z = ov_temp_vecs[0];
+  qpb_spinor_field y = ov_temp_vecs[0];
+  qpb_complex three = {3.0,0.0};
   void *dslash_args[4];
   dslash_args[0] = ov_params.gauge_ptr;
   dslash_args[1] = &ov_params.m_bare;
@@ -128,6 +129,7 @@ A_op(qpb_spinor_field y, qpb_spinor_field x)
   dslash_args[3] = &ov_params.c_sw;
   ov_params.g5_dslash_op(z, x, dslash_args);
   ov_params.g5_dslash_op(y, z, dslash_args);
+  qpb_spinor_axpy(z,three,y,x);
   return;
 }
 
