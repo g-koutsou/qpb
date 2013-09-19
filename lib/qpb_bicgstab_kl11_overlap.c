@@ -29,14 +29,16 @@ Op(qpb_spinor_field out, qpb_spinor_field in)
   qpb_spinor_field y = op_temp_vecs[1];  
   qpb_spinor_field I3pAx = op_temp_vecs[2];
   qpb_spinor_field Ip3Ax = op_temp_vecs[3];
-  qpb_complex mt = {3*(1+mass_tilde/rho_ov), 0};
+  qpb_complex three = {3.0, 0.0};
+  qpb_complex mt = {(1+mass_tilde/rho_ov), 0};
 
   dslash_func(y,in,dslash_args);
   dslash_func(Ax,y,dslash_args);
-  qpb_spinor_axpy(Ip3Ax, mt, Ax, in);
-  qpb_spinor_axpy(I3pAx, (qpb_complex){3.0, 0}, in, Ax);
+  qpb_spinor_axpy(Ip3Ax, three, Ax, in);
+  qpb_spinor_axpy(I3pAx, three, in, Ax);
+  qpb_spinor_gamma5(y, Ip3Ax);
+  qpb_spinor_ax(Ip3Ax, mt, y);
   dslash_func(y, I3pAx, dslash_args);
-  qpb_spinor_gamma5(Ip3Ax, Ip3Ax);
   qpb_spinor_xpy(out, Ip3Ax, y);
   return;
 }

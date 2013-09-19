@@ -14,7 +14,7 @@
 #include <qpb_kl_defs.h>
 
 #define OVERLAP_NUMB_TEMP_VECS 3
-#define CG_NUMB_TEMP_VECS 4
+#define CG_NUMB_TEMP_VECS 3
 
 static qpb_spinor_field ov_temp_vecs[OVERLAP_NUMB_TEMP_VECS];
 static qpb_spinor_field cg_temp_vecs[CG_NUMB_TEMP_VECS];
@@ -139,19 +139,15 @@ qpb_congrad_1p3A(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilon, int
   qpb_spinor_field p = cg_temp_vecs[0];
   qpb_spinor_field r = cg_temp_vecs[1];
   qpb_spinor_field y = cg_temp_vecs[2];
-  qpb_spinor_field w = cg_temp_vecs[3];
 
   int n_reeval = 100;
   int iters = 0;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma;
-  qpb_complex_double three = {3.0, 0.0};
   qpb_spinor_xdotx(&b_norm, b);
-  /* r = Ax */
-  A_op(r, x);
-  /* p = 3*Ax + x */
-  qpb_spinor_axpy(p, three, r, x);
+  /* r = (1+3A)x */
+  A_op(p, x);
   /* r = b - (3*Ax + x) */
   qpb_spinor_xmy(r, b, p);
   qpb_spinor_xdotx(&gamma.re, r);
@@ -163,21 +159,20 @@ qpb_congrad_1p3A(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilon, int
     {
       if(res_norm / b_norm <= epsilon)
 	break;
-      /* w = Ap */
-      A_op(w, p);
       /* y = 3*Ap + p */
-      qpb_spinor_axpy(y, three, w, p);
+      A_op(y, p);
 
       /* omega = dot(p, (1+3*A)p) */
       qpb_spinor_xdoty(&omega, p, y);
+
       /* alpha = dot(r, r)/omega */
       alpha = CDEV(gamma, omega);
+
       /* x <- x + alpha*p */
       qpb_spinor_axpy(x, alpha, p, x);
       if(iters % n_reeval == 0) 
 	{
-	  A_op(w, x);
-	  qpb_spinor_axpy(y, three, w, x);
+	  A_op(y, x);
 	  qpb_spinor_xmy(r, b, y);
 	}
       else
@@ -197,8 +192,7 @@ qpb_congrad_1p3A(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilon, int
       gamma.im = 0.;
     }
   t = qpb_stop_watch(t);
-  A_op(w, x);
-  qpb_spinor_axpy(y, three, w, x);
+  A_op(y, x);
   qpb_spinor_xmy(r, b, y);
   qpb_spinor_xdotx(&res_norm, r);
 

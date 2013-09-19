@@ -42,6 +42,9 @@ qpb_bicgstab_overlap_outer_finalize()
 }
 
 #define D_op(y, x)							\
+  qpb_gamma5_overlap_kl(y, x, kl_class, kl_iters, eps_relax, max_iter);
+
+#define D_hp_op(y, x)							\
   qpb_gamma5_overlap_kl(y, x, kl_class, kl_iters, epsilon, max_iter);
 
 int
@@ -54,15 +57,16 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b,
   qpb_spinor_field u = bicgstab_temp_vecs[3];
   qpb_spinor_field v = bicgstab_temp_vecs[4];
 
+  qpb_double eps_relax = epsilon;
   int iters = 0;
-  const int n_echo = 1, n_reeval = 100;
+  const int n_echo = 1, n_reeval = 50;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma, rho, zeta;
   qpb_spinor_field_set_random(x);
   qpb_spinor_gamma5(b, b);
   qpb_spinor_xdotx(&b_norm, b);
-  D_op(r, x);
+  D_hp_op(r, x);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xeqy(r0, r);
   qpb_spinor_xdotx(&gamma.re, r);
@@ -80,13 +84,27 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b,
       omega = CNEGATE(omega);
       qpb_spinor_axpy(p, omega, u, p);
       qpb_spinor_axpy(p, beta, p, r);
-      D_op(u, p);
+      if(iters % n_reeval == 0)
+	{
+	  D_hp_op(u, p);
+	}
+      else
+	{
+	  D_op(u, p);
+	}
       qpb_spinor_xdoty(&beta, r0, u);
       rho = gamma;
       alpha = CDEV(rho, beta);
       alpha = CNEGATE(alpha);
       qpb_spinor_axpy(r, alpha, u, r);
-      D_op(v, r);
+      if(iters % n_reeval == 0)
+	{
+	  D_hp_op(v, r);
+	}
+      else
+	{
+	  D_op(v, r);
+	}
       qpb_spinor_xdoty(&zeta, v, r);
       qpb_spinor_xdotx(&beta.re, v);
       beta.im = 0;
@@ -96,7 +114,7 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b,
       qpb_spinor_axpy(x, alpha, p, x);
       if(iters % n_reeval == 0)
 	{
-	  D_op(r, x);
+	  D_hp_op(r, x);
 	  qpb_spinor_xmy(r, b, r);
 	}
       else
@@ -110,7 +128,7 @@ qpb_bicgstab_overlap_outer(qpb_spinor_field x, qpb_spinor_field b,
 	print(" iters = %8d, res = %e\n", iters, res_norm / b_norm);
     }
   t = qpb_stop_watch(t);
-  D_op(r, x);
+  D_hp_op(r, x);
   qpb_spinor_xmy(r, b, r);
   qpb_spinor_xdotx(&res_norm, r);
   qpb_spinor_gamma5(b, b);
