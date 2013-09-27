@@ -431,6 +431,24 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
+  if(sscanf(qpb_parse("Precondition"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Precondition");
+      exit(QPB_PARSER_ERROR);
+    }
+  int precondition = -1;
+  if(strcmp(aux_string, "yes") == 0)
+    precondition = 1;
+  else if(strcmp(aux_string, "no") == 0)
+    precondition = 0;
+  else
+    {
+      error("%s: option should be one of: ", "Precondition");
+      error("%s, ", "yes"); 
+      error("%s\n", "no"); 
+      exit(QPB_PARSER_ERROR);
+    };
 
   if(sscanf(qpb_parse("Dslash operator"), "%s", aux_string)!=1)
     {
@@ -636,6 +654,16 @@ main(int argc, char *argv[])
       break;
     }
 
+  if(precondition)
+    {
+      print(" Will use preconditioning with bare operator\n");    
+    }
+  else
+    {
+      print(" Will not use preconditioning\n");        
+    }
+
+
   /*
     Has been checked above that argument is sane
    */
@@ -834,10 +862,10 @@ main(int argc, char *argv[])
   switch(solver)
     {
     case BICGSTAB_V1:
-      qpb_bicgstab_overlap_outer_init(solver_arg_links, clover_term, rho, c_sw, mass);
+      qpb_bicgstab_overlap_outer_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition);
       break;
     case BICGSTAB_V2:
-      qpb_bicgstab_kl11_mult_init(solver_arg_links, clover_term, rho, c_sw, mass);
+      qpb_bicgstab_kl11_mult_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition);
       break;
     }
 

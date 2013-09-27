@@ -1,3 +1,4 @@
+#include <string.h>
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_spinor_field.h>
@@ -11,10 +12,12 @@
 
 #define QPB_BICGSTAB_NUMB_TEMP_VECS 5
 
-qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
+static qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
+static char out_pre[QPB_MAX_STRING];
+static int n_echo;
 
 void
-qpb_bicgstab_init()
+qpb_bicgstab_init(char output_prefix[], int echo_freq)
 {
   for(int i=0; i<QPB_BICGSTAB_NUMB_TEMP_VECS; i++)
     {
@@ -22,6 +25,8 @@ qpb_bicgstab_init()
       qpb_spinor_field_set_zero(bicgstab_temp_vecs[i]);
     }
   qpb_comm_halo_spinor_field_init();
+  n_echo = echo_freq;
+  strcpy(out_pre, output_prefix);
   return;
 }
 
@@ -38,7 +43,7 @@ qpb_bicgstab_finalize()
 
 int
 qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
-	     qpb_clover_term clover, qpb_double kappa, qpb_double c_sw,
+	     qpb_clover_term clover, qpb_double kappa, qpb_double c_sw, 
 	     qpb_double epsilon, int max_iter)
 {
   qpb_spinor_field r0 = bicgstab_temp_vecs[0];
@@ -48,13 +53,13 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_spinor_field v = bicgstab_temp_vecs[4];
 
   int iters = 0;
-  const int n_echo = 1, n_reeval = 10;
+  const int n_reeval = 10;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma, rho, zeta;
   qpb_double mass = 1./(2.*kappa) - 4.;
   void (* dslash_func)() = NULL;
-
+  qpb_spinor_field_set_zero(x);
   /* set boundary condition in time
      !!! currently not implemented for diagonal links !!! */
   void * gauge_bc_ptr;
@@ -141,7 +146,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
 	}
       qpb_spinor_xdotx(&res_norm, r);
       if((iters % n_echo == 0))
-	print(" iters = %8d, res = %e\n", iters, res_norm / b_norm);
+	print("%s iters = %8d, res = %e\n", out_pre, iters, res_norm / b_norm);
     }
   t = qpb_stop_watch(t);
   dslash_func(r, x, dslash_args);
@@ -157,8 +162,8 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       return -1;
     }
 
-  print(" After %d iterrations BiCGStab converged\n", iters);
-  print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
+  print("%s After %d iterrations BiCGStab converged\n", out_pre, iters);
+  print("%s residual = %e, relative = %e, t = %g secs\n", out_pre, res_norm, res_norm / b_norm, t);
 
   if(which_dslash_op == QPB_DSLASH_STANDARD)
     {

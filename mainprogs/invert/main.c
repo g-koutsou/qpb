@@ -839,7 +839,11 @@ main(int argc, char *argv[])
   switch(solver)
     {
     case BICGSTAB:
-      qpb_bicgstab_init();
+      {
+	char output_prefix[] = "";
+	int n_echo = 1;
+	qpb_bicgstab_init(output_prefix, n_echo);
+      }
       break;
     case CG:
       qpb_congrad_init();

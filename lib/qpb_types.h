@@ -8,6 +8,7 @@
 #define MAX_NUM_THREADS 16
 #define QPB_MAX_STRING 256
 #define QPB_MASTER_PROC 0
+#define QPB_SPINOR_COMM_INITIALIZED 38965
 
 #define NS 4 /* spin components */
 #define NC 3 /* colors */

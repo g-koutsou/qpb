@@ -1,10 +1,12 @@
 #include <string.h>
+#include <math.h>
 #include <qpb_types.h>
 #include <qpb_globals.h>
 #include <qpb_alloc.h>
 #include <qpb_spinor_field.h>
 #include <qpb_spinor_linalg.h>
 #include <qpb_gauge_field.h>
+#include <qpb_bicgstab.h>
 #include <qpb_comm_halo_spinor_field.h>
 #include <qpb_comm_halo_gauge_field.h>
 #include <qpb_timebc_set_gauge_field.h>
@@ -14,9 +16,10 @@
 #include <qpb_overlap_kl.h>
 
 
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 6
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 8
 #define QPB_OP_NUMB_TEMP_VECS 4
 
+static int precond;
 static qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 static qpb_spinor_field op_temp_vecs[QPB_OP_NUMB_TEMP_VECS];
 static qpb_overlap_params ov_params;
@@ -72,8 +75,16 @@ Ip3A(qpb_spinor_field out, qpb_spinor_field in)
 
 void
 qpb_bicgstab_kl11_mult_init(void * gauge, qpb_clover_term clover, 
-			    qpb_double rho, qpb_double c_sw, qpb_double mass)
+			    qpb_double rho, qpb_double c_sw, qpb_double mass, int precondition)
 {
+  if(precondition)
+    precond = 1;
+  else
+    precond = 0;
+  
+  if(precond)
+    qpb_bicgstab_init((char *)"\t", 10000);
+
   for(int i=0; i<QPB_BICGSTAB_NUMB_TEMP_VECS; i++)
     {
       bicgstab_temp_vecs[i] = qpb_spinor_field_init();
@@ -136,6 +147,9 @@ qpb_bicgstab_kl11_mult_init(void * gauge, qpb_clover_term clover,
 void
 qpb_bicgstab_kl11_mult_finalize()
 {
+  if(precond)
+    qpb_bicgstab_finalize();
+  
   for(int i=0; i<QPB_BICGSTAB_NUMB_TEMP_VECS; i++)
     {
       qpb_spinor_field_finalize(bicgstab_temp_vecs[i]);
@@ -162,9 +176,12 @@ qpb_bicgstab_kl11_mult(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
   qpb_spinor_field u = bicgstab_temp_vecs[3];
   qpb_spinor_field v = bicgstab_temp_vecs[4];
   qpb_spinor_field b_tilde = bicgstab_temp_vecs[5];
- 
+  // For preconditioned version
+  qpb_spinor_field q = bicgstab_temp_vecs[6];
+  qpb_spinor_field t = bicgstab_temp_vecs[7];
+
   int iters = 0;
-  const int n_echo = 1, n_reeval = 10;
+  const int n_echo = 1, n_reeval = 100;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma, zeta, rho;
@@ -180,7 +197,7 @@ qpb_bicgstab_kl11_mult(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
   gamma.im = 0;
   res_norm = gamma.re;
   rho = gamma;
-  qpb_double t = qpb_stop_watch(0);
+  qpb_double secs = qpb_stop_watch(0);
   for(iters=1; iters<max_iter; iters++)
     {
       if(res_norm / b_norm <= epsilon)
@@ -191,20 +208,41 @@ qpb_bicgstab_kl11_mult(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
       omega = CNEGATE(omega);
       qpb_spinor_axpy(p, omega, u, p);
       qpb_spinor_axpy(p, beta, p, r);
-      Op(u, p);
+      if(precond) {
+	qpb_double mass_tilde = mass/factor;
+	qpb_double kappa = 1./(8.0+2.0*mass_tilde);
+	qpb_bicgstab(q, p, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
+		     sqrt(epsilon), max_iter);
+	Op(u, q);
+      }else{
+	Op(u, p);
+      }
       qpb_spinor_xdoty(&beta, r0, u);
       rho = gamma;
       alpha = CDEV(rho, beta);
       alpha = CNEGATE(alpha);
       qpb_spinor_axpy(r, alpha, u, r);
-      Op(v, r);
+      if(precond) {
+	qpb_double mass_tilde = mass/factor;
+	qpb_double kappa = 1./(8.0+2.0*mass_tilde);
+	qpb_bicgstab(t, r, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
+		     sqrt(epsilon), max_iter);
+	Op(v, t);
+      }else{
+	Op(v, r);
+      }
       qpb_spinor_xdoty(&zeta, v, r);
       qpb_spinor_xdotx(&beta.re, v);
       beta.im = 0;
       omega = CDEV(zeta, beta);
       alpha = CNEGATE(alpha);
-      qpb_spinor_axpy(x, omega, r, x);
-      qpb_spinor_axpy(x, alpha, p, x);
+      if(precond) {       
+	qpb_spinor_axpy(x, omega, t, x);
+	qpb_spinor_axpy(x, alpha, q, x);		
+      }else{
+	qpb_spinor_axpy(x, omega, r, x);
+	qpb_spinor_axpy(x, alpha, p, x);	
+      }
       if(iters % n_reeval == 0)
 	{
 	  Op(r, x);
@@ -228,18 +266,18 @@ qpb_bicgstab_kl11_mult(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
   Ip3A(r,x);
   qpb_spinor_xeqy(x, r);
 
-  t = qpb_stop_watch(t);
+  secs = qpb_stop_watch(secs);
   if(iters==max_iter)
     {
       error(" !\n");
       error(" BiCGStab *did not* converge, after %d iterrations\n", iters);
-      error(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
+      error(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, secs);
       error(" !\n");
       return -1;
     }
 
   print(" After %d iterrations BiCGStab converged\n", iters);
-  print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
+  print(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, secs);
 
   return iters;
 }

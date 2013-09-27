@@ -6,7 +6,8 @@
 #include <qpb_globals.h>
 #include <qpb_alloc.h>
 
-qpb_spinor *sendb[2*ND];
+static unsigned int spinor_comm_initialized;
+static qpb_spinor *sendb[2*ND];
 MPI_Request send_req[2*ND];
 
 
@@ -17,38 +18,42 @@ MPI_Request send_req[2*ND];
 void
 qpb_comm_halo_spinor_field_init()
 {
-  int edim[ND], ldim[ND];
-  for(int d=0; d<ND; d++)
+  if(spinor_comm_initialized != QPB_SPINOR_COMM_INITIALIZED)
     {
-      edim[d] = problem_params.ext_dim[d];
-      ldim[d] = problem_params.l_dim[d];
-    }
+      int edim[ND], ldim[ND];
+      for(int d=0; d<ND; d++)
+	{
+	  edim[d] = problem_params.ext_dim[d];
+	  ldim[d] = problem_params.l_dim[d];
+	}
 
-  for(int dir=1; dir<ND; dir++)
-    if(problem_params.par_dir[dir])
-      {
-	int dims[ND];
-	for(int d=0; d<dir; d++)
-	  dims[d] = edim[d];
-	
-	for(int d=dir+1; d<ND; d++)
-	  dims[d] = ldim[d];
-	
-	dims[dir] = 1;
-	int bvol = 1;
-	for(int d=0; d<ND; d++)
-	  bvol *= dims[d];
-	for(int sign=0; sign<2; sign++)
+      for(int dir=1; dir<ND; dir++)
+	if(problem_params.par_dir[dir])
 	  {
-	    sendb[dir+sign*ND] = qpb_alloc(sizeof(qpb_spinor) * bvol);
+	    int dims[ND];
+	    for(int d=0; d<dir; d++)
+	      dims[d] = edim[d];
+	
+	    for(int d=dir+1; d<ND; d++)
+	      dims[d] = ldim[d];
+	
+	    dims[dir] = 1;
+	    int bvol = 1;
+	    for(int d=0; d<ND; d++)
+	      bvol *= dims[d];
+	    for(int sign=0; sign<2; sign++)
+	      {
+		sendb[dir+sign*ND] = qpb_alloc(sizeof(qpb_spinor) * bvol);
 
-	    int nn;
-	    nn = problem_params.proc_neigh[dir+sign*ND];
-	    MPI_Send_init(sendb[dir+sign*ND], sizeof(qpb_spinor)*bvol, MPI_BYTE, nn,
-			  nn + ((sign+1)%2)*problem_params.nprocs, 
-			  MPI_COMM_WORLD, &send_req[dir+sign*ND]);
+		int nn;
+		nn = problem_params.proc_neigh[dir+sign*ND];
+		MPI_Send_init(sendb[dir+sign*ND], sizeof(qpb_spinor)*bvol, MPI_BYTE, nn,
+			      nn + ((sign+1)%2)*problem_params.nprocs, 
+			      MPI_COMM_WORLD, &send_req[dir+sign*ND]);
+	      }
 	  }
-      }
+      spinor_comm_initialized = QPB_SPINOR_COMM_INITIALIZED;
+    }
   return;
 }
 
@@ -59,13 +64,17 @@ qpb_comm_halo_spinor_field_init()
 void
 qpb_comm_halo_spinor_field_finalize()
 {
-  for(int dir=1; dir<ND; dir++)
-    if(problem_params.par_dir[dir])
-      for(int sign=0; sign<2; sign++)
-	{
-	  free(sendb[dir+sign*ND]);
-	  MPI_Request_free(&send_req[dir+sign*ND]);
-	}
+  if(spinor_comm_initialized == QPB_SPINOR_COMM_INITIALIZED)
+    {
+      for(int dir=1; dir<ND; dir++)
+	if(problem_params.par_dir[dir])
+	  for(int sign=0; sign<2; sign++)
+	    {
+	      free(sendb[dir+sign*ND]);
+	      MPI_Request_free(&send_req[dir+sign*ND]);
+	    }
+      spinor_comm_initialized = 0;
+    }
   return;
 }
 
