@@ -8,10 +8,21 @@ qpb_spinor_xdotg5y(9,126
 lib/qpb_write_n_spinor.c,27
 qpb_write_n_spinor(12,186
 
-lib/qpb_kl_defs.h,74
+lib/qpb_kl_defs.h,410
 #define _QPB_KL_DEFS_H 2,23
-enum qpb_kl_classes 4,49
-  KL_CLASS_115,71
+enum qpb_kl_classes 4,71
+  KL_CLASS_115,93
+#define QPB_OVERLAP_INITIALIZED 8,111
+  unsigned int initialized;11,167
+  void *gauge_ptr;gauge_ptr12,195
+  qpb_double m_bare;13,214
+  qpb_double rho;14,235
+  qpb_double c_sw;15,253
+  qpb_clover_term clover;16,272
+  void (* dslash_op)17,298
+  void (* g5_dslash_op)18,322
+  qpb_double mass;19,349
+} qpb_overlap_params;20,368
 
 lib/qpb_gamma_matrices.h,251
 #define _QPB_GAMMA_MATRICES_H 2,30
@@ -31,11 +42,23 @@ qpb_ft(118,3004
 lib/qpb_bicgstab.h,30
 #define _QPB_BICGSTAB_H 2,24
 
-lib/qpb_cg_overlap_outer.h,38
-#define _QPB_CG_OVERLAP_OUTER_H 2,32
+lib/qpb_bicgstab_kl11_mult.h,40
+#define _QPB_BICGSTAB_KL11_MULT_H 2,34
 
 lib/qpb_read_raw_gauge.h,36
 #define _QPB_READ_RAW_GAUGE_H 2,30
+
+lib/qpb_bicgstab_kl11_mult.c,391
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 17,416
+#define QPB_OP_NUMB_TEMP_VECS 18,454
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs20,487
+static qpb_spinor_field op_temp_vecs[op_temp_vecs21,560
+static qpb_overlap_params ov_params;22,621
+Op(25,671
+Ip3A(55,1577
+qpb_bicgstab_kl11_mult_init(74,2069
+qpb_bicgstab_kl11_mult_finalize(137,3833
+qpb_bicgstab_kl11_mult(157,4312
 
 lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
@@ -43,7 +66,7 @@ qpb_spinor_field_finalize(114,3198
 
 lib/qpb_apply_bri_dslash.c,66
 qpb_apply_bri_dslash(13,255
-qpb_apply_gamma5_bri_dslash(63,1571
+qpb_apply_gamma5_bri_dslash(61,1569
 
 lib/qpb_mesons_2pt_stoch.c,143
 #define QPB_N_STOCH_MESON_2PT_CHANNELS 10,185
@@ -443,18 +466,6 @@ qpb_spinor_xmy(6,85
 lib/qpb_spinor_field_set_random.c,34
 qpb_spinor_field_set_random(8,96
 
-lib/qpb_cg_overlap_outer.c,245
-#define QPB_CONGRAD_NUMB_TEMP_VECS 10,238
-qpb_spinor_field congrad_temp_vecs[congrad_temp_vecs12,276
-qpb_cg_overlap_outer_init(15,346
-qpb_cg_overlap_outer_finalize(31,714
-#define D(45,1027
-#define DD(49,1191
-qpb_cg_overlap_outer(54,1257
-
-lib/qpb_overlap_apply.h,35
-#define _QPB_OVERLAP_APPLY_H 2,29
-
 lib/qpb_spinor_xdoty.c,24
 qpb_spinor_xdoty(9,126
 
@@ -681,6 +692,20 @@ lib/qpb_apply_bri_dslash.h,38
 
 lib/qpb_spinor_gamma5.h,35
 #define _QPB_SPINOR_GAMMA5_H 2,29
+
+lib/qpb_overlap_kl.c,408
+#define OVERLAP_NUMB_TEMP_VECS 16,411
+#define CG_NUMB_TEMP_VECS 17,444
+static qpb_spinor_field ov_temp_vecs[ov_temp_vecs19,473
+static qpb_spinor_field cg_temp_vecs[cg_temp_vecs20,535
+static qpb_overlap_params ov_params;21,592
+qpb_overlap_kl_init(24,635
+qpb_overlap_kl_finalize(87,2348
+D_op(109,2818
+A_op(121,3108
+qpb_congrad_1p3A(137,3543
+qpb_overlap_kl(215,5537
+qpb_gamma5_overlap_kl(259,6858
 
 lib/qpb_spinor_axpy.h,33
 #define _QPB_SPINOR_AXPY_H 2,27
@@ -1262,19 +1287,13 @@ qpb_lanczos(40,801
 lib/qpb_nucleon_2pt.h,33
 #define _QPB_NUCLEON_2PT_H 2,27
 
-lib/qpb_bicgstab_overlap_outer.c,521
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 13,344
-#define QPB_OP_NUMB_TEMP_VECS 14,382
-static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,415
-static qpb_spinor_field op_temp_vecs[op_temp_vecs17,488
-static  void *gauge_bc_ptr;gauge_bc_ptr21,674
-static  void *dslash_args[dslash_args22,702
-static  qpb_double mass_tilde,23,732
-static  qpb_double mass_tilde, rho_ov;23,732
-Op(26,784
-qpb_bicgstab_overlap_outer_init(45,1340
-qpb_bicgstab_overlap_outer_finalize(63,1762
-qpb_bicgstab_overlap_outer(78,2086
+lib/qpb_bicgstab_overlap_outer.c,254
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 14,372
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,411
+qpb_bicgstab_overlap_outer_init(19,490
+qpb_bicgstab_overlap_outer_finalize(33,904
+#define Op(44,1148
+qpb_bicgstab_overlap_outer(48,1241
 
 lib/qpb_baryons_2pt.h,33
 #define _QPB_BARYONS_2PT_H 2,27
@@ -1290,12 +1309,6 @@ qpb_write_gauge(12,186
 
 lib/qpb_read_n_spinor.c,26
 qpb_read_n_spinor(12,186
-
-lib/qpb_overlap_apply.c,140
-static void * gauge_bc_ptr;18,493
-static qpb_spinor_field temp_vecs[temp_vecs19,521
-qpb_congrad_1p3A(29,632
-qpb_overlap_apply(129,3370
 
 lib/qpb_byte_order.h,32
 #define _QPB_BYTE_ORDER_H 2,26
@@ -1323,6 +1336,9 @@ qpb_spinor_xdotx(9,126
 
 lib/qpb_gauge_field_set_unit.c,31
 qpb_gauge_field_set_unit(7,75
+
+lib/qpb_overlap_kl.h,32
+#define _QPB_OVERLAP_KL_H 2,26
 
 lib/qpb_bicgstab_overlap_outer.h,44
 #define _QPB_BICGSTAB_OVERLAP_OUTER_H 2,38
@@ -1419,7 +1435,7 @@ mainprogs/overlap-kl/ginsparg-wilson-relation/main.c,104
 usage(10,89
 main(17,196
 
-mainprogs/overlap-kl/invert/main.c,528
+mainprogs/overlap-kl/invert/main.c,539
   INVERT_VECTORS,4,25
   INVERT_PROPAGATOR5,43
 } invert_mode;6,63
@@ -1427,23 +1443,23 @@ mainprogs/overlap-kl/invert/main.c,528
   CONF_RAW_32,10,99
   CONF_RAW_64,11,114
 } conf_format;12,129
-  BICGSTAB,15,152
-  CG,16,164
-} solver;17,170
-  SOURCE_POINT,20,188
-  SOURCE_ZERO,21,204
-  SOURCE_STOCH,22,219
-  SOURCE_FILE23,235
-} source_opt;24,249
-  SOURCE_NOT_SMEARED,27,271
-  SOURCE_SMEARED28,293
-} source_smearing;29,310
-  STOCH_SOURCE_Z4,32,337
-  STOCH_SOURCE_Z4_T,33,356
-  STOCH_SOURCE_UNIFORM34,377
-} stochastic_source;35,400
-usage(38,427
-main(45,534
+  BICGSTAB_V1,15,152
+  BICGSTAB_V216,167
+} solver;17,181
+  SOURCE_POINT,20,199
+  SOURCE_ZERO,21,215
+  SOURCE_STOCH,22,230
+  SOURCE_FILE23,246
+} source_opt;24,260
+  SOURCE_NOT_SMEARED,27,282
+  SOURCE_SMEARED28,304
+} source_smearing;29,321
+  STOCH_SOURCE_Z4,32,348
+  STOCH_SOURCE_Z4_T,33,367
+  STOCH_SOURCE_UNIFORM34,388
+} stochastic_source;35,411
+usage(38,438
+main(45,545
 
 mainprogs/eigens/main.c,137
 tridiag_eigenv(12,198

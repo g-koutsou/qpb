@@ -56,7 +56,7 @@
 #include <qpb_plaquette.h>
 #include <qpb_lanczos.h>
 #include <qpb_bicgstab.h>
-#include <qpb_bicgstab_kl11_overlap.h>
+#include <qpb_bicgstab_kl11_mult.h>
 #include <qpb_bicgstab_overlap_outer.h>
 #include <qpb_bicgg5.h>
 #include <qpb_mscongrad.h>
