@@ -38,6 +38,8 @@ SOURCES = qpb_init\
 	qpb_apesmear\
 	qpb_gauge_field_copy\
 	qpb_gauge_field_shift\
+	qpb_spinor_field_copy\
+	qpb_spinor_field_shift\
 	qpb_timebc_set_gauge_field\
 	qpb_spinor_field\
 	qpb_spinor_field_set_delta\
@@ -85,7 +87,9 @@ SOURCES = qpb_init\
 	qpb_delta_1o2_2pt\
 	qpb_delta_3o2_2pt\
 	qpb_multiq_2pt\
+	qpb_multiq_displ_2pt\
 	qpb_tetraq_mol_2pt\
+	qpb_tetraq_mol_displ_2pt\
 	qpb_spinor_xdotx\
 	qpb_spinor_xdoty\
 	qpb_spinor_xdotg5y\

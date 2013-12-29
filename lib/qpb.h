@@ -66,8 +66,11 @@
 #include <qpb_apesmear.h>
 #include <qpb_gauge_field_copy.h>
 #include <qpb_gauge_field_shift.h>
+#include <qpb_spinor_field_copy.h>
+#include <qpb_spinor_field_shift.h>
 #include <qpb_mesons_2pt_corr.h>
 #include <qpb_mesons_2pt_stoch.h>
 #include <qpb_baryons_2pt.h>
 #include <qpb_multiq_2pt.h>
+#include <qpb_multiq_displ_2pt.h>
 #endif /* _QPB_H */

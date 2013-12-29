@@ -8,15 +8,15 @@
 #include <qpb_gamma_matrices.h>
 #include <qpb_stop_watch.h>
 #include <qpb_ft.h>
-#include <qpb_tetraq_mol_2pt.h>
+#include <qpb_tetraq_mol_displ_2pt.h>
 
 #define QPB_N_MULTIQ_2PT_CHANNELS 2
-static enum qpb_multiq_2pt_channels {
+enum qpb_multiq_2pt_channels {
   TETRAQ_MOL_TR,
   TETRAQ_MOL_TRTR
 };
 
-void *
+static void *
 corr_alloc(int n, int lv)
 {
   qpb_complex **corr = qpb_alloc(sizeof(qpb_complex *)*n);
@@ -29,7 +29,7 @@ corr_alloc(int n, int lv)
   return corr;
 }
 
-void
+static void
 corr_free(qpb_complex **corr, int n, int lv)
 {
   for(int i=0; i<n; i++)
@@ -46,7 +46,7 @@ corr_free(qpb_complex **corr, int n, int lv)
  *  
  */  
 void
-qpb_multiq_2pt(qpb_spinor_field *prop, int max_q2, char outfile[])
+qpb_multiq_displ_2pt(qpb_spinor_field *prop[2][2], int max_q2, char outfile[])
 {
   /* This should never happen. For now the package is built so that
      only x, y and z are parallelized accross MPI and t along OpenMP */
@@ -59,7 +59,7 @@ qpb_multiq_2pt(qpb_spinor_field *prop, int max_q2, char outfile[])
   int lvol = problem_params.l_vol;
   int lt = problem_params.l_dim[0];
   int lvol3d = lvol/lt;
-  qpb_complex **corr_p[QPB_N_MULTIQ_2PT_CHANNELS];
+  qpb_complex **corr_p[2][2][QPB_N_MULTIQ_2PT_CHANNELS];
   int nmom = 0, nq = (int)sqrt(max_q2)+1;
   int (*mom)[4];
   /*
@@ -114,50 +114,64 @@ qpb_multiq_2pt(qpb_spinor_field *prop, int max_q2, char outfile[])
       for(int j=0; j<4; j++) mom[i][j] = swap[j];
     }
 
-  
-  for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
-    {      
-      corr_p[ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
-      for(int p=0; p<nmom; p++)
-	{
-	  corr_p[ich][p] = qpb_alloc(lt * sizeof(qpb_complex));
-	  for(int t=0; t<lt; t++)
-	    corr_p[ich][p][t] = (qpb_complex){0., 0.};
+  for(int i=0; i<2; i++)
+    for(int j=0; j<2; j++)
+      for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
+	{      
+	  corr_p[i][j][ich] = qpb_alloc(nmom * sizeof(qpb_complex *));
+	  for(int p=0; p<nmom; p++)
+	    {
+	      corr_p[i][j][ich][p] = qpb_alloc(lt * sizeof(qpb_complex));
+	      for(int t=0; t<lt; t++)
+		corr_p[i][j][ich][p][t] = (qpb_complex){0., 0.};
+	    }
 	}
-    }
 
   double t0;
   for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS;)
     {      
-      qpb_complex **corr_x;
+      qpb_complex **corr_x[2][2];
       int nch = 0;
       switch(ich)
 	{
 	case TETRAQ_MOL_TR:
 	case TETRAQ_MOL_TRTR:
 	  nch = 2;
-	  corr_x = corr_alloc(nch*lt, lvol3d);
+	  for(int i=0; i<2; i++)
+	    for(int j=0; j<2; j++)
+	      corr_x[i][j] = corr_alloc(nch*lt, lvol3d);
 
 	  t0 = qpb_stop_watch(0);
-	  qpb_tetraq_mol_2pt(corr_x, prop);
+	  qpb_tetraq_mol_displ_2pt(corr_x, prop);
 	  t0 = qpb_stop_watch(t0);
 	  print(" Tetraquark molecule contractions done in: %g sec\n", t0);	  
 	  break;
 	}
 
-      qpb_complex **corr_k = corr_alloc(nch*lt, nmom);
-      qpb_ft(corr_k, corr_x, nch*lt, mom, nmom);
-      
-      for(int i=0; i<nch; i++)
-	for(int t=0; t<lt; t++)
-	  for(int p=0; p<nmom; p++)
-	    {
-	      corr_p[i+ich][p][t] = corr_k[i*lt + t][p];
-	    }
+      qpb_complex **corr_k[2][2];
+      for(int i=0; i<2; i++)
+	for(int j=0; j<2; j++)
+	  {
+	    corr_k[i][j] = corr_alloc(nch*lt, nmom);
+	    qpb_ft(corr_k[i][j], corr_x[i][j], nch*lt, mom, nmom);
+	  }
+
+      for(int i=0; i<2; i++)
+	for(int j=0; j<2; j++)
+	  for(int c=0; c<nch; c++)
+	    for(int t=0; t<lt; t++)
+	      for(int p=0; p<nmom; p++)
+		{
+		  corr_p[i][j][c+ich][p][t] = corr_k[i][j][c*lt + t][p];
+		}
       
       ich += nch;
-      corr_free(corr_k, nch*lt, nmom);
-      corr_free(corr_x, nch*lt, lvol3d);
+      for(int i=0; i<2; i++)
+	for(int j=0; j<2; j++)
+	  {
+	    corr_free(corr_k[i][j], nch*lt, nmom);
+	    corr_free(corr_x[i][j], nch*lt, lvol3d);
+	  }
     }
   
   FILE *fp = NULL;
@@ -174,39 +188,43 @@ qpb_multiq_2pt(qpb_spinor_field *prop, int max_q2, char outfile[])
     {
       char ctag[QPB_MAX_STRING];
       for(int p=0; p<nmom; p++)
-	for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
-	  {
-	    switch(ich)
+	for(int i=0; i<2; i++)
+	  for(int j=0; j<2; j++)
+	    for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
 	      {
-	      case TETRAQ_MOL_TR:
-		strcpy(ctag ,"MOLECULE_TR");
-		break;
-	      case TETRAQ_MOL_TRTR:
-		strcpy(ctag ,"MOLECULE_TRTR");
-		break;
+		char c0 = i == 0 ? '0' : 'd';
+		char c1 = j == 0 ? '0' : 'd';
+		switch(ich)
+		  {
+		  case TETRAQ_MOL_TR:
+		    strcpy(ctag ,"MOLECULE_TR");
+		    break;
+		  case TETRAQ_MOL_TRTR:
+		    strcpy(ctag ,"MOLECULE_TRTR");
+		    break;
+		  }
+		if(am_master)
+		  {
+		    fprintf(fp, " %+2d %+2d %+2d %3d ",
+			    mom[p][3], mom[p][2], mom[p][1], t);
+		    fprintf(fp, " %+e %+e ", corr_p[i][j][ich][p][t].re, corr_p[i][j][ich][p][t].im);
+		    fprintf(fp, " %20s %c-%c\n", ctag, c0, c1);
+		  }
 	      }
-	    if(am_master)
-	      {
-		fprintf(fp, " %+2d %+2d %+2d %3d ",
-			mom[p][3], mom[p][2], mom[p][1], t);
-		    
-		fprintf(fp, " %+e %+e ", corr_p[ich][p][t].re, corr_p[ich][p][t].im);
-		    
-		fprintf(fp, " %20s\n", ctag);
-	      }
-	  }
     }
-
+  
   if(am_master)
     fclose(fp);
   
-  for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
-    {
-      for(int p=0; p<nmom; p++)
-	free(corr_p[ich][p]);
-
-      free(corr_p[ich]);
-    }
+  for(int i=0; i<2; i++)
+    for(int j=0; j<2; j++)
+      for(int ich=0; ich<QPB_N_MULTIQ_2PT_CHANNELS; ich++)
+	{
+	  for(int p=0; p<nmom; p++)
+	    free(corr_p[i][j][ich][p]);
+	  
+	  free(corr_p[i][j][ich]);
+	}
   free(mom);
   return;
 }

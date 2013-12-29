@@ -48,21 +48,28 @@ lib/qpb_bicgstab_kl11_mult.h,40
 lib/qpb_read_raw_gauge.h,36
 #define _QPB_READ_RAW_GAUGE_H 2,30
 
-lib/qpb_bicgstab_kl11_mult.c,391
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 17,416
-#define QPB_OP_NUMB_TEMP_VECS 18,454
-static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs20,487
-static qpb_spinor_field op_temp_vecs[op_temp_vecs21,560
-static qpb_overlap_params ov_params;22,621
-Op(25,671
-Ip3A(55,1577
-qpb_bicgstab_kl11_mult_init(74,2069
-qpb_bicgstab_kl11_mult_finalize(137,3833
-qpb_bicgstab_kl11_mult(157,4312
+lib/qpb_bicgstab_kl11_mult.c,418
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 19,460
+#define QPB_OP_NUMB_TEMP_VECS 20,498
+static int precond;22,531
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs23,551
+static qpb_spinor_field op_temp_vecs[op_temp_vecs24,624
+static qpb_overlap_params ov_params;25,685
+Op(28,735
+Ip3A(58,1641
+qpb_bicgstab_kl11_mult_init(77,2133
+qpb_bicgstab_kl11_mult_finalize(148,4037
+qpb_bicgstab_kl11_mult(171,4562
 
 lib/qpb_spinor_field.c,66
 qpb_spinor_field_init(10,179
 qpb_spinor_field_finalize(114,3198
+
+lib/qpb_spinor_field_copy.h,39
+#define _QPB_SPINOR_FIELD_COPY_H 2,33
+
+lib/qpb_bicgstab_kl11kl11_mult.h,44
+#define _QPB_BICGSTAB_KL11KL11_MULT_H 2,38
 
 lib/qpb_apply_bri_dslash.c,66
 qpb_apply_bri_dslash(13,255
@@ -90,14 +97,14 @@ qpb_apply_clover_term_yz(65,1989
 qpb_apply_clover_term_yt(82,2416
 qpb_apply_clover_term_zt(99,2843
 
-lib/qpb_multiq_2pt.c,188
+lib/qpb_multiq_2pt.c,195
 #define QPB_N_MULTIQ_2PT_CHANNELS 13,265
-enum qpb_baryon_2pt_channels 14,301
-  TETRAQ_MOL_TR,15,332
-  TETRAQ_MOL_TRTR16,349
-corr_alloc(20,378
-corr_free(33,643
-qpb_multiq_2pt(49,927
+static enum qpb_multiq_2pt_channels 14,301
+  TETRAQ_MOL_TR,15,339
+  TETRAQ_MOL_TRTR16,356
+corr_alloc(20,385
+corr_free(33,650
+qpb_multiq_2pt(49,934
 
 lib/qpb_errors.h,238
 #define _QPB_ERRORS_H 2,22
@@ -188,6 +195,9 @@ lib/qpb_apply_clover_bri_dslash.c,80
 qpb_apply_clover_bri_dslash(14,295
 qpb_apply_gamma5_clover_bri_dslash(76,2264
 
+lib/qpb_tetraq_mol_displ_2pt.h,42
+#define _QPB_TETRAQ_MOL_DISPL_2PT_H 2,36
+
 lib/qpb_rng.c,113
 qpb_rng_init(7,108
 qpb_rng_finalize(20,536
@@ -215,12 +225,19 @@ lib/qpb_gauge_field_set_unit.h,43
 lib/qpb_apply_clover_term.h,39
 #define _QPB_APPLY_CLOVER_TERM_H 2,33
 
+lib/qpb_tetraq_mol_displ_2pt.c,53
+#define IDX(12,242
+qpb_tetraq_mol_displ_2pt(15,283
+
 lib/qpb_gauss_smear.h,33
 #define _QPB_GAUSS_SMEAR_H 2,27
 
 lib/qpb_spinor_field_set_gaussian.c,80
 qpb_spinor_field_set_gaussian(8,96
 qpb_spinor_field_set_gaussian_site(56,1200
+
+lib/qpb_spinor_field_shift.h,40
+#define _QPB_SPINOR_FIELD_SHIFT_H 2,34
 
 lib/qpb_gauge_field_shift.h,39
 #define _QPB_GAUGE_FIELD_SHIFT_H 2,33
@@ -237,12 +254,14 @@ qpb_spinor_field_set_z4(8,96
 lib/qpb_write_n_spinor.h,36
 #define _QPB_WRITE_N_SPINOR_H 2,30
 
-lib/qpb_bicgstab.c,184
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 12,319
-qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs14,358
-qpb_bicgstab_init(17,430
-qpb_bicgstab_finalize(29,681
-qpb_bicgstab(40,884
+lib/qpb_bicgstab.c,254
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 13,339
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs15,378
+static char out_pre[out_pre16,451
+static int n_echo;17,488
+qpb_bicgstab_init(20,513
+qpb_bicgstab_finalize(34,855
+qpb_bicgstab(45,1058
 
 lib/qpb_read_ildg_gauge.c,47
 xpath_get(22,435
@@ -250,6 +269,9 @@ qpb_read_ildg_gauge(45,1097
 
 lib/qpb_spinor_field_set_random.h,45
 #define _QPB_SPINOR_FIELD_SET_RANDOM_H 2,39
+
+lib/qpb_spinor_field_shift.c,31
+qpb_spinor_field_shift(10,253
 
 lib/qpb_spinor_field_set_z4.h,41
 #define _QPB_SPINOR_FIELD_SET_Z4_H 2,35
@@ -297,6 +319,15 @@ qpb_apply_bri_dslash_site(9,204
 
 lib/qpb_stop_watch.c,21
 qpb_stop_watch(6,58
+
+lib/qpb_multiq_displ_2pt.c,194
+#define QPB_N_MULTIQ_2PT_CHANNELS 13,271
+enum qpb_multiq_2pt_channels 14,307
+  TETRAQ_MOL_TR,15,338
+  TETRAQ_MOL_TRTR16,355
+corr_alloc(20,391
+corr_free(33,663
+qpb_multiq_displ_2pt(49,947
 
 lib/qpb_apesmear.h,30
 #define _QPB_APESMEAR_H 2,24
@@ -540,19 +571,20 @@ qpb_read_gauge(12,186
 lib/qpb_multiq_2pt.h,32
 #define _QPB_MULTIQ_2PT_H 2,26
 
-lib/qpb_comm_halo_spinor_field.c,505
-qpb_spinor *sendb[sendb9,132
-MPI_Request send_req[send_req10,157
-qpb_comm_halo_spinor_field_init(18,261
-qpb_comm_halo_spinor_field_finalize(60,1157
-qpb_comm_halo_spinor_field_start(83,1648
-qpb_comm_halo_spinor_field_wait(144,2971
-qpb_comm_halo_spinor_field_x_start(168,3498
-qpb_comm_halo_spinor_field_x_wait(226,4769
-qpb_comm_halo_spinor_field_y_start(251,5282
-qpb_comm_halo_spinor_field_y_wait(309,6553
-qpb_comm_halo_spinor_field_z_start(334,7066
-qpb_comm_halo_spinor_field_z_wait(392,8337
+lib/qpb_comm_halo_spinor_field.c,564
+static unsigned int spinor_comm_initialized;9,132
+static qpb_spinor *sendb[sendb10,177
+MPI_Request send_req[send_req11,209
+qpb_comm_halo_spinor_field_init(19,313
+qpb_comm_halo_spinor_field_finalize(65,1378
+qpb_comm_halo_spinor_field_start(92,1991
+qpb_comm_halo_spinor_field_wait(153,3314
+qpb_comm_halo_spinor_field_x_start(177,3841
+qpb_comm_halo_spinor_field_x_wait(235,5112
+qpb_comm_halo_spinor_field_y_start(260,5625
+qpb_comm_halo_spinor_field_y_wait(318,6896
+qpb_comm_halo_spinor_field_z_start(343,7409
+qpb_comm_halo_spinor_field_z_wait(401,8680
 
 lib/qpb_sun_project.h,31
 #define _QPB_SUN_PROJECT 2,25
@@ -740,7 +772,7 @@ sun_mul_du(191,7236
 sun_mul_dd(254,10236
 sun_mul_au(317,13245
 
-lib/qpb_types.h,4950
+lib/qpb_types.h,4997
 #define _QPB_TYPES_H 2,21
 #define qpb_float 4,61
 #define qpb_double 5,85
@@ -748,133 +780,134 @@ lib/qpb_types.h,4950
 #define MAX_NUM_THREADS 8,141
 #define QPB_MAX_STRING 9,168
 #define QPB_MASTER_PROC 10,195
-#define NS 12,222
-#define NC 13,257
-#define ND 14,283
-#define N_DIR_COMB_2 22,503
-#define N_HYPERCUBE_NEIGH 31,792
-  float re;34,852
-  float im;35,864
-} qpb_complex_float;36,876
-  double re;39,914
-  double im;40,927
-} qpb_complex_double;41,940
-  long double re;44,979
-  long double im;45,997
-} qpb_complex_quad;46,1015
-typedef qpb_complex_float qpb_link_float[qpb_link_float48,1036
-typedef qpb_complex_double qpb_link_double[qpb_link_double49,1085
-typedef qpb_complex_float qpb_spinor_float[qpb_spinor_float51,1137
-typedef qpb_complex_double qpb_spinor_double[qpb_spinor_double52,1188
-  qpb_link_float (*bulk)bulk55,1258
-  qpb_link_float (*boundaries)boundaries56,1288
-  void *boundary_start[boundary_start57,1326
-  qpb_complex_float *zero_field;zero_field58,1356
-  void **index0;index059,1391
-  void **index;index60,1408
-} qpb_gauge_field_float;61,1424
-  qpb_link_double (*bulk)bulk64,1466
-  qpb_link_double (*boundaries)boundaries65,1497
-  void *boundary_start[boundary_start66,1534
-  qpb_complex_double *zero_field;zero_field67,1564
-  void **index0;index068,1600
-  void **index;index69,1617
-} qpb_gauge_field_double;70,1633
-  qpb_spinor_float *bulk;bulk73,1676
-  qpb_spinor_float *boundaries;boundaries74,1702
-  void *boundary_start[boundary_start75,1734
-  qpb_complex_float *zero_field;zero_field76,1764
-  void **index0;index077,1797
-  void **index;index78,1814
-  MPI_Request recv_req[recv_req79,1830
-} qpb_spinor_field_float;80,1860
-  qpb_spinor_double *bulk;bulk83,1903
-  qpb_spinor_double *boundaries;boundaries84,1930
-  void *boundary_start[boundary_start85,1963
-  qpb_complex_double *zero_field;zero_field86,1993
-  void **index0;index087,2027
-  void **index;index88,2044
-  MPI_Request recv_req[recv_req89,2060
-} qpb_spinor_field_double;90,2090
-  qpb_link_float (*bulk)bulk93,2134
-  void **index;index94,2174
-} qpb_clover_term_float;95,2190
-  qpb_link_double (*bulk)bulk98,2232
-  void **index;index99,2273
-} qpb_clover_term_double;100,2289
-  qpb_link_float (*bulk)bulk103,2332
-  qpb_link_float (*boundaries)boundaries104,2377
-  void *boundary_start[boundary_start105,2428
-  void **index;index106,2458
-} qpb_diagonal_links_float;107,2474
-  qpb_link_double (*bulk)bulk110,2519
-  qpb_link_double (*boundaries)boundaries111,2565
-  void *boundary_start[boundary_start112,2617
-  void **index;index113,2647
-} qpb_diagonal_links_double;114,2663
-  unsigned short int g_dim[g_dim118,2710
-  unsigned short int l_dim[l_dim119,2742
-  unsigned short int ext_dim[ext_dim120,2774
-  unsigned short int procs[procs121,2808
-  unsigned short int coords[coords122,2840
-  unsigned short int par_dir[par_dir123,2873
-  unsigned int proc_neigh[proc_neigh124,2907
-  unsigned int b_vol,125,2940
-  unsigned int b_vol, g_vol,125,2940
-  unsigned int b_vol, g_vol, l_vol,125,2940
-  unsigned int b_vol, g_vol, l_vol, ext_vol,125,2940
-  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs,125,2940
-  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs, proc_id;125,2940
-  qpb_double timebc;126,3002
-  MPI_Comm mpi_comm_cart;127,3023
-} qpb_problem_params;128,3049
-  gsl_rng *gsl_rng_state[gsl_rng_state132,3113
-} qpb_random_state;133,3156
-enum qpb_field_init_opts{qpb_field_init_opts135,3177
-  QPB_ZERO 136,3203
-  QPB_UNIT 137,3219
-  QPB_FILE 138,3235
-  QPB_RAND 139,3251
-	typedef qpb_complex_float qpb_complex;143,3294
-	typedef qpb_link_float qpb_link;144,3334
-	typedef qpb_gauge_field_float qpb_gauge_field;145,3368
-	typedef qpb_clover_term_float qpb_clover_term;146,3416
-	typedef qpb_diagonal_links_float qpb_diagonal_links;147,3464
-	typedef qpb_spinor_float qpb_spinor;148,3518
-	typedef qpb_spinor_field_float qpb_spinor_field;149,3556
-	typedef qpb_complex_double qpb_complex;151,3612
-	typedef qpb_link_double qpb_link;152,3653
-	typedef qpb_gauge_field_double qpb_gauge_field;153,3688
-	typedef qpb_clover_term_double qpb_clover_term;154,3737
-	typedef qpb_diagonal_links_double qpb_diagonal_links;155,3786
-	typedef qpb_spinor_double qpb_spinor;156,3841
-	typedef qpb_spinor_field_double qpb_spinor_field;157,3880
-#define _C0_ 160,3962
-#define _CP1_ 161,4001
-#define _CPI_ 162,4043
-#define _CM1_ 163,4085
-#define _CMI_ 164,4127
-#define CNORM2(166,4170
-#define CNORM(167,4221
-#define CMULR(168,4277
-#define CMULI(169,4329
-#define CMUL(170,4381
-#define CSCALE(171,4451
-#define CADD(172,4517
-#define CSUB(173,4587
-#define CNEGATE(174,4657
-#define CCONJ(175,4711
-#define CDEV(176,4762
-#define CDEVR(177,4827
-#define CDEVI(178,4884
-#define CSQRTR(179,4941
-#define CSQRTI(180,5005
-#define CSQRT(181,5069
-#define CARG(182,5126
-#define CPOWR(183,5166
-#define CPOWI(184,5220
-#define MIN(185,5274
-#define MAX(186,5310
+#define QPB_SPINOR_COMM_INITIALIZED 11,221
+#define NS 13,264
+#define NC 14,299
+#define ND 15,325
+#define N_DIR_COMB_2 23,545
+#define N_HYPERCUBE_NEIGH 32,834
+  float re;35,894
+  float im;36,906
+} qpb_complex_float;37,918
+  double re;40,956
+  double im;41,969
+} qpb_complex_double;42,982
+  long double re;45,1021
+  long double im;46,1039
+} qpb_complex_quad;47,1057
+typedef qpb_complex_float qpb_link_float[qpb_link_float49,1078
+typedef qpb_complex_double qpb_link_double[qpb_link_double50,1127
+typedef qpb_complex_float qpb_spinor_float[qpb_spinor_float52,1179
+typedef qpb_complex_double qpb_spinor_double[qpb_spinor_double53,1230
+  qpb_link_float (*bulk)bulk56,1300
+  qpb_link_float (*boundaries)boundaries57,1330
+  void *boundary_start[boundary_start58,1368
+  qpb_complex_float *zero_field;zero_field59,1398
+  void **index0;index060,1433
+  void **index;index61,1450
+} qpb_gauge_field_float;62,1466
+  qpb_link_double (*bulk)bulk65,1508
+  qpb_link_double (*boundaries)boundaries66,1539
+  void *boundary_start[boundary_start67,1576
+  qpb_complex_double *zero_field;zero_field68,1606
+  void **index0;index069,1642
+  void **index;index70,1659
+} qpb_gauge_field_double;71,1675
+  qpb_spinor_float *bulk;bulk74,1718
+  qpb_spinor_float *boundaries;boundaries75,1744
+  void *boundary_start[boundary_start76,1776
+  qpb_complex_float *zero_field;zero_field77,1806
+  void **index0;index078,1839
+  void **index;index79,1856
+  MPI_Request recv_req[recv_req80,1872
+} qpb_spinor_field_float;81,1902
+  qpb_spinor_double *bulk;bulk84,1945
+  qpb_spinor_double *boundaries;boundaries85,1972
+  void *boundary_start[boundary_start86,2005
+  qpb_complex_double *zero_field;zero_field87,2035
+  void **index0;index088,2069
+  void **index;index89,2086
+  MPI_Request recv_req[recv_req90,2102
+} qpb_spinor_field_double;91,2132
+  qpb_link_float (*bulk)bulk94,2176
+  void **index;index95,2216
+} qpb_clover_term_float;96,2232
+  qpb_link_double (*bulk)bulk99,2274
+  void **index;index100,2315
+} qpb_clover_term_double;101,2331
+  qpb_link_float (*bulk)bulk104,2374
+  qpb_link_float (*boundaries)boundaries105,2419
+  void *boundary_start[boundary_start106,2470
+  void **index;index107,2500
+} qpb_diagonal_links_float;108,2516
+  qpb_link_double (*bulk)bulk111,2561
+  qpb_link_double (*boundaries)boundaries112,2607
+  void *boundary_start[boundary_start113,2659
+  void **index;index114,2689
+} qpb_diagonal_links_double;115,2705
+  unsigned short int g_dim[g_dim119,2752
+  unsigned short int l_dim[l_dim120,2784
+  unsigned short int ext_dim[ext_dim121,2816
+  unsigned short int procs[procs122,2850
+  unsigned short int coords[coords123,2882
+  unsigned short int par_dir[par_dir124,2915
+  unsigned int proc_neigh[proc_neigh125,2949
+  unsigned int b_vol,126,2982
+  unsigned int b_vol, g_vol,126,2982
+  unsigned int b_vol, g_vol, l_vol,126,2982
+  unsigned int b_vol, g_vol, l_vol, ext_vol,126,2982
+  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs,126,2982
+  unsigned int b_vol, g_vol, l_vol, ext_vol, nprocs, proc_id;126,2982
+  qpb_double timebc;127,3044
+  MPI_Comm mpi_comm_cart;128,3065
+} qpb_problem_params;129,3091
+  gsl_rng *gsl_rng_state[gsl_rng_state133,3155
+} qpb_random_state;134,3198
+enum qpb_field_init_opts{qpb_field_init_opts136,3219
+  QPB_ZERO 137,3245
+  QPB_UNIT 138,3261
+  QPB_FILE 139,3277
+  QPB_RAND 140,3293
+	typedef qpb_complex_float qpb_complex;144,3336
+	typedef qpb_link_float qpb_link;145,3376
+	typedef qpb_gauge_field_float qpb_gauge_field;146,3410
+	typedef qpb_clover_term_float qpb_clover_term;147,3458
+	typedef qpb_diagonal_links_float qpb_diagonal_links;148,3506
+	typedef qpb_spinor_float qpb_spinor;149,3560
+	typedef qpb_spinor_field_float qpb_spinor_field;150,3598
+	typedef qpb_complex_double qpb_complex;152,3654
+	typedef qpb_link_double qpb_link;153,3695
+	typedef qpb_gauge_field_double qpb_gauge_field;154,3730
+	typedef qpb_clover_term_double qpb_clover_term;155,3779
+	typedef qpb_diagonal_links_double qpb_diagonal_links;156,3828
+	typedef qpb_spinor_double qpb_spinor;157,3883
+	typedef qpb_spinor_field_double qpb_spinor_field;158,3922
+#define _C0_ 161,4004
+#define _CP1_ 162,4043
+#define _CPI_ 163,4085
+#define _CM1_ 164,4127
+#define _CMI_ 165,4169
+#define CNORM2(167,4212
+#define CNORM(168,4263
+#define CMULR(169,4319
+#define CMULI(170,4371
+#define CMUL(171,4423
+#define CSCALE(172,4493
+#define CADD(173,4559
+#define CSUB(174,4629
+#define CNEGATE(175,4699
+#define CCONJ(176,4753
+#define CDEV(177,4804
+#define CDEVR(178,4869
+#define CDEVI(179,4926
+#define CSQRTR(180,4983
+#define CSQRTI(181,5047
+#define CSQRT(182,5111
+#define CARG(183,5168
+#define CPOWR(184,5208
+#define CPOWI(185,5262
+#define MIN(186,5316
+#define MAX(187,5352
 
 lib/qpb_stop_watch.h,32
 #define _QPB_STOP_WATCH_H 2,26
@@ -899,6 +932,23 @@ spinor_xmy(287,7158
 
 lib/qpb_timebc_set_gauge_field.c,35
 qpb_timebc_set_gauge_field(11,176
+
+lib/qpb_bicgstab_kl11kl11_mult.c,516
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 19,460
+#define QPB_OP_NUMB_TEMP_VECS 20,498
+#define N_TIMERS 21,530
+static int precond;23,550
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs24,570
+static qpb_spinor_field op_temp_vecs[op_temp_vecs25,643
+static qpb_overlap_params ov_params;26,704
+static double timers[timers27,741
+A(30,786
+D(44,1167
+Op(56,1458
+tilde(101,2709
+qpb_bicgstab_kl11kl11_mult_init(124,3345
+qpb_bicgstab_kl11kl11_mult_finalize(198,5305
+qpb_bicgstab_kl11kl11_mult(221,5834
 
 lib/qpb_spinor_gammas.h,11311
 #define _QPB_SPINOR_GAMMAS_H 2,29
@@ -1251,6 +1301,9 @@ lib/qpb_spinor_xdotg5y.h,36
 lib/qpb_rng.h,25
 #define _QPB_RNG_H 2,19
 
+lib/qpb_multiq_displ_2pt.h,38
+#define _QPB_MULTIQ_DISPL_2PT_H 2,32
+
 lib/qpb_finalize.c,20
 qpb_finalize(9,134
 
@@ -1287,13 +1340,15 @@ qpb_lanczos(40,801
 lib/qpb_nucleon_2pt.h,33
 #define _QPB_NUCLEON_2PT_H 2,27
 
-lib/qpb_bicgstab_overlap_outer.c,254
-#define QPB_BICGSTAB_NUMB_TEMP_VECS 14,372
-static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs16,411
-qpb_bicgstab_overlap_outer_init(19,490
-qpb_bicgstab_overlap_outer_finalize(33,904
-#define Op(44,1148
-qpb_bicgstab_overlap_outer(48,1241
+lib/qpb_bicgstab_overlap_outer.c,326
+#define QPB_BICGSTAB_NUMB_TEMP_VECS 16,416
+static qpb_spinor_field bicgstab_temp_vecs[bicgstab_temp_vecs18,455
+static int precond;19,528
+static qpb_overlap_params ov_params;20,548
+qpb_bicgstab_overlap_outer_init(23,591
+qpb_bicgstab_overlap_outer_finalize(50,1278
+#define Op(64,1566
+qpb_bicgstab_overlap_outer(68,1659
 
 lib/qpb_baryons_2pt.h,33
 #define _QPB_BARYONS_2PT_H 2,27
@@ -1330,6 +1385,9 @@ spinor_sun_dag_meq_mul(576,23854
 
 lib/qpb_msg_passing_init.c,28
 qpb_msg_passing_init(9,134
+
+lib/qpb_spinor_field_copy.c,29
+qpb_spinor_field_copy(7,126
 
 lib/qpb_spinor_xdotx.c,24
 qpb_spinor_xdotx(9,126
