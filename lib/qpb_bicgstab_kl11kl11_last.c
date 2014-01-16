@@ -59,7 +59,7 @@ cg_inner(qpb_spinor_field x, qpb_spinor_field b)
   qpb_spinor_field r = cg_inner_temp_vecs[1];
   qpb_spinor_field y = cg_inner_temp_vecs[2];
 
-  qpb_double epsilon = 1e-8;
+  qpb_double epsilon = 1e-5;
   int iters = 0, max_iter = 1000;
   const int n_echo = 100, n_reeval = 10;
   qpb_double res_norm, b_norm;
@@ -135,7 +135,7 @@ XA(qpb_spinor_field out, qpb_spinor_field in)
   qpb_complex_double a = {8./3., 0.};
   qpb_spinor_field iAp1o3x = op_temp_vecs[1];
   cg_inner(iAp1o3x, in);
-  qpb_spinor_axpy(out, a, iAp1o3x, in);  
+  qpb_spinor_ax(out, a, iAp1o3x);  
   return;
 }
 
@@ -153,7 +153,7 @@ Op(qpb_spinor_field out, qpb_spinor_field in)
   qpb_spinor_field I3pA1x = op_temp_vecs[6];
   qpb_spinor_field Ip3A1x = op_temp_vecs[7];
   XA(y, in);
-  qpb_spinor_ax(y, (qpb_complex){9.0,0.}, y);
+  qpb_spinor_ax(y, (qpb_complex){1.0/9.0,0.}, y);
   A0(z, y);
   XA(A1x, z);
   qpb_spinor_axpy(Ip3A1x, (qpb_complex){3.0,0}, A1x, in);
@@ -172,7 +172,7 @@ Ip3A(qpb_spinor_field out, qpb_spinor_field in)
   qpb_spinor_field z = op_temp_vecs[3];
   qpb_spinor_field A1x = op_temp_vecs[4];
   XA(y, in);
-  qpb_spinor_ax(y, (qpb_complex){9.0,0.}, y);
+  qpb_spinor_ax(y, (qpb_complex){1.0/9.0,0.}, y);
   A0(z, y);
   XA(A1x, z);
   qpb_spinor_axpy(out, (qpb_complex){3.0,0}, A1x, in);
@@ -304,7 +304,7 @@ qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double ep
   qpb_spinor_field t = bicgstab_temp_vecs[8];
 
   int iters = 0;
-  const int n_reeval = 100;
+  const int n_reeval = 200;
   qpb_double res_norm, b_norm;
   qpb_complex_double alpha = {1, 0}, omega = {1, 0}, rho_new = {1, 0};
   qpb_complex_double beta, rho_old;
@@ -334,8 +334,8 @@ qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double ep
       qpb_spinor_axpy(p, beta, r, p);
       qpb_spinor_axpy(p, CNEGATE(CMUL(beta,omega)), q, p);
       if(precond) {
-	//qpb_spinor_ax(q, (qpb_complex){rho_ov*factor, 0}, p);
-	qpb_bicgstab_kl11_last(y, p, sqrt(sqrt(epsilon)), max_iter);
+	qpb_spinor_ax(q, (qpb_complex){rho_ov*factor, 0}, p);
+	qpb_bicgstab_kl11_last(y, q, 1e-1, max_iter);
 	Op(q, y);
       }else{
 	Op(q, p);
@@ -345,8 +345,8 @@ qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double ep
       alpha = CDEV(rho_new,r0q);
       qpb_spinor_axpy(s, CNEGATE(alpha), q, r);
       if(precond) {
-	//qpb_spinor_ax(t, (qpb_complex){rho_ov*factor, 0}, s);
-	qpb_bicgstab_kl11_last(z, s, sqrt(sqrt(epsilon)), max_iter);
+	qpb_spinor_ax(t, (qpb_complex){rho_ov*factor, 0}, s);
+	qpb_bicgstab_kl11_last(z, s, 1e-1, max_iter);
 	Op(t, z);
       }else{
 	Op(t, s);

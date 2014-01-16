@@ -219,10 +219,10 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
       qpb_spinor_axpy(p, beta, r, p);
       qpb_spinor_axpy(p, CNEGATE(CMUL(beta,omega)), q, p);
       if(precond) {
-	qpb_double m = mass/factor;
+	qpb_double m = 1+mass/factor/rho_ov;
 	qpb_double kappa = 1./(8.0+2.0*m);
 	qpb_bicgstab(y, p, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     sqrt(sqrt(epsilon)), max_iter);
+		     1e-1, max_iter);
 	Op(q, y);
       }else{
 	Op(q, p);
@@ -232,10 +232,10 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
       alpha = CDEV(rho_new,r0q);
       qpb_spinor_axpy(s, CNEGATE(alpha), q, r);
       if(precond) {
-	qpb_double m = mass/factor;
+	qpb_double m = mass/factor/rho_ov;
 	qpb_double kappa = 1./(8.0+2.0*m);
 	qpb_bicgstab(z, s, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     sqrt(sqrt(epsilon)), max_iter);
+		     1e-1, max_iter);
 	Op(t, z);
       }else{
 	Op(t, s);
