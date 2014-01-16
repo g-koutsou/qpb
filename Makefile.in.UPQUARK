@@ -3,7 +3,7 @@ RANLIB=ranlib
 CC=mpicc
 DEBUGFLAGS=-ggdb -DDEBUG
 PROFFLAGS=-pg
-CFLAGS=-O2 -Winline -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall -I/usr/include/libxml2 -I./ -I$(HOME)/loc-install/include -DOPENMP -fopenmp -DHAVE_LONG_DOUBLE -DINLINE="static inline"
+CFLAGS=-O3 -Wno-unused-result --param max-inline-insns-single=10000000 --param large-function-growth=1000000 -std=c99 -Wall -I/usr/include/libxml2 -I./ -I$(HOME)/loc-install/include -DOPENMP -fopenmp -DHAVE_LONG_DOUBLE -DINLINE="static inline"
 LDFLAGS=-L$(HOME)/loc-install/lib
 LIBS=-llime -lgsl -lgslcblas -lxml2 -lm
 

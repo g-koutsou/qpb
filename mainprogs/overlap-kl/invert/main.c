@@ -12,8 +12,12 @@ enum {
 } conf_format;
 
 enum {
-  BICGSTAB_V1,
-  BICGSTAB_V2
+  KL11,
+  KL11KL11
+} kl_type;
+
+enum {
+  BICGSTAB,
 } solver;
 
 enum {
@@ -405,29 +409,23 @@ main(int argc, char *argv[])
       break;
     }
 
-  if(sscanf(qpb_parse("KL class"), "%s", aux_string)!=1)
+  if(sscanf(qpb_parse("KL type"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
-	    "KL class");
+	    "KL type");
       exit(QPB_PARSER_ERROR);
     }
-  enum qpb_kl_classes kl_class;
-  if(strcmp(aux_string, "11") == 0)
-    kl_class = KL_CLASS_11;
+  if(strcmp(aux_string, "KL11") == 0)
+    kl_type = KL11;
+  else if(strcmp(aux_string, "KL11KL11") == 0)
+    kl_type = KL11KL11;
   else
     {
-      error("%s: option currently supports: ", "KL class");
-      error("%s\n", "11"); 
+      error("%s: option currently supports: ", "KL type");
+      error("%s or", "KL11"); 
+      error("%s\n", "KL11KL11"); 
       exit(QPB_PARSER_ERROR);
     }  
-  int kl_iters;
-  if(sscanf(qpb_parse("KL iters"), "%d", &kl_iters)!=1)
-    {
-      error("error parsing for %s\n", 
-	    "KL iters");
-      exit(QPB_PARSER_ERROR);
-    }
-
   int numb_shifts;
   if(sscanf(qpb_parse("Solver"), "%s", aux_string)!=1)
     {
@@ -435,31 +433,15 @@ main(int argc, char *argv[])
 	    "Solver");
       exit(QPB_PARSER_ERROR);
     }
-  if(strcmp(aux_string, "bicgstab-v1") == 0)
+  if(strcmp(aux_string, "bicgstab") == 0)
     {
-      solver = BICGSTAB_V1;
+      solver = BICGSTAB;
       numb_shifts = 1;
-      if(kl_iters != 1)
-	{
-	  error("%s: option currently supports only 1 iteration for %s\n", "KL iters", aux_string);
-	  exit(QPB_PARSER_ERROR);
-	}
-    }
-  else if(strcmp(aux_string, "bicgstab-v2") == 0)
-    {
-      solver = BICGSTAB_V2;
-      numb_shifts = 1;
-      if(kl_iters > 2)
-	{
-	  error("%s: option currently supports only 1 or 2 iterations for %s\n", "KL iters", aux_string);
-	  exit(QPB_PARSER_ERROR);
-	}
     }
   else
     {
       error("%s: option should be one of: ", "Solver");
-      error("%s, ", "bicgstab-v1"); 
-      error("%s\n", "bicgstab-v2"); 
+      error("%s\n", "bicgstab"); 
       exit(QPB_PARSER_ERROR);
     };
 
@@ -661,7 +643,7 @@ main(int argc, char *argv[])
 
   if(precondition)
     {
-      print(" Will use preconditioning with bare operator\n");    
+      print(" Will use preconditioning\n");    
     }
   else
     {
@@ -674,11 +656,8 @@ main(int argc, char *argv[])
    */
   switch(solver)
     {
-    case BICGSTAB_V1:      
-      print(" Solver = BiCGStab-v1 \n");
-      break;
-    case BICGSTAB_V2:
-      print(" Solver = BiCGStab-v2 \n");
+    case BICGSTAB:      
+      print(" Solver = BiCGStab\n");
       break;
     }
   qpb_rng_init(seed);
@@ -866,14 +845,16 @@ main(int argc, char *argv[])
   qpb_double t = qpb_stop_watch(0);
   switch(solver)
     {
-    case BICGSTAB_V1:
-      qpb_bicgstab_overlap_outer_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition);
-      break;
-    case BICGSTAB_V2:
-      if(kl_iters == 1)
-	qpb_bicgstab_kl11_mult_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition);
-      if(kl_iters == 2)
-	qpb_bicgstab_kl11kl11_mult_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition);	
+    case BICGSTAB:
+      switch(kl_type)
+	{
+	case KL11:
+	  qpb_bicgstab_kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);
+	  break;
+	case KL11KL11:
+	  qpb_bicgstab_kl11kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);
+	  break;
+	}
       break;
     }
 
@@ -881,14 +862,16 @@ main(int argc, char *argv[])
     {
       switch(solver)
 	{
-	case BICGSTAB_V1:
-	  iters = qpb_bicgstab_overlap_outer(sol[i], source[i], kl_class, kl_iters, epsilon, max_iters);
-	  break;
-	case BICGSTAB_V2:
-	  if(kl_iters == 1)
-	    iters = qpb_bicgstab_kl11_mult(sol[i], source[i], epsilon, max_iters);
-	  if(kl_iters == 2)
-	    iters = qpb_bicgstab_kl11kl11_mult(sol[i], source[i], epsilon, max_iters);
+	case BICGSTAB:
+	  switch(kl_type)
+	    {
+	    case KL11:
+	      iters = qpb_bicgstab_kl11_last(sol[i], source[i], epsilon, max_iters);
+	      break;
+	    case KL11KL11:
+	      iters = qpb_bicgstab_kl11kl11_last(sol[i], source[i], epsilon, max_iters);
+	      break;
+	    }
 	  break;
 	}
       print(" Done vector = %d / %d, iters = %d\n", i+1, n_spinors, iters);
@@ -896,18 +879,20 @@ main(int argc, char *argv[])
 
   switch(solver)             
     {                        
-    case BICGSTAB_V1: 
-      qpb_bicgstab_overlap_outer_finalize();
-      t = qpb_stop_watch(t);
-      print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
-      break;
-    case BICGSTAB_V2:           
-      if(kl_iters == 1)
-	qpb_bicgstab_kl11_mult_finalize();
-      if(kl_iters == 2)
-	qpb_bicgstab_kl11kl11_mult_finalize();
-      t = qpb_stop_watch(t);
-      print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
+    case BICGSTAB:
+      switch(kl_type)
+	{
+	case KL11:
+	  qpb_bicgstab_kl11_last_finalize();
+	  t = qpb_stop_watch(t);
+	  print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
+	  break;
+	case KL11KL11:
+	  qpb_bicgstab_kl11kl11_last_finalize();
+	  t = qpb_stop_watch(t);
+	  print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
+	  break;
+	}
       break;
     }
 
