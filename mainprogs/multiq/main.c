@@ -423,13 +423,6 @@ main(int argc, char *argv[])
 	    qpb_spinor_field_copy(prop_Dd[d][i], prop_0d[i]);
 	    qpb_spinor_field_copy(prop_D0[d][i], prop_00[i]);
 	  }
-	        
-      for(int d=0; d<n_displ; d++)
-	for(int i=0; i<n_vec; i++)
-	  {
-	    qpb_spinor_field_shift(prop_Dd[d][i], displ[d]);
-	    qpb_spinor_field_shift(prop_D0[d][i], displ[d]);
-	  }
     }
   
   qpb_gauge_field gauge;
@@ -539,6 +532,12 @@ main(int argc, char *argv[])
     {
       for(int d=0; d<n_displ; d++)
 	{
+	  for(int i=0; i<n_vec; i++)
+	    {
+	      qpb_spinor_field_shift(prop_Dd[d][i], displ[d]);
+	      qpb_spinor_field_shift(prop_D0[d][i], displ[d]);
+	    }
+
 	  qpb_spinor_field *prop[2][2] = {{prop_00, prop_0d},
 					  {prop_D0[d], prop_Dd[d]}};
 	  qpb_multiq_displ_2pt(prop, max_q2, corr_file[d]);
