@@ -25,6 +25,7 @@ static qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 static qpb_spinor_field cg_inner_temp_vecs[CG_INNER_NUMB_TEMP_VECS];
 static qpb_spinor_field op_temp_vecs[QPB_OP_NUMB_TEMP_VECS];
 static qpb_overlap_params ov_params;
+static qpb_double epsilon;
 
 INLINE void
 A0(qpb_spinor_field out, qpb_spinor_field in)
@@ -59,7 +60,6 @@ cg_inner(qpb_spinor_field x, qpb_spinor_field b)
   qpb_spinor_field r = cg_inner_temp_vecs[1];
   qpb_spinor_field y = cg_inner_temp_vecs[2];
 
-  qpb_double epsilon = 1e-5;
   int iters = 0, max_iter = 1000;
   const int n_echo = 100, n_reeval = 10;
   qpb_double res_norm, b_norm;
@@ -78,7 +78,7 @@ cg_inner(qpb_spinor_field x, qpb_spinor_field b)
   qpb_double t = qpb_stop_watch(0);
   for(iters=1; iters<max_iter; iters++)
     {
-      if(res_norm / b_norm <= epsilon)
+      if(res_norm / b_norm <= epsilon/3)
 	break;
     
       A0(y, p);
@@ -124,8 +124,8 @@ cg_inner(qpb_spinor_field x, qpb_spinor_field b)
       return;
     }
 
-  print(" \t\t CG: After %d iterrations CG converged\n", iters);
-  print(" \t\t CG: residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, t);
+  print(" \t\t CG: converged in %d iters, res. = %4.2e, rel. = %4.2e, t = %4.2e secs\n", 
+	iters, res_norm, res_norm / b_norm, t);
   return;
 }
 
@@ -290,8 +290,9 @@ qpb_bicgstab_kl11kl11_last_finalize()
 }
 
 int
-qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilon, int max_iter)
+qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double eps_in, int max_iter)
 {
+  epsilon = eps_in;
   qpb_spinor_field r0 = bicgstab_temp_vecs[0];
   qpb_spinor_field r = bicgstab_temp_vecs[1];
   qpb_spinor_field p = bicgstab_temp_vecs[2];
@@ -329,9 +330,8 @@ qpb_bicgstab_kl11kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double ep
 
       rho_old = rho_new;
       qpb_spinor_xdoty(&rho_new, r0, r);
-      beta.re = CMULR((CDEV(rho_new, rho_old)), (CDEV(alpha, omega)));
-      beta.im = CMULI((CDEV(rho_new, rho_old)), (CDEV(alpha, omega)));
-      qpb_spinor_axpy(p, beta, r, p);
+      beta = CMUL((CDEV(rho_new, rho_old)), (CDEV(alpha, omega)));
+      qpb_spinor_axpy(p, beta, p, r);
       qpb_spinor_axpy(p, CNEGATE(CMUL(beta,omega)), q, p);
       if(precond) {
 	qpb_spinor_ax(q, (qpb_complex){rho_ov*factor, 0}, p);
