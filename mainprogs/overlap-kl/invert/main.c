@@ -452,8 +452,17 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     }
   int precondition = -1;
+  qpb_double eps_prec = 1;
   if(strcmp(aux_string, "yes") == 0)
-    precondition = 1;
+    {
+      precondition = 1;
+      if(sscanf(qpb_parse("Preconditioner epsilon"), "%lf", &eps_prec)!=1)
+	{
+	  error("error parsing for %s\n", 
+		"Preconditioner epsilon");
+	  exit(QPB_PARSER_ERROR);
+	}
+    }
   else if(strcmp(aux_string, "no") == 0)
     precondition = 0;
   else
@@ -643,7 +652,8 @@ main(int argc, char *argv[])
 
   if(precondition)
     {
-      print(" Will use preconditioning\n");    
+      print(" Will use preconditioning\n");  
+      print(" Preconditioner epsilon = %e\n", eps_prec);  
     }
   else
     {
@@ -849,7 +859,7 @@ main(int argc, char *argv[])
       switch(kl_type)
 	{
 	case KL11:
-	  qpb_bicgstab_kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);
+	  qpb_bicgstab_kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, eps_prec, "", 1);
 	  break;
 	case KL11KL11:
 	  qpb_bicgstab_kl11kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);

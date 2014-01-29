@@ -194,7 +194,7 @@ qpb_bicgstab_kl11kl11_last_init(void * gauge, qpb_clover_term clover,
   if(precond) {
     char aux_pre[QPB_MAX_STRING];
     sprintf(aux_pre, "\t%s", out_pre);
-    qpb_bicgstab_kl11_last_init(gauge, clover, rho, c_sw, mass, precondition, aux_pre, 10000);
+    qpb_bicgstab_kl11_last_init(gauge, clover, rho, c_sw, mass, precondition, 1e-8, aux_pre, 10000);
   }
 
   for(int i=0; i<QPB_BICGSTAB_NUMB_TEMP_VECS; i++)

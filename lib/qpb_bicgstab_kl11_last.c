@@ -20,6 +20,7 @@
 
 static char out_pre[QPB_MAX_STRING];
 static int precond, n_echo;
+static qpb_double precond_eps;
 static qpb_spinor_field bicgstab_temp_vecs[QPB_BICGSTAB_NUMB_TEMP_VECS];
 static qpb_spinor_field op_temp_vecs[QPB_OP_NUMB_TEMP_VECS];
 static qpb_overlap_params ov_params;
@@ -74,14 +75,15 @@ Ip3A(qpb_spinor_field out, qpb_spinor_field in)
 
 void
 qpb_bicgstab_kl11_last_init(void * gauge, qpb_clover_term clover, 
-			    qpb_double rho, qpb_double c_sw, qpb_double mass, int precondition,
-			    char output_prefix[], int echo_freq)
+			    qpb_double rho, qpb_double c_sw, qpb_double mass, int precondition, 
+			    qpb_double eps_prec, char output_prefix[], int echo_freq)
 {
-  if(precondition)
+  if(precondition) {
     precond = 1;
-  else
+    precond_eps = eps_prec;
+  } else {
     precond = 0;
-  
+  }
   n_echo = echo_freq;
   strcpy(out_pre, output_prefix);  
   if(precond) {
@@ -220,7 +222,7 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
 	qpb_double m = mass/factor;
 	qpb_double kappa = 1./(8.0+2.0*m);
 	qpb_bicgstab(y, p, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     sqrt(sqrt(epsilon)), max_iter);
+		     precond_eps, max_iter);
 	Op(q, y);
       }else{
 	Op(q, p);
@@ -233,7 +235,7 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
 	qpb_double m = mass/factor;
 	qpb_double kappa = 1./(8.0+2.0*m);
 	qpb_bicgstab(z, s, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     sqrt(sqrt(epsilon)), max_iter);
+		     precond_eps, max_iter);
 	Op(t, z);
       }else{
 	Op(t, s);
