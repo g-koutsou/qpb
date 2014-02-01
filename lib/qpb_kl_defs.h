@@ -1,9 +1,6 @@
 #ifndef _QPB_KL_DEFS_H
 #define _QPB_KL_DEFS_H 1
 #include <qpb_types.h>
-enum qpb_kl_classes {
-  KL_CLASS_11
-};
 
 #define QPB_OVERLAP_INITIALIZED 31726
 
@@ -18,4 +15,5 @@ typedef struct {
   void (* g5_dslash_op)();
   qpb_double mass;
 } qpb_overlap_params;
+
 #endif /* _QPB_KL_DEFS_H */

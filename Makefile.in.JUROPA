@@ -1,7 +1,7 @@
 AR = xiar
 RANLIB = ranlib
 CC = mpicc
-CFLAGS = -O3 -fp-model strict -m64 -std=c99 -I./ -I/usr/include/libxml2/ -I${HOME}/install/include -openmp -DOPENMP -I$(GSL_ROOT)/include -DHAVE_LONG_DOUBLE
+CFLAGS = -O3 -fp-model strict -m64 -std=c99 -I./ -I/usr/include/libxml2/ -I${HOME}/install/include -openmp -DOPENMP -I$(GSL_ROOT)/include -DHAVE_LONG_DOUBLE -DINLINE="static __inline__"
 DSLASH_CFLAGS := $(CFLAGS) -O1
 LDFLAGS = -L${HOME}/install/lib -L$(GSL_ROOT)/lib
 LIBS = -lgsl -lgslcblas -llime -lxml2 -lm

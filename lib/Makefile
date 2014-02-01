@@ -71,12 +71,10 @@ SOURCES = qpb_init\
 	qpb_apply_clover_bri_dslash\
 	qpb_apply_clover_term\
 	qpb_bicgstab\
-	qpb_bicgstab_kl11_mult\
-	qpb_bicgstab_kl11kl11_mult\
-	qpb_bicgstab_overlap_outer\
+	qpb_bicgstab_kl11_last\
+	qpb_bicgstab_kl11kl11_last\
 	qpb_mscongrad\
 	qpb_congrad\
-	qpb_overlap_kl\
 	qpb_bicgg5\
 	qpb_lanczos\
 	qpb_dslash_wrappers\
