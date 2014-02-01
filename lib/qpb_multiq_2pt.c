@@ -11,7 +11,7 @@
 #include <qpb_tetraq_mol_2pt.h>
 
 #define QPB_N_MULTIQ_2PT_CHANNELS 2
-static enum qpb_multiq_2pt_channels {
+enum qpb_multiq_2pt_channels {
   TETRAQ_MOL_TR,
   TETRAQ_MOL_TRTR
 };

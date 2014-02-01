@@ -1,6 +1,7 @@
-AR=xiar
+AR=ar
 RANLIB=ranlib
-CC=mpiicc
-CFLAGS=-O3 -fp-model strict -m64 -std=c99 -I./ -I${HOME}/install/include/libxml2/ -I${HOME}/install/include -openmp -DOPENMP -DHAVE_LONG_DOUBLE
+CC=mpicc
+CFLAGS=-std=c99 -O2 -I./ -I${HOME}/install/include -Wno-unused-result --param max-inline-insns-single=10000 --param large-function-growth=10000 -fopenmp -DOPENMP -DHAVE_LONG_DOUBLE -DINLINE="static inline" -I/usr/include/libxml2/
+# CFLAGS=-std=c99 -O3 -fp-model strict -I./ -I${HOME}/install/include -fopenmp -DOPENMP -DHAVE_LONG_DOUBLE -DINLINE="static inline" -I/usr/include/libxml2/
 LDFLAGS=-L${HOME}/install/lib
-LIBS=-lgsl -lgslcblas -llime -lxml2 -lm
+LIBS= -lfftw3 -llime -lgsl -lgslcblas -lxml2 -lm
