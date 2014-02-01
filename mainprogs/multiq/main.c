@@ -11,7 +11,8 @@ enum {
   SINK_SMEARED
 } sink_smearing;
 
-#define MAX_N_DISPL 32
+#define MAX_SRC_DISPL 128
+#define MAX_SNK_DISPL 128
 
 void
 usage(char *argv[])
@@ -83,9 +84,10 @@ main(int argc, char *argv[])
     }
 
   char prop_file_0[QPB_MAX_STRING]; 
-  char prop_file_d[QPB_MAX_STRING];
-  int n_displ = 0;
-  int displ[MAX_N_DISPL][ND];
+  char prop_file_d[MAX_SRC_DISPL][QPB_MAX_STRING];
+  int n_snk_displ = 0;
+  int n_src_displ = 0;
+  int displ_snk[MAX_SNK_DISPL][ND];
   if(sscanf(qpb_parse("Prop file (0)"), "%s",
 		prop_file_0)!=1)
     {
@@ -96,35 +98,45 @@ main(int argc, char *argv[])
 
   if(n_quarks == 2)
     {
-      if(sscanf(qpb_parse("Prop file (displaced)"), "%s",
-		prop_file_d)!=1)
+      if(sscanf(qpb_parse("Numb. of source-displaced props."), "%d",
+		&n_src_displ)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Prop file (displaced)");
+		"Numb. of source-displaced props.");
 	  exit(QPB_PARSER_ERROR);
 	}
-      if(sscanf(qpb_parse("Numb. of displacements"), "%d",
-		&n_displ)!=1)
+      for(int isrc=0; isrc<n_src_displ; isrc++)
+	{
+	  sprintf(aux_string, "Prop file (displaced) %d", isrc);
+	  if(sscanf(qpb_parse(aux_string), "%s", prop_file_d[isrc])!=1)
+	    {
+	      error("error parsing for %s\n", 
+		    aux_string);
+	      exit(QPB_PARSER_ERROR);
+	    }
+	}
+      if(sscanf(qpb_parse("Numb. of sink displacements"), "%d",
+		&n_snk_displ)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Numb. of displacements");
+		"Numb. of sink displacements");
 	  exit(QPB_PARSER_ERROR);
 	}
-      for(int d=0; d<n_displ; d++)
+      for(int d=0; d<n_src_displ; d++)
 	{
-	  sprintf(aux_string, "Displacement %d", d);
+	  sprintf(aux_string, "Sink displacement %d", d);
 	  if(sscanf(qpb_parse(aux_string), "%d %d %d %d",
-		    displ[d], displ[d]+1, displ[d]+2, displ[d]+3)!=ND)
+		    displ_snk[d], displ_snk[d]+1, displ_snk[d]+2, displ_snk[d]+3)!=ND)
 	    {
 	      error("error parsing for %s\n", 
 		    aux_string);
 	      exit(QPB_PARSER_ERROR);
 	    }
       
-	  if((displ[d][0] > g_dim[0]/2-1) || (displ[d][0] < -g_dim[0]/2) ||
-	     (displ[d][1] > g_dim[1]/2-1) || (displ[d][1] < -g_dim[1]/2) ||
-	     (displ[d][2] > g_dim[2]/2-1) || (displ[d][2] < -g_dim[2]/2) ||
-	     (displ[d][3] > g_dim[3]/2-1) || (displ[d][3] < -g_dim[3]/2))
+	  if((displ_snk[d][0] > g_dim[0]/2-1) || (displ_snk[d][0] < -g_dim[0]/2) ||
+	     (displ_snk[d][1] > g_dim[1]/2-1) || (displ_snk[d][1] < -g_dim[1]/2) ||
+	     (displ_snk[d][2] > g_dim[2]/2-1) || (displ_snk[d][2] < -g_dim[2]/2) ||
+	     (displ_snk[d][3] > g_dim[3]/2-1) || (displ_snk[d][3] < -g_dim[3]/2))
 	    {
 	      error("displacement(s) go beyond +/- half-lattice length(s), quiting\n");
 	      exit(QPB_PARAMETERS_ERROR);
@@ -132,10 +144,10 @@ main(int argc, char *argv[])
       
 	}
     }
-  char corr_file[MAX_N_DISPL][QPB_MAX_STRING];
+  char corr_file[MAX_SNK_DISPL][MAX_SRC_DISPL][QPB_MAX_STRING];
   if(n_quarks == 1)
     {
-      if(sscanf(qpb_parse("Output file"), "%s", corr_file[0])!=1)
+      if(sscanf(qpb_parse("Output file"), "%s", corr_file[0][0])!=1)
 	{
 	  error("error parsing for %s\n",
 		"Output file");
@@ -144,16 +156,17 @@ main(int argc, char *argv[])
     }
   else
     {
-      for(int d=0; d<n_displ; d++)
-	{
-	  sprintf(aux_string, "Output file %d", d);
-	  if(sscanf(qpb_parse(aux_string), "%s", corr_file[d])!=1)
-	    {
-	      error("error parsing for %s\n", 
-		    aux_string);
-	      exit(QPB_PARSER_ERROR);
-	    }
-	}
+      for(int isrc=0; isrc<n_src_displ; isrc++)
+	for(int d=0; d<n_snk_displ; d++)
+	  {
+	    sprintf(aux_string, "Output file %d,%d", d,isrc);
+	    if(sscanf(qpb_parse(aux_string), "%s", corr_file[d][isrc])!=1)
+	      {
+		error("error parsing for %s\n", 
+		      aux_string);
+		exit(QPB_PARSER_ERROR);
+	      }
+	  }
     }
 
   if(sscanf(qpb_parse("Sink smearing"), "%s", aux_string)!=1)
@@ -327,10 +340,11 @@ main(int argc, char *argv[])
   print(" Prop file (0) = %s\n", prop_file_0);
   if(n_quarks == 2)
     {
-      print(" Prop file (displaced) = %s\n", prop_file_d);
-      print(" Numb. of displacements = %d\n", n_displ);
-      for(int d=0; d<n_displ; d++)
-	print(" Displacement %d = %+d %+d %+d %+d\n", d, displ[d][0], displ[d][1], displ[d][2], displ[d][3]);
+      print(" Numb. of sink displacements = %d\n", n_snk_displ);
+      for(int isrc=0; isrc<n_src_displ; isrc++) 
+	print(" Prop file (displaced) %d = %s\n", isrc, prop_file_d[isrc]);
+      for(int d=0; d<n_snk_displ; d++)
+	print(" Displacement %d = %+d %+d %+d %+d\n", d, displ_snk[d][0], displ_snk[d][1], displ_snk[d][2], displ_snk[d][3]);
     }
 
   if(sink_smearing == SINK_SMEARED)
@@ -368,31 +382,31 @@ main(int argc, char *argv[])
 
   if(n_quarks == 1)
     {
-      print(" Output file = %s\n", corr_file[0]);
+      print(" Output file = %s\n", corr_file[0][0]);
     }
   else
     {
-      for(int d=0; d<n_displ; d++)
-	print(" Output file %d = %s\n", d, corr_file[d]);
+      for(int d=0; d<n_snk_displ; d++)
+	for(int isrc=0; isrc<n_src_displ; isrc++)
+	  print(" Output file %d,%d = %s\n", d, isrc, corr_file[d][isrc]);
     }
 
   /* Allocate propagator structs (as 12 spinor structs) */
   qpb_spinor_field *prop_00 = NULL;
-  qpb_spinor_field *prop_0d = NULL;
-  qpb_spinor_field *prop_D0[MAX_N_DISPL];
-  qpb_spinor_field *prop_Dd[MAX_N_DISPL];
-  for(int d=0; d<n_displ; d++)
+  qpb_spinor_field *prop_0d = NULL;;
+  qpb_spinor_field *prop_D0[MAX_SNK_DISPL];
+  qpb_spinor_field *prop_Dd[MAX_SNK_DISPL];
+  for(int d=0; d<n_snk_displ; d++)
     {
       prop_D0[d] = NULL;
       prop_Dd[d] = NULL;
     }
   int n_vec = 12;
-  prop_00 = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);
-  
+  prop_00 = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);  
   if(n_quarks == 2)
     {
       prop_0d = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);
-      for(int d=0; d<n_displ; d++)
+      for(int d=0; d<n_snk_displ; d++)
 	{
 	  prop_D0[d] = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);
 	  prop_Dd[d] = qpb_alloc(sizeof(qpb_spinor_field)*n_vec);
@@ -405,26 +419,14 @@ main(int argc, char *argv[])
       if(n_quarks == 2)
 	{
 	  prop_0d[i] = qpb_spinor_field_init();
-	  for(int d=0; d<n_displ; d++)
+	  for(int d=0; d<n_snk_displ; d++)
 	    {
 	      prop_D0[d][i] = qpb_spinor_field_init();
 	      prop_Dd[d][i] = qpb_spinor_field_init();
 	    }
 	}
     }
-
-  qpb_read_n_spinor(prop_00, n_vec, prop_file_0);
-  if(n_quarks == 2)
-    {
-      qpb_read_n_spinor(prop_0d, n_vec, prop_file_d);
-      for(int d=0; d<n_displ; d++)
-	for(int i=0; i<n_vec; i++)
-	  {
-	    qpb_spinor_field_copy(prop_Dd[d][i], prop_0d[i]);
-	    qpb_spinor_field_copy(prop_D0[d][i], prop_00[i]);
-	  }
-    }
-  
+ 
   qpb_gauge_field gauge;
   qpb_double plaquette;
   if(sink_smearing == SINK_SMEARED)
@@ -478,7 +480,11 @@ main(int argc, char *argv[])
 	  print(" Done APE 3D in %g sec\n", qpb_stop_watch(t));
 	}
       qpb_gauge_field_shift(gauge, shifts);
-      
+    }
+
+  qpb_read_n_spinor(prop_00, n_vec, prop_file_0);
+  if(sink_smearing == SINK_SMEARED)
+    {
       double t = qpb_stop_watch(0);
       qpb_gauss_smear_init();
       qpb_spinor_field aux = qpb_spinor_field_init();
@@ -488,64 +494,63 @@ main(int argc, char *argv[])
 	  qpb_spinor_xeqy(aux, prop_00[i]);
 	  qpb_gauss_smear_niter(prop_00[i], aux, gauge, delta_gauss, n_gauss);
 	}
-      
-      if(n_quarks == 2)
+      qpb_spinor_field_finalize(aux);       
+      qpb_gauss_smear_finalize();
+      print(" Done gaussian smearing in %g sec\n", qpb_stop_watch(t));
+    }
+  if(n_quarks == 1) {
+    print(" Two-point contractions...\n");
+    double t = qpb_stop_watch(0);
+    qpb_multiq_2pt(prop_00, max_q2, corr_file[0][0]);
+    print(" Done correlators in %g sec\n", qpb_stop_watch(t));
+  }
+  /* if n_quarks == 1 ==> isrc == 0, so no loop */
+  for(int isrc=0; isrc<n_src_displ; isrc++)
+    {
+      qpb_read_n_spinor(prop_0d, n_vec, prop_file_d[isrc]);
+      if(sink_smearing == SINK_SMEARED)
 	{
+	  double t = qpb_stop_watch(0);
+	  qpb_gauss_smear_init();
+	  qpb_spinor_field aux = qpb_spinor_field_init();
 	  print(" Smearing prop [0-d]...\n");
 	  for(int i=0; i<n_vec; i++)
 	    {
 	      qpb_spinor_xeqy(aux, prop_0d[i]);
 	      qpb_gauss_smear_niter(prop_0d[i], aux, gauge, delta_gauss, n_gauss);
 	    }
-	  for(int d=0; d<n_displ; d++)
-	    {
-	      print(" Smearing prop [D(%d)-0]...\n", d);
-	      for(int i=0; i<n_vec; i++)
-		{
-		  qpb_spinor_xeqy(aux, prop_D0[d][i]);
-		  qpb_gauss_smear_niter(prop_D0[d][i], aux, gauge, delta_gauss, n_gauss);
-		}
-	    }
-	  for(int d=0; d<n_displ; d++)
-	    {
-	      print(" Smearing prop [D(%d)-d]...\n", d);
-	      for(int i=0; i<n_vec; i++)
-		{
-		  qpb_spinor_xeqy(aux, prop_Dd[d][i]);
-		  qpb_gauss_smear_niter(prop_Dd[d][i], aux, gauge, delta_gauss, n_gauss);
-		}
-	    }
+	  qpb_spinor_field_finalize(aux);       
+	  qpb_gauss_smear_finalize();
+	  print(" Done gaussian smearing in %g sec\n", qpb_stop_watch(t));
 	}
-      qpb_spinor_field_finalize(aux);       
-      qpb_gauss_smear_finalize();
-      qpb_gauge_field_finalize(gauge);
-      print(" Done gaussian smearing in %g sec\n", qpb_stop_watch(t));
-    }
+      for(int d=0; d<n_snk_displ; d++)
+	for(int i=0; i<n_vec; i++)
+	  {
+	    qpb_spinor_field_copy(prop_Dd[d][i], prop_0d[i]);
+	    qpb_spinor_field_copy(prop_D0[d][i], prop_00[i]);
+	  }
 
-  print(" Two-point contractions...\n");
-  double t = qpb_stop_watch(0);
-  if(n_quarks == 1)
-    {
-      qpb_multiq_2pt(prop_00, max_q2, corr_file[0]);
-    }
-  else
-    {
-      for(int d=0; d<n_displ; d++)
+      print(" Two-point contractions for source: %s\n", prop_file_d[isrc]);
+      double t = qpb_stop_watch(0);
+      for(int d=0; d<n_snk_displ; d++)
 	{
 	  for(int i=0; i<n_vec; i++)
 	    {
-	      qpb_spinor_field_shift(prop_Dd[d][i], displ[d]);
-	      qpb_spinor_field_shift(prop_D0[d][i], displ[d]);
+	      qpb_spinor_field_shift(prop_Dd[d][i], displ_snk[d]);
+	      qpb_spinor_field_shift(prop_D0[d][i], displ_snk[d]);
 	    }
-
+	  
 	  qpb_spinor_field *prop[2][2] = {{prop_00, prop_0d},
 					  {prop_D0[d], prop_Dd[d]}};
-	  qpb_multiq_displ_2pt(prop, max_q2, corr_file[d]);
+	  qpb_multiq_displ_2pt(prop, max_q2, corr_file[d][isrc]);
 	  print(" Done displacement %d: %+d %+d %+d %+d\n", d, 
-		displ[d][0], displ[d][1], displ[d][2], displ[d][3]);
+		displ_snk[d][0], displ_snk[d][1], displ_snk[d][2], displ_snk[d][3]);
 	}
+      print(" Done correlators in %g sec\n", qpb_stop_watch(t));
     }
-  print(" Done correlators in %g sec\n", qpb_stop_watch(t));
+
+  if(sink_smearing == SINK_SMEARED)
+    qpb_gauge_field_finalize(gauge);
 
   for(int i=0; i<n_vec; i++)
     {
@@ -553,7 +558,7 @@ main(int argc, char *argv[])
       if(n_quarks == 2)
 	{
 	  qpb_spinor_field_finalize(prop_0d[i]);
-	  for(int d=0; d<n_displ; d++)
+	  for(int d=0; d<n_snk_displ; d++)
 	    {
 	      qpb_spinor_field_finalize(prop_D0[d][i]);
 	      qpb_spinor_field_finalize(prop_Dd[d][i]);
@@ -564,7 +569,7 @@ main(int argc, char *argv[])
   if(n_quarks == 2)
     {
       free(prop_0d);
-      for(int d=0; d<n_displ; d++)
+      for(int d=0; d<n_snk_displ; d++)
 	{
 	  free(prop_D0[d]);
 	  free(prop_Dd[d]);
