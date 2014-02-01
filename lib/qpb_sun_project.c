@@ -88,8 +88,8 @@ funcdfunc(const gsl_vector * th, void * params, double * f, gsl_vector * g){
 void
 minimize_for_thetas(gsl_vector *th, struct func_params *f_params)
 {
-  const int niter = 10000;
-  const double eps = 1.e-5;
+  const int niter = 1000;
+  const double eps = 1.e-3;
   const gsl_multimin_fdfminimizer_type *minimizer_type;
   gsl_multimin_fdfminimizer *minimizer;
   int status;
@@ -103,9 +103,9 @@ minimize_for_thetas(gsl_vector *th, struct func_params *f_params)
       n,
       (void *)f_params
     };
-  minimizer_type = gsl_multimin_fdfminimizer_conjugate_fr;
+  minimizer_type = gsl_multimin_fdfminimizer_vector_bfgs2;
   minimizer = gsl_multimin_fdfminimizer_alloc (minimizer_type, 2);
-  gsl_multimin_fdfminimizer_set (minimizer, &fdf, th, 0.1, eps);
+  gsl_multimin_fdfminimizer_set (minimizer, &fdf, th, 100*eps, eps);
   do{
     iter++;
     status = gsl_multimin_fdfminimizer_iterate (minimizer);
@@ -134,7 +134,7 @@ minimize_for_thetas(gsl_vector *th, struct func_params *f_params)
 void
 get_theta_matrix(gsl_matrix_complex *D, gsl_vector *S, qpb_double phi){
   qpb_double pi = 4. * atan2(1.0, 1.0);
-  qpb_double theta_step = pi / 3.;
+  qpb_double theta_step = pi/2.0;
   qpb_double th_initial[NC-1] = {0, 0};
   qpb_double max_f = -1e10;
   gsl_vector *th_trial = gsl_vector_alloc(NC-1);
@@ -232,6 +232,10 @@ qpb_sun_project(qpb_link *u, int n)
 void 
 qpb_sun_project(qpb_link *u, int n)
 {
+/* #ifdef OPENMP */
+/* #pragma omp parallel */
+/* #endif   */
+/*   { */
   gsl_eigen_hermv_workspace *gsl_work = gsl_eigen_hermv_alloc(NC);
   gsl_matrix_complex *B = gsl_matrix_complex_alloc(NC, NC);
   gsl_matrix_complex *A = gsl_matrix_complex_alloc(NC, NC);
@@ -241,6 +245,9 @@ qpb_sun_project(qpb_link *u, int n)
   gsl_vector *S = gsl_vector_alloc(NC);
   gsl_permutation *perm = gsl_permutation_alloc(NC);
 
+/* #ifdef OPENMP */
+/* #pragma omp for */
+/* #endif   */
   for(int k=0; k<n; k++){
     qpb_complex *a = (qpb_complex *)(u + k);
     
@@ -278,6 +285,7 @@ qpb_sun_project(qpb_link *u, int n)
   gsl_permutation_free(perm);
   gsl_vector_free(S);
   gsl_eigen_hermv_free(gsl_work);
+  /* } */
   return;
 }
 #endif
