@@ -781,6 +781,7 @@ main(int argc, char *argv[])
       /* 3D-APE smear the gauge field for gaussian source */
       if(n_ape_gauss != 0)
 	{
+	  double t = qpb_stop_watch(0);
 	  print(" 3D-APE smear gauge field...\n");
 	  qpb_apesmear_3d_niter(gauss_gauge, gauge, alpha_ape_gauss, n_ape_gauss);
 	  
@@ -788,6 +789,7 @@ main(int argc, char *argv[])
 	  qpb_double p3d = qpb_plaquette_3d(gauss_gauge);
 
 	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
+	  print(" Done APE 3D in %g sec\n", qpb_stop_watch(t));
 	}
       else
 	{
