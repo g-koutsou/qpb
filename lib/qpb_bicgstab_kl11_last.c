@@ -212,6 +212,8 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
     {
       if((iters % n_echo == 0))
 	print("%s iters = %8d, res = %e\n", out_pre, iters, res_norm/b_norm);
+      if(res_norm / b_norm <= epsilon)
+	break;
 
       rho_old = rho_new;
       qpb_spinor_xdoty(&rho_new, r0, r);
@@ -259,8 +261,6 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, qpb_double epsilo
 	  qpb_spinor_xmy(r, b_tilde, r);
 	}
       qpb_spinor_xdotx(&res_norm, r);
-      if(res_norm / b_norm <= epsilon)
-	break;
     }
   Op(r, x);
   qpb_spinor_xmy(r, b_tilde, r);
