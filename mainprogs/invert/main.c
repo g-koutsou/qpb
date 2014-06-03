@@ -513,13 +513,34 @@ main(int argc, char *argv[])
 	    "Solver max iters");
       exit(QPB_PARSER_ERROR);
     }
-  char sol_file[QPB_MAX_STRING];
-  if(sscanf(qpb_parse("Solution file"), "%s", sol_file)!=1)
+  char (*sol_file)[QPB_MAX_STRING];
+  sol_file = qpb_alloc(QPB_MAX_STRING*numb_shifts);
+  switch(solver)
     {
-      error("error parsing for %s\n",
-	    "Solution file");
-      exit(QPB_PARSER_ERROR);
+    case BICGSTAB:
+    case CG:
+    case BICGGAMMA5:
+      if(sscanf(qpb_parse("Solution file"), "%s", sol_file[0])!=1)
+	{
+	  error("error parsing for %s\n",
+		"Solution file");
+	  exit(QPB_PARSER_ERROR);
+	}
+      break;
+    case MSCG:
+      for(int i=1; i<=numb_shifts; i++)
+	{
+	  sprintf(aux_string, "Solution file %d", i);
+	  if(sscanf(qpb_parse(aux_string), "%s", sol_file[i-1])!=1)
+	    {
+	      error("error parsing for %s\n",
+		    aux_string);
+	      exit(QPB_PARSER_ERROR);
+	    }
+	}
+      break;
     }
+  
   qpb_double timebc;
   if(sscanf(qpb_parse("BC in time"), "%lf", &timebc)!=1)
     {
@@ -913,7 +934,7 @@ main(int argc, char *argv[])
       for(int i=0; i<n_spinors; i++)
 	aux[i] = sol[j+i*numb_shifts];
 
-      qpb_write_n_spinor(aux, n_spinors, sol_file);
+      qpb_write_n_spinor(aux, n_spinors, sol_file[j]);
 
       free(aux);
     }
