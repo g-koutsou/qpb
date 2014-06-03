@@ -144,7 +144,7 @@ qpb_mesons_2pt_stoch(qpb_spinor_field *light, qpb_spinor_field *heavy, int n_vec
 	      break;
 	    }
 	  if(am_master)
-	    fprintf(fp, " %+2d %+2d %+2d %3d %+e %+e %s\n", 0, 0, 0, t, corr[ich][t].re, corr[ich][t].im, ctag);
+	    fprintf(fp, " %+2d %+2d %+2d %3d %+12.8e %+12.8e %s\n", 0, 0, 0, t, corr[ich][t].re, corr[ich][t].im, ctag);
 	}
     }
   if(am_master)
