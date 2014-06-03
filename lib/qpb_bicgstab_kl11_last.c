@@ -177,244 +177,6 @@ qpb_bicgstab_kl11_last_finalize()
 }
 
 int
-_qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, 
-		       qpb_double epsilon, int max_iter)
-{
-  qpb_spinor_field r0 = bicgstab_temp_vecs[0];
-  qpb_spinor_field r = bicgstab_temp_vecs[1];
-  qpb_spinor_field p = bicgstab_temp_vecs[2];
-  qpb_spinor_field y = bicgstab_temp_vecs[3];
-  qpb_spinor_field s = bicgstab_temp_vecs[4];
-  qpb_spinor_field z = bicgstab_temp_vecs[5];
-  qpb_spinor_field b_tilde = bicgstab_temp_vecs[6];
-  // For preconditioned version
-  qpb_spinor_field q = bicgstab_temp_vecs[7];
-  qpb_spinor_field t = bicgstab_temp_vecs[8];
-
-  int iters = 0;
-  const int n_reeval = 100;
-  qpb_double res_norm, b_norm;
-  qpb_complex_double alpha = {1, 0}, omega = {1, 0}, rho_new = {1, 0};
-  qpb_complex_double beta, rho_old;
-  qpb_double rho_ov = ov_params.rho;
-  qpb_double mass = ov_params.mass;  
-  qpb_double factor = 1 - mass / (2*rho_ov);
-  qpb_spinor_field_set_zero(x);
-  qpb_spinor_field_set_zero(p);
-  qpb_spinor_field_set_zero(q);
-  qpb_spinor_field_set_zero(s);
-  qpb_spinor_field_set_zero(t);
-  qpb_spinor_ax(b_tilde, (qpb_complex){1.0/(rho_ov*factor), 0.0}, b);
-  qpb_spinor_xdotx(&b_norm, b_tilde);
-  Op(r, x);
-  qpb_spinor_xmy(r, b_tilde, r);
-  qpb_spinor_xeqy(r0, r);
-  qpb_spinor_xdotx(&res_norm, r);
-  qpb_double secs = qpb_stop_watch(0);
-  for(iters=1; iters<max_iter; iters++)
-    {
-      if((iters % n_echo == 0))
-	print("%s iters = %8d, res = %e\n", out_pre, iters, res_norm/b_norm);
-      if(res_norm / b_norm <= epsilon)
-	break;
-
-      rho_old = rho_new;
-      qpb_spinor_xdoty(&rho_new, r0, r);
-      beta = CMUL((CDEV(rho_new, rho_old)), (CDEV(alpha, omega)));
-      qpb_spinor_axpy(p, beta, p, r);
-      qpb_spinor_axpy(p, CNEGATE(CMUL(beta,omega)), q, p);
-      if(precond) {
-	qpb_double m = mass/factor;
-	qpb_double kappa = 1./(8.0+2.0*m);
-	qpb_bicgstab(y, p, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     precond_eps, max_iter);
-	Op(q, y);
-      }else{
-	Op(q, p);
-      }
-      qpb_complex_double r0q = {0.,0.};
-      qpb_spinor_xdoty(&r0q, r0, q);
-      alpha = CDEV(rho_new,r0q);
-      qpb_spinor_axpy(s, CNEGATE(alpha), q, r);
-      if(precond) {
-	qpb_double m = mass/factor;
-	qpb_double kappa = 1./(8.0+2.0*m);
-	qpb_bicgstab(z, s, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     precond_eps, max_iter);
-	Op(t, z);
-      }else{
-	Op(t, s);
-      }
-      qpb_complex_double tt = {0.,0.};
-      qpb_complex_double ts = {0.,0.};      
-      qpb_spinor_xdoty(&ts, t, s);
-      qpb_spinor_xdotx(&tt.re, t);
-      omega = CDEV(ts, tt);
-      if(precond) {       
-	qpb_spinor_axpy(x, omega, z, x);
-	qpb_spinor_axpy(x, alpha, y, x);		
-      }else{
-	qpb_spinor_axpy(x, omega, s, x);
-	qpb_spinor_axpy(x, alpha, p, x);	
-      }
-      qpb_spinor_axpy(r, CNEGATE(omega), t, s);
-      if(iters % n_reeval == 0)
-	{
-	  Op(r, x);
-	  qpb_spinor_xmy(r, b_tilde, r);
-	}
-      qpb_spinor_xdotx(&res_norm, r);
-    }
-  Op(r, x);
-  qpb_spinor_xmy(r, b_tilde, r);
-  qpb_spinor_xdotx(&res_norm, r);
-  
-  /* We now have x_tilde, apply (1+3A) to get x */
-  Ip3A(r,x);
-  qpb_spinor_xeqy(x, r);
-
-  secs = qpb_stop_watch(secs);
-  if(iters==max_iter)
-    {
-      error(" !\n");
-      error(" BiCGStab *did not* converge, after %d iterrations\n", iters);
-      error(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, secs);
-      error(" !\n");
-      return -1;
-    }
-
-  print(" %s After %d iterrations BiCGStab converged\n", out_pre, iters);
-  print(" %s residual = %e, relative = %e, t = %g secs\n", out_pre, res_norm, res_norm / b_norm, secs);
-
-  return iters;
-}
-
-int
-__qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, 
-		       qpb_double epsilon, int max_iter)
-{
-  qpb_spinor_field r0 = bicgstab_temp_vecs[0];
-  qpb_spinor_field r = bicgstab_temp_vecs[1];
-  qpb_spinor_field p = bicgstab_temp_vecs[2];
-  qpb_spinor_field y = bicgstab_temp_vecs[3];
-  qpb_spinor_field s = bicgstab_temp_vecs[4];
-  qpb_spinor_field z = bicgstab_temp_vecs[5];
-  qpb_spinor_field b_tilde = bicgstab_temp_vecs[6];
-  // For preconditioned version
-  qpb_spinor_field q = bicgstab_temp_vecs[7];
-  qpb_spinor_field t = bicgstab_temp_vecs[8];
-
-  int iters = 0;
-  const int n_reeval = 100;
-  qpb_double res_norm, b_norm;
-  qpb_complex_double alpha = {1, 0}, omega = {1, 0}, rho_new = {1, 0};
-  qpb_complex_double beta, rho_old;
-  qpb_double rho_ov = ov_params.rho;
-  qpb_double mass = ov_params.mass;  
-  qpb_double factor = 1 - mass / (2*rho_ov);
-  qpb_spinor_field_set_zero(x);
-  qpb_spinor_field_set_zero(p);
-  qpb_spinor_field_set_zero(q);
-  qpb_spinor_field_set_zero(s);
-  qpb_spinor_field_set_zero(t);
-  qpb_spinor_ax(b_tilde, (qpb_complex){1.0/(rho_ov*factor), 0.0}, b);
-  qpb_spinor_xdotx(&b_norm, b_tilde);
-  qpb_spinor_xeqy(r, b_tilde);
-  qpb_spinor_xeqy(r0, r);
-  qpb_spinor_xdotx(&res_norm, r);
-  qpb_double secs = qpb_stop_watch(0);
-  for(iters=1; iters<max_iter; iters++)
-    {
-      if((iters % n_echo == 0))
-	print("%s iters = %8d, res = %e\n", out_pre, iters, res_norm/b_norm);
-      if(res_norm / b_norm <= epsilon)
-	break;
-
-      rho_old = rho_new;
-      qpb_spinor_xdoty(&rho_new, r0, r);
-      beta = CMUL((CDEV(rho_new, rho_old)), (CDEV(alpha, omega)));
-      qpb_spinor_axpy(p, beta, p, r);
-      qpb_spinor_axpy(p, CNEGATE(CMUL(beta,omega)), q, p);
-      if(precond) {
-	qpb_double m = mass/factor;
-	qpb_double kappa = 1./(8.0+2.0*m);
-	qpb_bicgstab(y, p, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     precond_eps, max_iter);
-	Op(q, y);
-      }else{
-	Op(q, p);
-      }
-      qpb_complex_double r0q = {0.,0.};
-      qpb_spinor_xdoty(&r0q, r0, q);
-      alpha = CDEV(rho_new,r0q);
-      qpb_spinor_axpy(s, CNEGATE(alpha), q, r);
-      if(precond) {
-	qpb_double m = mass/factor;
-	qpb_double kappa = 1./(8.0+2.0*m);
-	qpb_bicgstab(z, s, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		     precond_eps, max_iter);
-	Op(t, z);
-      }else{
-	Op(t, s);
-      }
-      qpb_complex_double tt = {0.,0.};
-      qpb_complex_double ts = {0.,0.};      
-      qpb_spinor_xdoty(&ts, t, s);
-      qpb_spinor_xdotx(&tt.re, t);
-      omega = CDEV(ts, tt);
-      qpb_spinor_axpy(x, omega, s, x);
-      qpb_spinor_axpy(x, alpha, p, x);	
-      qpb_spinor_axpy(r, CNEGATE(omega), t, s);
-      if(iters % n_reeval == 0)
-	{
-	  if(precond) {
-	    qpb_double m = mass/factor;
-	    qpb_double kappa = 1./(8.0+2.0*m);
-	    qpb_bicgstab(z, x, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-			 precond_eps, max_iter);
-
-	    Op(r, z);
-	    qpb_spinor_xmy(r, b_tilde, r);
-	  } else {
-	    Op(r, x);
-	    qpb_spinor_xmy(r, b_tilde, r);
-	  }
-	}
-      qpb_spinor_xdotx(&res_norm, r);
-    }
-
-  if(precond) {
-    qpb_double m = mass/factor;
-    qpb_double kappa = 1./(8.0+2.0*m);
-    qpb_spinor_xeqy(r, x);
-    qpb_bicgstab(x, r, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
-		 precond_eps, max_iter);  
-  }
-  Op(r, x);
-  qpb_spinor_xmy(r, b_tilde, r);
-  qpb_spinor_xdotx(&res_norm, r);
-  
-  /* We now have x_tilde, apply (1+3A) to get x */
-  Ip3A(r,x);
-  qpb_spinor_xeqy(x, r);
-
-  secs = qpb_stop_watch(secs);
-  if(iters==max_iter)
-    {
-      error(" !\n");
-      error(" BiCGStab *did not* converge, after %d iterrations\n", iters);
-      error(" residual = %e, relative = %e, t = %g secs\n", res_norm, res_norm / b_norm, secs);
-      error(" !\n");
-      return -1;
-    }
-
-  print(" %s After %d iterrations BiCGStab converged\n", out_pre, iters);
-  print(" %s residual = %e, relative = %e, t = %g secs\n", out_pre, res_norm, res_norm / b_norm, secs);
-
-  return iters;
-}
-
-int
 qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b, 
 		       qpb_double epsilon, int max_iter)
 {
@@ -504,7 +266,6 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b,
 	Op(z, s);
 	qpb_bicgstab(t, z, ov_params.gauge_ptr, ov_params.clover, kappa, ov_params.c_sw, 
 		     precond_eps, max_iter);
-
       }else{
 	Op(t, s);
       }
@@ -540,9 +301,8 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b,
   if(res_norm/b_norm > epsilon) {
     precond = 0;
     restart = 1;
-    qpb_bicgstab_kl11_last(x, b, epsilon, 100);
+    qpb_bicgstab_kl11_last(x, b, epsilon, max_iter);
   }
-
   /* We now have x_tilde, apply (1+3A) to get x */
   Ip3A(r,x);
   qpb_spinor_xeqy(x, r);
@@ -557,8 +317,7 @@ qpb_bicgstab_kl11_last(qpb_spinor_field x, qpb_spinor_field b,
       return -1;
     }
 
-  print(" %s After %d iterrations BiCGStab converged\n", out_pre, iters);
-  print(" %s residual = %e, relative = %e, t = %g secs\n", out_pre, res_norm, res_norm / b_norm, secs);
+  print(" %s converged in %d iters, res. = %e, rel. = %e, t = %g secs\n", out_pre, iters, res_norm, res_norm / b_norm, secs);
 
   return iters;
 }

@@ -162,8 +162,7 @@ qpb_bicgstab(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
       return -1;
     }
 
-  print("%s After %d iterrations BiCGStab converged\n", out_pre, iters);
-  print("%s residual = %e, relative = %e, t = %g secs\n", out_pre, res_norm, res_norm / b_norm, t);
+  print(" %s converged in %d iters, res. = %e, rel. = %e, t = %g secs\n", out_pre, iters, res_norm, res_norm / b_norm, t);
 
   if(which_dslash_op == QPB_DSLASH_STANDARD)
     {
