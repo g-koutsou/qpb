@@ -13,7 +13,8 @@ enum {
 
 enum {
   KL11,
-  KL11KL11
+  KL11KL11,
+  KL44
 } kl_type;
 
 enum {
@@ -417,13 +418,16 @@ main(int argc, char *argv[])
     }
   if(strcmp(aux_string, "KL11") == 0)
     kl_type = KL11;
+  else if(strcmp(aux_string, "KL44") == 0)
+    kl_type = KL44;
   else if(strcmp(aux_string, "KL11KL11") == 0)
     kl_type = KL11KL11;
   else
     {
       error("%s: option currently supports: ", "KL type");
-      error("%s or", "KL11"); 
-      error("%s\n", "KL11KL11"); 
+      error("%s, ", "KL11"); 
+      error("%s or ", "KL11KL11"); 
+      error("%s\n", "KL44"); 
       exit(QPB_PARSER_ERROR);
     }  
   int numb_shifts;
@@ -862,7 +866,10 @@ main(int argc, char *argv[])
 	  qpb_bicgstab_kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, eps_prec, "", 1);
 	  break;
 	case KL11KL11:
-	  qpb_bicgstab_kl11kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);
+	  qpb_bicgstab_kl11kl11_last_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, eps_prec, "", 1);
+	  break;
+	case KL44:
+	  qpb_bicgstab_kl44_rational_init(solver_arg_links, clover_term, rho, c_sw, mass, precondition, "", 1);
 	  break;
 	}
       break;
@@ -880,6 +887,9 @@ main(int argc, char *argv[])
 	      break;
 	    case KL11KL11:
 	      iters = qpb_bicgstab_kl11kl11_last(sol[i], source[i], epsilon, max_iters);
+	      break;
+	    case KL44:
+	      iters = qpb_bicgstab_kl44_rational(sol[i], source[i], epsilon, max_iters);
 	      break;
 	    }
 	  break;
@@ -899,6 +909,11 @@ main(int argc, char *argv[])
 	  break;
 	case KL11KL11:
 	  qpb_bicgstab_kl11kl11_last_finalize();
+	  t = qpb_stop_watch(t);
+	  print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
+	  break;
+	case KL44:
+	  qpb_bicgstab_kl44_rational_finalize();
 	  t = qpb_stop_watch(t);
 	  print(" BiCGStab done, %d vectors in t = %f sec\n", n_spinors, t);
 	  break;

@@ -71,6 +71,7 @@ SOURCES = qpb_init\
 	qpb_bicgstab\
 	qpb_bicgstab_kl11_last\
 	qpb_bicgstab_kl11kl11_last\
+	qpb_bicgstab_kl44_rational\
 	qpb_mscongrad\
 	qpb_congrad\
 	qpb_bicgg5\

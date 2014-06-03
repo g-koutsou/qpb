@@ -57,6 +57,7 @@
 #include <qpb_bicgstab.h>
 #include <qpb_bicgstab_kl11_last.h>
 #include <qpb_bicgstab_kl11kl11_last.h>
+#include <qpb_bicgstab_kl44_rational.h>
 #include <qpb_bicgg5.h>
 #include <qpb_mscongrad.h>
 #include <qpb_congrad.h>
