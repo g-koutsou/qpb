@@ -349,19 +349,19 @@ main(int argc, char *argv[])
   a = qpb_alloc(sizeof(qpb_double)*max_iters);
   b = qpb_alloc(sizeof(qpb_double)*max_iters);
   eig = qpb_alloc(sizeof(qpb_double)*max_iters);
-
-  qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, 1);
+  int step = 10;
+  qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, step);
   qpb_double lambda = 0, dlambda, lambda0 = 1e3;
   int i = 0;
-  for(i=1; 1<max_iters; i++)
+  for(i=step; i<max_iters; i+=step)
     {
-      qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, -1);
-      tridiag_eigenv(eig, a, b, i+1);
+      qpb_lanczos(&a[i], &b[i], solver_arg_links, clover_term, kappa, c_sw, -step);
+      tridiag_eigenv(eig, a, b, i+step);
 
-      lambda = eig[i] / eig[0];
+      lambda = eig[i+step-1] / eig[0];
       dlambda = fabs(lambda - lambda0) / fabs(lambda + lambda0);
       print(" iter = %4d, CN = %e/%e = %e (change = %e, target = %e)\n",
-	    i+1, eig[i], eig[0], eig[i]/eig[0], dlambda, epsilon);
+	    i, eig[i+step-1], eig[0], eig[i+step-1]/eig[0], dlambda, epsilon);
       if(dlambda < epsilon*0.5)
 	break;
       lambda0 = lambda;
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
   print(" Done, kappa = %g, CN = %+f, in t = %g sec\n", kappa, lambda, t);
 
   for(int j=0; j<numb_eigv; j++)
-    print(" %3d %e %e\n", j, eig[j], eig[i-j]);
+    print(" %3d %e %e\n", j, eig[j], eig[i+step-1-j]);
 
   qpb_lanczos_finalize();
   if(which_dslash_op == QPB_DSLASH_BRILLOUIN)
