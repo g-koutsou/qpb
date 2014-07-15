@@ -9,8 +9,6 @@
 
 #define QPB_LANCZOS_NUMB_TEMP_VECS 4
 
-int n_lanczos;
-
 static qpb_spinor_field lanczos_temp_vecs[QPB_LANCZOS_NUMB_TEMP_VECS];
 
 void
@@ -37,7 +35,7 @@ qpb_lanczos_finalize()
 }
 
 void
-qpb_lanczos(qpb_double *alpha, qpb_double *beta, void *gauge, qpb_clover_term clover,
+_qpb_lanczos(qpb_double *alpha, qpb_double *beta, void *gauge, qpb_clover_term clover,
 	    qpb_double kappa, qpb_double c_sw, int niter)
 {
   qpb_spinor_field w = lanczos_temp_vecs[0];
@@ -106,6 +104,86 @@ qpb_lanczos(qpb_double *alpha, qpb_double *beta, void *gauge, qpb_clover_term cl
       qpb_spinor_xdotx(&z0.re, r);
       b[i] = sqrt(z0.re);
       qpb_spinor_xeqy(u0, u1);
+    }
+
+  for(int i=0; i<niter; i++)
+    {
+      alpha[i] = a[i+1];
+      beta[i] = b[i+1];
+    }
+  return;
+}
+
+void
+qpb_lanczos(qpb_double *alpha, qpb_double *beta, void *gauge, qpb_clover_term clover,
+	    qpb_double kappa, qpb_double c_sw, int niter)
+{
+  qpb_spinor_field w = lanczos_temp_vecs[0];
+  qpb_spinor_field v = lanczos_temp_vecs[1];
+  qpb_spinor_field u0 = lanczos_temp_vecs[2];
+  qpb_spinor_field u1 = lanczos_temp_vecs[3];
+  qpb_double mass = 1./(2.*kappa) - 4.;
+  void (* dslash_func)() = NULL;
+
+  void *dslash_args[] = 
+    {
+      gauge,
+      &mass,
+      &clover,
+      &c_sw
+    };
+
+  switch(which_dslash_op)
+    {
+    case QPB_DSLASH_BRILLOUIN:
+      if(c_sw)
+	dslash_func = &qpb_gamma5_clover_bri_dslash;
+      else
+	dslash_func = &qpb_gamma5_bri_dslash;	
+      break;
+    case QPB_DSLASH_STANDARD:
+      if(c_sw)
+	dslash_func = &qpb_gamma5_clover_dslash;
+      else
+	dslash_func = &qpb_gamma5_dslash;	
+      break;
+    }
+
+  int new = (niter>0);
+  niter = abs(niter);
+  qpb_double a[niter+1], b[niter+1];
+  if(new)
+    {
+      qpb_spinor_field_set_random(u1);
+      qpb_spinor_field_set_zero(u0);
+      qpb_spinor_field_set_zero(w);
+      
+      qpb_complex norm;
+      qpb_spinor_xdotx(&norm.re, u1);
+      norm = (qpb_complex){1./sqrt(norm.re), 0.};
+      qpb_spinor_ax(u1, norm, u1);
+      b[0] = 0;
+    }
+  else
+    {
+      qpb_spinor_xdotx(&b[0], w);
+      b[0] = sqrt(b[0]);      
+    }
+  for(int i=1; i<=niter; i++)
+    {
+      dslash_func(v, u1, dslash_args);
+      dslash_func(w, v, dslash_args);
+      qpb_complex ca,cb;
+      qpb_spinor_xdoty(&ca, w, u1);
+      a[i] = ca.re;
+      cb = (qpb_complex){b[i-1],0};
+      qpb_spinor_axpy(w, CNEGATE(ca), u1, w);
+      qpb_spinor_axpy(w, CNEGATE(cb), u0, w);
+      qpb_spinor_xdotx(&cb.re, w);
+      b[i] = sqrt(cb.re);
+      qpb_spinor_xeqy(u0,u1);
+      cb = (qpb_complex){1/b[i],0};
+      qpb_spinor_ax(u1, cb, w);
     }
 
   for(int i=0; i<niter; i++)

@@ -353,6 +353,8 @@ main(int argc, char *argv[])
   qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, step);
   qpb_double lambda = 0, dlambda, lambda0 = 1e3;
   int i = 0;
+  tridiag_eigenv(eig, a, b, step);
+  print(" iter = %4d, CN = %f/%10.8f = %e\n", step, eig[i+step-1], eig[0], eig[i+step-1]/eig[0]);
   for(i=step; i<max_iters; i+=step)
     {
       qpb_lanczos(&a[i], &b[i], solver_arg_links, clover_term, kappa, c_sw, -step);
@@ -360,8 +362,8 @@ main(int argc, char *argv[])
 
       lambda = eig[i+step-1] / eig[0];
       dlambda = fabs(lambda - lambda0) / fabs(lambda + lambda0);
-      print(" iter = %4d, CN = %e/%e = %e (change = %e, target = %e)\n",
-	    i, eig[i+step-1], eig[0], eig[i+step-1]/eig[0], dlambda, epsilon);
+      print(" iter = %4d, CN = %f/%10.8f = %e (change = %e, target = %e)\n",
+	    i+step, eig[i+step-1], eig[0], eig[i+step-1]/eig[0], dlambda, epsilon);
       if(dlambda < epsilon*0.5)
 	break;
       lambda0 = lambda;
