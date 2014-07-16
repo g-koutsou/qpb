@@ -350,21 +350,35 @@ main(int argc, char *argv[])
   b = qpb_alloc(sizeof(qpb_double)*max_iters);
   eig = qpb_alloc(sizeof(qpb_double)*max_iters);
   int step = 10;
-  qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, step);
+  qpb_lanczos(a, b, solver_arg_links, clover_term, kappa, c_sw, step+numb_eigv);
   qpb_double lambda = 0, dlambda, lambda0 = 1e3;
   int i = 0;
-  tridiag_eigenv(eig, a, b, step);
-  print(" iter = %4d, CN = %f/%10.8f = %e\n", step, eig[i+step-1], eig[0], eig[i+step-1]/eig[0]);
-  for(i=step; i<max_iters; i+=step)
+  tridiag_eigenv(eig, a, b, step+numb_eigv);
+  qpb_double ev_min,ev_max,ev_Nmin,ev_Nmax;
+  ev_min = eig[0];
+  ev_max = eig[step+numb_eigv-1];
+  ev_Nmin = eig[numb_eigv];
+  ev_Nmax = eig[step+numb_eigv-numb_eigv-1];
+  print(" iter = %4d, CN[0]=%f/%10.8f=%4.2e, CN[%d]=%f/%10.8f=%4.2e \n", 
+	step+numb_eigv, ev_max, ev_min, ev_max/ev_min, numb_eigv, ev_Nmax, ev_Nmin, ev_Nmax/ev_Nmin);
+  for(i=step+numb_eigv; i<max_iters; i+=step)
     {
       qpb_lanczos(&a[i], &b[i], solver_arg_links, clover_term, kappa, c_sw, -step);
       tridiag_eigenv(eig, a, b, i+step);
-
-      lambda = eig[i+step-1] / eig[0];
+      
+      /*
+       * Checks for convegence of the ratio of the numb_eigv'th
+       * smallest and numb_eigv'th larges eigenvalue
+       */
+      ev_min = eig[0];
+      ev_max = eig[i+step-1];
+      ev_Nmin = eig[numb_eigv];
+      ev_Nmax = eig[i+step-numb_eigv-1];
+      lambda = ev_Nmax/ev_Nmin;
       dlambda = fabs(lambda - lambda0) / fabs(lambda + lambda0);
-      print(" iter = %4d, CN = %f/%10.8f = %e (change = %e, target = %e)\n",
-	    i+step, eig[i+step-1], eig[0], eig[i+step-1]/eig[0], dlambda, epsilon);
-      if(dlambda < epsilon*0.5)
+      print(" iter = %4d, CN[0]=%f/%10.8f=%4.2e, CN[%d]=%f/%10.8f=%4.2e (change=%4.2e, target=%g)\n", 
+	    i+step, ev_max, ev_min, ev_max/ev_min, numb_eigv, ev_Nmax, ev_Nmin, ev_Nmax/ev_Nmin, dlambda, epsilon);
+      if(dlambda < epsilon)
 	break;
       lambda0 = lambda;
     }
