@@ -61,6 +61,7 @@ SOURCES = qpb_init\
 	qpb_clover_term\
 	qpb_diagonal_links\
 	qpb_sun_project\
+	qpb_sun_cheap_project\
 	qpb_clover_term_get\
 	qpb_diagonal_links_get\
 	qpb_apply_dslash\

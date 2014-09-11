@@ -7,6 +7,7 @@
 #include <qpb_sun_linalg.h>
 #include <qpb_gauge_field.h>
 #include <qpb_sun_project.h>
+#include <qpb_sun_cheap_project.h>
 #include <qpb_comm_halo_gauge_field.h>
 #include <qpb_comm_halo_diagonal_links.h>
 /*
@@ -146,6 +147,7 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
 	int v = blk_to_ext[lv];
 	qpb_link *dl_ptr = ((qpb_link *)diagonal_links.index[v]);
 	qpb_sun_project(dl_ptr, N_HYPERCUBE_NEIGH);
+	//qpb_sun_cheap_project(dl_ptr, N_HYPERCUBE_NEIGH);
       }
 
   qpb_gauge_field_finalize(gauge[1]);

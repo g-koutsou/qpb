@@ -694,11 +694,13 @@ main(int argc, char *argv[])
   if(ape_niter != 0)
     {
 
+      qpb_double t = qpb_stop_watch(0);
       print(" APE smear gauge field...\n");
       qpb_apesmear_niter(apegauge, gauge, ape_alpha, ape_niter);
 
       plaquette = qpb_plaquette(apegauge);
-      print(" Plaquette = %12.8f\n", plaquette);
+      t = qpb_stop_watch(t);
+      print(" Plaquette = %12.8f, %g sec\n", plaquette, t);
     }
   else
     {
