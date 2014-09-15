@@ -58,10 +58,10 @@ sun_umequ(qpb_complex *z, qpb_complex *x)
   return;
 }
 
-__inline__ qpb_double
+__inline__ qpb_complex
 sun_trace(qpb_complex *x)
 {
-  return (x+ 0)->re;
+  return (qpb_complex){(x+ 0)->re,(x+ 0)->im};
 }
 
 #endif /* NC == 1 */
@@ -228,10 +228,10 @@ sun_umequ(qpb_complex *z, qpb_complex *x)
   return;
 }
 
-__inline__ qpb_double
+__inline__ qpb_complex
 sun_trace(qpb_complex *x)
 {
-  return (x+ 0)->re + (x+ 4)->re + (x+ 8)->re;
+  return (qpb_complex){(x+ 0)->re + (x+ 4)->re + (x+ 8)->re,(x+ 0)->im + (x+ 4)->im + (x+ 8)->im};
 }
 
 #endif /* NC == 3 */

@@ -49,7 +49,8 @@ qpb_plaquette(qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[ND+nu][v]] + nu);
 	  sun_mul_uu(aux0, aux1, u0);
 	  
-	  plaquette += sun_trace(aux0) / 3.;
+	  qpb_complex tr = sun_trace(aux0);
+	  plaquette +=  tr.re / 3.;
 	}
     }  
   qpb_double plaquette_vec[nprocs];
@@ -121,7 +122,8 @@ qpb_plaquette_3d(qpb_gauge_field gauge)
 	  u0 = (qpb_complex *)((qpb_link *) gauge.index[nneigh[ND+nu][v]] + nu);
 	  sun_mul_uu(aux0, aux1, u0);
 	  
-	  plaquette += sun_trace(aux0) / 3.;
+	  qpb_complex tr = sun_trace(aux0);
+	  plaquette += tr.re / 3.;
 	}
     }  
   qpb_double plaquette_vec[nprocs];

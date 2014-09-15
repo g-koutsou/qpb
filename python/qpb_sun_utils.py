@@ -155,10 +155,10 @@ for NC in [1, 3]:
     body += "  return;\n}\n\n"
 
     ### y -= x
-    body += "__inline__ qpb_double\n"
+    body += "__inline__ qpb_complex\n"
     body += "sun_trace(qpb_complex *x)\n{\n"
-    z = x.trace().as_real_imag()[0]
-    body += "  return %s;\n}\n\n" % z
+    z = x.trace().as_real_imag()
+    body += "  return (qpb_complex){%s,%s};\n}\n\n" % z
     body += "#endif /* NC == %d */\n" % NC
 body += "/* END python generated segment */\n"
 

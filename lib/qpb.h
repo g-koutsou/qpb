@@ -64,6 +64,7 @@
 #include <qpb_congrad.h>
 #include <qpb_finalize.h>
 #include <qpb_apesmear.h>
+#include <qpb_stoutsmear.h>
 #include <qpb_gauge_field_copy.h>
 #include <qpb_gauge_field_shift.h>
 #include <qpb_mesons_2pt_corr.h>

@@ -36,6 +36,7 @@ SOURCES = qpb_init\
 	qpb_comm_halo_gauge_field\
 	qpb_comm_halo_diagonal_links\
 	qpb_apesmear\
+	qpb_stoutsmear\
 	qpb_gauge_field_copy\
 	qpb_gauge_field_shift\
 	qpb_timebc_set_gauge_field\
