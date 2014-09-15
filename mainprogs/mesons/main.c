@@ -12,6 +12,11 @@ enum {
 } conf_format;
 
 enum {
+  CONF_SMEARING_STOUT,
+  CONF_SMEARING_APE,
+} conf_smearing_type;
+
+enum {
   SINK_NOT_SMEARED,
   SINK_SMEARED
 } sink_smearing;
@@ -162,12 +167,38 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
+
+  char conf_smearing_name[QPB_MAX_STRING];
+  if(sscanf(qpb_parse("Conf smearing type"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Conf smearing type");
+      exit(QPB_PARSER_ERROR);
+    }
+  if(strcmp(aux_string, "APE") == 0)
+    {
+      conf_smearing_type = CONF_SMEARING_APE;
+      strcpy(conf_smearing_name, "APE");
+    }
+  else if(strcmp(aux_string, "Stout") == 0)
+    {
+      conf_smearing_type = CONF_SMEARING_STOUT;
+      strcpy(conf_smearing_name, "Stout");
+    }
+  else
+    {
+      error("%s: option should be one of: ", "Conf smearing type");
+      error("%s, ", "APE"); 
+      error("%s\n", "Stout"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
   enum qpb_field_init_opts conf_opt = 0;
   char conf_file[QPB_MAX_STRING];
   int shifts[ND];
   unsigned int seed;
-  int n_gauss, n_ape_gauss;
-  qpb_double delta_gauss, alpha_ape_gauss;
+  int n_gauss, n_conf_smearing_gauss;
+  qpb_double delta_gauss, alpha_conf_smearing_gauss;
   if(sink_smearing == SINK_SMEARED)
     {
       if(sscanf(qpb_parse("Conf"), "%s", aux_string)!=1)
@@ -274,17 +305,19 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing APE iterations"), "%d", &n_ape_gauss)!=1)
+      sprintf(aux_string, "Gaussian smearing %s iterations", conf_smearing_name);
+      if(sscanf(qpb_parse(aux_string), "%d", &n_conf_smearing_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing APE iterations");
+		aux_string);
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing APE alpha"), "%lf", &alpha_ape_gauss)!=1)
+      sprintf(aux_string, "Gaussian smearing %s alpha", conf_smearing_name);
+      if(sscanf(qpb_parse(aux_string), "%lf", &alpha_conf_smearing_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing APE alpha");
+		aux_string);
 	  exit(QPB_PARSER_ERROR);	  
 	}
       
@@ -369,7 +402,7 @@ main(int argc, char *argv[])
 	}
       print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
       print(" Gaussian smearing = (%f, %d)\n", delta_gauss, n_gauss);
-      print(" Gaussian sink APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
+      print(" Gaussian source %s smearing = (%f, %d)\n", conf_smearing_name, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
     }
 
   print(" Output file = %s\n", corr_file);
@@ -430,20 +463,31 @@ main(int argc, char *argv[])
       plaquette = qpb_plaquette(gauge);
       print(" Plaquette = %12.8f\n", plaquette);
 
-      /* 3D-APE smear the gauge field for gaussian source */
-      if(n_ape_gauss != 0)
+      /* 3D-smear the gauge field for gaussian source */
+      if(n_conf_smearing_gauss != 0)
 	{
 	  double t = qpb_stop_watch(0);
-	  qpb_gauge_field ape3dgauge = qpb_gauge_field_init();
-	  print(" 3D-APE smear gauge field...\n");
-	  qpb_apesmear_3d_niter(ape3dgauge, gauge, alpha_ape_gauss, n_ape_gauss);
-	  qpb_gauge_field_copy(gauge, ape3dgauge);
-	  qpb_gauge_field_finalize(ape3dgauge);
+	  qpb_gauge_field smeared3dgauge = qpb_gauge_field_init();
+	  print(" 3D-%s smear gauge field...\n", conf_smearing_name);
+	  switch(conf_smearing_type) {
+	  case CONF_SMEARING_APE:
+	    qpb_apesmear_3d_niter(smeared3dgauge, gauge, 
+				  alpha_conf_smearing_gauss, 
+				  n_conf_smearing_gauss);
+	    break;
+	  case CONF_SMEARING_STOUT:
+	    qpb_stoutsmear_3d_niter(smeared3dgauge, gauge, 
+				    alpha_conf_smearing_gauss, 
+				    n_conf_smearing_gauss);
+	    break;
+	  }
+	  qpb_gauge_field_copy(gauge, smeared3dgauge);
+	  qpb_gauge_field_finalize(smeared3dgauge);
 	  
 	  plaquette = qpb_plaquette(gauge);
 	  qpb_double p3d = qpb_plaquette_3d(gauge);
 	  print(" Plaquette (3D) = %10.8f (%10.8f)\n", plaquette, p3d);
-	  print(" Done APE 3D in %g sec\n", qpb_stop_watch(t));
+	  print(" Done %s 3D in %g sec\n", conf_smearing_name, qpb_stop_watch(t));
 	}
       qpb_gauge_field_shift(gauge, shifts);
       

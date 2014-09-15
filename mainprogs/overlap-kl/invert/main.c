@@ -12,6 +12,11 @@ enum {
 } conf_format;
 
 enum {
+  CONF_SMEARING_STOUT,
+  CONF_SMEARING_APE,
+} conf_smearing_type;
+
+enum {
   BICGSTAB_V1,
   BICGSTAB_V2
 } solver;
@@ -175,19 +180,44 @@ main(int argc, char *argv[])
       break;
     }
 
-  qpb_double ape_alpha;
-  if(sscanf(qpb_parse("APE alpha"), "%lf", &ape_alpha)!=1)
+  char conf_smearing_name[QPB_MAX_STRING];
+  if(sscanf(qpb_parse("Conf smearing type"), "%s", aux_string)!=1)
+    {
+      error("error parsing for %s\n", 
+	    "Conf smearing type");
+      exit(QPB_PARSER_ERROR);
+    }
+  if(strcmp(aux_string, "APE") == 0)
+    {
+      conf_smearing_type = CONF_SMEARING_APE;
+      strcpy(conf_smearing_name, "APE");
+    }
+  else if(strcmp(aux_string, "Stout") == 0)
+    {
+      conf_smearing_type = CONF_SMEARING_STOUT;
+      strcpy(conf_smearing_name, "Stout");
+    }
+  else
+    {
+      error("%s: option should be one of: ", "Conf smearing type");
+      error("%s, ", "APE"); 
+      error("%s\n", "Stout"); 
+      exit(QPB_PARSER_ERROR);
+    };
+
+  qpb_double conf_smearing_alpha;
+  if(sscanf(qpb_parse("Conf smearing alpha"), "%lf", &conf_smearing_alpha)!=1)
     {
       error("error parsing for %s\n",
-	    "alpha");
+	    "Conf smearing alpha");
       exit(QPB_PARSER_ERROR);
     }
 
-  int ape_niter;
-  if(sscanf(qpb_parse("APE iterations"), "%d", &ape_niter)!=1)
+  int conf_smearing_niter;
+  if(sscanf(qpb_parse("Conf smearing iterations"), "%d", &conf_smearing_niter)!=1)
     {
       error("error parsing for %s\n",
-	    "Smear iterations");
+	    "Conf smearing iterations");
       exit(QPB_PARSER_ERROR);
     }
 
@@ -268,8 +298,8 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
-  int n_gauss, n_ape_gauss;
-  qpb_double delta_gauss, alpha_ape_gauss;
+  int n_gauss, n_conf_smearing_gauss;
+  qpb_double delta_gauss, alpha_conf_smearing_gauss;
   switch(source_smearing)
     {
     case SOURCE_SMEARED:
@@ -287,17 +317,19 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing APE iterations"), "%d", &n_ape_gauss)!=1)
+      sprintf(aux_string, "Gaussian smearing %s iterations", conf_smearing_name);
+      if(sscanf(qpb_parse(aux_string), "%d", &n_conf_smearing_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing APE iterations");
+		aux_string);
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      if(sscanf(qpb_parse("Gaussian smearing APE alpha"), "%lf", &alpha_ape_gauss)!=1)
+      sprintf(aux_string, "Gaussian smearing %s alpha", conf_smearing_name);
+      if(sscanf(qpb_parse(aux_string), "%lf", &alpha_conf_smearing_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
-		"Gaussian smearing APE alpha");
+		aux_string);
 	  exit(QPB_PARSER_ERROR);	  
 	}
       break;
@@ -606,7 +638,7 @@ main(int argc, char *argv[])
     case SOURCE_SMEARED:
       print(" Will smear source\n");
       print(" Gaussian smearing = (%f, %d)\n", delta_gauss, n_gauss);
-      print(" Gaussian source APE smearing = (%f, %d)\n", alpha_ape_gauss, n_ape_gauss);
+      print(" Gaussian source %s smearing = (%f, %d)\n", conf_smearing_name, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
       break;
       
     case SOURCE_NOT_SMEARED:
@@ -640,8 +672,8 @@ main(int argc, char *argv[])
       print(" Will set source to zero\n");      
       break;
     }
-  print(" APE alpha = %g\n", ape_alpha);
-  print(" APE iterations = %d\n", ape_niter);
+  print(" %s alpha = %g\n", conf_smearing_name, conf_smearing_alpha);
+  print(" %s iterations = %d\n", conf_smearing_name, conf_smearing_niter);
   print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
   print(" mass = %g\n", mass);
   print(" rho = %g\n", rho);
@@ -717,29 +749,34 @@ main(int argc, char *argv[])
   qpb_double plaquette = qpb_plaquette(gauge);
   print(" Plaquette = %12.8f\n", plaquette);
 
-  /* APE smear the gauge field */
-  qpb_gauge_field apegauge = qpb_gauge_field_init();
-  if(ape_niter != 0)
+  /* Smear the gauge field */
+  qpb_gauge_field smearedgauge = qpb_gauge_field_init();
+  if(conf_smearing_niter != 0)
     {
-
-      print(" APE smear gauge field...\n");
-      qpb_apesmear_niter(apegauge, gauge, ape_alpha, ape_niter);
-
-      plaquette = qpb_plaquette(apegauge);
+      print(" %s smear gauge field...\n", conf_smearing_name);
+      switch(conf_smearing_type) {
+      case CONF_SMEARING_APE:
+	qpb_apesmear_niter(smearedgauge, gauge, conf_smearing_alpha, conf_smearing_niter);
+	break;
+      case CONF_SMEARING_STOUT:
+	qpb_stoutsmear_niter(smearedgauge, gauge, conf_smearing_alpha, conf_smearing_niter);
+	break;
+      }
+      plaquette = qpb_plaquette(smearedgauge);
       print(" Plaquette = %12.8f\n", plaquette);
     }
   else
     {
-      qpb_gauge_field_copy(apegauge, gauge);
+      qpb_gauge_field_copy(smearedgauge, gauge);
     }
 
   /* Shift it */
-  qpb_gauge_field_shift(apegauge, shifts);
+  qpb_gauge_field_shift(smearedgauge, shifts);
   qpb_gauge_field_shift(gauge, shifts);
 
   /* Clover term */
   qpb_clover_term clover_term = qpb_clover_term_init();
-  qpb_clover_term_get(clover_term, apegauge);
+  qpb_clover_term_get(clover_term, smearedgauge);
 
   /* Allocate source and solution spinor */
   qpb_spinor_field *source;
@@ -806,12 +843,18 @@ main(int argc, char *argv[])
       /* 				   source_coords[i][5]); */
       {
       qpb_gauge_field gauss_gauge = qpb_gauge_field_init();
-      /* 3D-APE smear the gauge field for gaussian source */
-      if(n_ape_gauss != 0)
+      /* 3D smear the gauge field for gaussian source */
+      if(n_conf_smearing_gauss != 0)
 	{
-	  print(" 3D-APE smear gauge field...\n");
-	  qpb_apesmear_3d_niter(gauss_gauge, gauge, alpha_ape_gauss, n_ape_gauss);
-	  
+	  print(" 3D-%s smear gauge field...\n", conf_smearing_name);
+	  switch(conf_smearing_type) {
+	  case CONF_SMEARING_APE:
+	    qpb_apesmear_3d_niter(gauss_gauge, gauge, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
+	    break;
+	  case CONF_SMEARING_STOUT:
+	    qpb_stoutsmear_3d_niter(gauss_gauge, gauge, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
+	    break;
+	  }
 	  plaquette = qpb_plaquette(gauss_gauge);
 	  qpb_double p3d = qpb_plaquette_3d(gauss_gauge);
 
@@ -855,11 +898,11 @@ main(int argc, char *argv[])
     {
     case QPB_DSLASH_BRILLOUIN:
       diagonal_links = qpb_diagonal_links_init();
-      qpb_diagonal_links_get(diagonal_links, apegauge);
+      qpb_diagonal_links_get(diagonal_links, smearedgauge);
       solver_arg_links = &diagonal_links;
       break;
     case QPB_DSLASH_STANDARD:
-      solver_arg_links = &apegauge;
+      solver_arg_links = &smearedgauge;
       break;
     }
 
@@ -937,7 +980,7 @@ main(int argc, char *argv[])
   free(sol);
   free(source);
   qpb_gauge_field_finalize(gauge);
-  qpb_gauge_field_finalize(apegauge);
+  qpb_gauge_field_finalize(smearedgauge);
   qpb_clover_term_finalize(clover_term);
   qpb_rng_finalize();
   qpb_finalize();
