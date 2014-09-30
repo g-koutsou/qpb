@@ -182,7 +182,7 @@ main(int argc, char *argv[])
       break;
     }
 
-  char conf_smearing_name[QPB_MAX_STRING];
+  char *conf_smearing_name, *conf_smearing_param_name;
   if(sscanf(qpb_parse("Conf smearing type"), "%s", aux_string)!=1)
     {
       error("error parsing for %s\n", 
@@ -192,12 +192,14 @@ main(int argc, char *argv[])
   if(strcmp(aux_string, "APE") == 0)
     {
       conf_smearing_type = CONF_SMEARING_APE;
-      strcpy(conf_smearing_name, "APE");
+      conf_smearing_name = strdup("APE");
+      conf_smearing_param_name = strdup("alpha");      
     }
   else if(strcmp(aux_string, "Stout") == 0)
     {
       conf_smearing_type = CONF_SMEARING_STOUT;
-      strcpy(conf_smearing_name, "Stout");
+      conf_smearing_name = strdup("Stout");
+      conf_smearing_param_name = strdup("rho");
     }
   else
     {
@@ -207,19 +209,21 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
-  qpb_double conf_smearing_alpha;
-  if(sscanf(qpb_parse("Conf smearing alpha"), "%lf", &conf_smearing_alpha)!=1)
+  qpb_double conf_smearing_param;
+  sprintf(aux_string, "%s smearing %s", conf_smearing_name, conf_smearing_param_name);
+  if(sscanf(qpb_parse(aux_string), "%lf", &conf_smearing_param)!=1)
     {
-      error("error parsing for %s\n",
-	    "Conf smearing alpha");
-      exit(QPB_PARSER_ERROR);
+      error("error parsing for %s\n", 
+	    aux_string);
+      exit(QPB_PARSER_ERROR);	  
     }
 
   int conf_smearing_niter;
-  if(sscanf(qpb_parse("Conf smearing iterations"), "%d", &conf_smearing_niter)!=1)
+  sprintf(aux_string, "%s smearing iterations", conf_smearing_name);
+  if(sscanf(qpb_parse(aux_string), "%d", &conf_smearing_niter)!=1)
     {
       error("error parsing for %s\n",
-	    "Conf smearing iterations");
+	    aux_string);
       exit(QPB_PARSER_ERROR);
     }
 
@@ -301,7 +305,7 @@ main(int argc, char *argv[])
     };
 
   int n_gauss, n_conf_smearing_gauss;
-  qpb_double delta_gauss, alpha_conf_smearing_gauss;
+  qpb_double delta_gauss, param_conf_smearing_gauss;
   switch(source_smearing)
     {
     case SOURCE_SMEARED:
@@ -327,8 +331,8 @@ main(int argc, char *argv[])
 	  exit(QPB_PARSER_ERROR);	  
 	}
 
-      sprintf(aux_string, "Gaussian smearing %s alpha", conf_smearing_name);
-      if(sscanf(qpb_parse(aux_string), "%lf", &alpha_conf_smearing_gauss)!=1)
+      sprintf(aux_string, "Gaussian smearing %s %s", conf_smearing_name, conf_smearing_param_name);
+      if(sscanf(qpb_parse(aux_string), "%lf", &param_conf_smearing_gauss)!=1)
 	{
 	  error("error parsing for %s\n", 
 		aux_string);
@@ -615,7 +619,7 @@ main(int argc, char *argv[])
     case SOURCE_SMEARED:
       print(" Will smear source\n");
       print(" Gaussian smearing = (%f, %d)\n", delta_gauss, n_gauss);
-      print(" Gaussian source %s smearing = (%f, %d)\n", conf_smearing_name, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
+      print(" Gaussian source %s smearing = (%f, %d)\n", conf_smearing_name, param_conf_smearing_gauss, n_conf_smearing_gauss);
       break;
       
     case SOURCE_NOT_SMEARED:
@@ -649,7 +653,8 @@ main(int argc, char *argv[])
       print(" Will set source to zero\n");      
       break;
     }
-  print(" %s alpha = %g\n", conf_smearing_name, conf_smearing_alpha);
+
+  print(" %s %s = %g\n", conf_smearing_name, conf_smearing_param_name, conf_smearing_param);
   print(" %s iterations = %d\n", conf_smearing_name, conf_smearing_niter);
   print(" Conf shifts = %d %d %d %d\n", shifts[0], shifts[1], shifts[2], shifts[3]);
   print(" kappa = %g\n", kappa);
@@ -730,10 +735,10 @@ main(int argc, char *argv[])
       print(" %s smear gauge field...\n", conf_smearing_name);
       switch(conf_smearing_type) {
       case CONF_SMEARING_APE:
-	qpb_apesmear_niter(smearedgauge, gauge, conf_smearing_alpha, conf_smearing_niter);
+	qpb_apesmear_niter(smearedgauge, gauge, conf_smearing_param, conf_smearing_niter);
 	break;
       case CONF_SMEARING_STOUT:
-	qpb_stoutsmear_niter(smearedgauge, gauge, conf_smearing_alpha, conf_smearing_niter);
+	qpb_stoutsmear_niter(smearedgauge, gauge, conf_smearing_param, conf_smearing_niter);
 	break;
       }
       plaquette = qpb_plaquette(smearedgauge);
@@ -824,10 +829,10 @@ main(int argc, char *argv[])
 	  print(" 3D-%s smear gauge field...\n", conf_smearing_name);
 	  switch(conf_smearing_type) {
 	  case CONF_SMEARING_APE:
-	    qpb_apesmear_3d_niter(gauss_gauge, gauge, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
+	    qpb_apesmear_3d_niter(gauss_gauge, gauge, param_conf_smearing_gauss, n_conf_smearing_gauss);
 	    break;
 	  case CONF_SMEARING_STOUT:
-	    qpb_stoutsmear_3d_niter(gauss_gauge, gauge, alpha_conf_smearing_gauss, n_conf_smearing_gauss);
+	    qpb_stoutsmear_3d_niter(gauss_gauge, gauge, param_conf_smearing_gauss, n_conf_smearing_gauss);
 	    break;
 	  }
 	  plaquette = qpb_plaquette(gauss_gauge);
