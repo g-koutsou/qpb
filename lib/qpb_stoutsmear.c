@@ -164,12 +164,12 @@ sun_exp(qpb_link *u)
 /*
  * Stout smear once
  *
- * Performs: exp[ alpha/2 A ]*U
+ * Performs: exp[ rho/2 A ]*U
  * with A = \sum {[plaq - h.c] - 1/3 Tr[.]}
  *
  */
 void
-qpb_stoutsmear(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
+qpb_stoutsmear(qpb_gauge_field out, qpb_gauge_field in, qpb_double rho)
 {
   int lvol = problem_params.l_vol;
   qpb_complex u0[NC*NC], u1[NC*NC], stapl[NC*NC];
@@ -218,8 +218,8 @@ qpb_stoutsmear(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
 	  plaq[i*NC+i].re -= 1./3.*trace.re;
 	  plaq[i*NC+i].im -= 1./3.*trace.im;
 	}
-	// scale by \alpha/2
-	sun_mul_au(w, (qpb_complex){alpha/2.0, 0}, plaq);
+	// scale by \rho/2
+	sun_mul_au(w, (qpb_complex){rho/2.0, 0}, plaq);
       }
   }
   // Need to exponentiate outside omp region because exponentiation is not thread-safe
@@ -249,7 +249,7 @@ qpb_stoutsmear(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
  * "aux" is required if "in" is to be left untouched
  */
 void
-qpb_stoutsmear_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha, int niter)
+qpb_stoutsmear_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double rho, int niter)
 {
   qpb_gauge_field aux = qpb_gauge_field_init();
   qpb_gauge_field_copy(aux, in);
@@ -258,7 +258,7 @@ qpb_stoutsmear_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha, 
   for(int i=0; i<niter; i++)
     {
       qpb_comm_halo_gauge_field(U[i%2]);
-      qpb_stoutsmear(U[(i+1)%2], U[i%2], alpha);
+      qpb_stoutsmear(U[(i+1)%2], U[i%2], rho);
     }
 
   qpb_gauge_field_copy(out, U[niter%2]);
@@ -270,7 +270,7 @@ qpb_stoutsmear_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha, 
  * Stout smear once in 3D. See 4d version above for details
  */
 void
-qpb_stoutsmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
+qpb_stoutsmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double rho)
 {
   qpb_complex u0[NC*NC], u1[NC*NC], stapl[NC*NC];
   int lvol = problem_params.l_vol;
@@ -287,7 +287,7 @@ qpb_stoutsmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
 	  stapl[c] = (qpb_complex){0.0, 0.0};
 
 	/* create the staple for this mu direction */
-	for(int nu=mu==0?1:0; nu<ND; nu==mu-1?nu+=2:nu++)
+	for(int nu=mu==1?2:1; nu<ND; nu==mu-1?nu+=2:nu++)
 	  {
 	    qpb_complex *u, *w;
 	    u = (qpb_complex *)((qpb_link *) in.index[v] + nu);
@@ -322,26 +322,30 @@ qpb_stoutsmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
 	  plaq[i*NC+i].im -= 1./3.*trace.im;
 	}
 
-	// scale by \alpha/2
-	sun_mul_au(w, (qpb_complex){alpha/2.0, 0}, plaq);
+	// scale by \rho/2
+	sun_mul_au(w, (qpb_complex){rho/2.0, 0}, plaq);
       }
     
   }
   // Need to exponentiate outside omp region because exponentiation is not thread-safe
   sun_exp_init();
-  for(int mu=1; mu<ND; mu++)
+  for(int mu=0; mu<ND; mu++)
     for(int lv=0; lv<lvol; lv++)
       {
 	int v = blk_to_ext[lv];
 	qpb_complex *w = (qpb_complex *)((qpb_link *) out.index[v] + mu);
 	qpb_complex *u = (qpb_complex *)((qpb_link *) in.index[v] + mu);
-	qpb_complex u0[NC*NC];
-	sun_uequ(u0, w);
-	// exponentiate	
-	sun_exp((qpb_link *)u0);
-
-	// Multiply with u
-	sun_mul_uu(w, u0, u);
+	if(mu != 0) {
+	  qpb_complex u0[NC*NC];
+	  sun_uequ(u0, w);
+	  // exponentiate	
+	  sun_exp((qpb_link *)u0);
+	  
+	  // Multiply with u
+	  sun_mul_uu(w, u0, u);	
+	} else {
+	  sun_uequ(w, u);
+	}
       }
   sun_exp_finalize();
   return;
@@ -354,7 +358,7 @@ qpb_stoutsmear_3d(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
  * "aux" is required if "in" is to be left untouched
  */
 void
-qpb_stoutsmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha, int niter)
+qpb_stoutsmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double rho, int niter)
 {
   qpb_gauge_field aux = qpb_gauge_field_init();
   qpb_gauge_field_copy(aux, in);
@@ -363,8 +367,15 @@ qpb_stoutsmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double alph
   for(int i=0; i<niter; i++)
     {
       qpb_comm_halo_gauge_field(U[i%2]);
-      qpb_stoutsmear_3d(U[(i+1)%2], U[i%2], alpha);
+      qpb_double plaquette = qpb_plaquette(U[i%2]);
+      qpb_double p3d = qpb_plaquette_3d(U[i%2]);
+      print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", i, plaquette, p3d);
+      qpb_stoutsmear_3d(U[(i+1)%2], U[i%2], rho);
     }
+  qpb_comm_halo_gauge_field(U[niter%2]);
+  qpb_double plaquette = qpb_plaquette(U[niter%2]);
+  qpb_double p3d = qpb_plaquette_3d(U[niter%2]);
+  print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", niter, plaquette, p3d);
 
   qpb_gauge_field_copy(out, U[niter%2]);
   qpb_gauge_field_finalize(aux);
