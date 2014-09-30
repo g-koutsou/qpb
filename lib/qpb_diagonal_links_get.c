@@ -137,6 +137,23 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
 	      sun_upequ(dl_ptr, u[0]);
 	    }
 	}
+      /*
+       * Diagonal link is the average over the n_fact
+       * combinations. Normalize by n_fact here.
+       */
+#ifdef OPENMP
+#pragma omp parallel for
+#endif	  
+      for(int lv=0; lv<lvol; lv++)
+	{
+	  qpb_complex u[NC*NC];
+	  qpb_complex a = (qpb_complex){1./n_fact, 0.};
+	  int v = blk_to_ext[lv];
+	  qpb_complex *dl_ptr = (qpb_complex *)
+	    ((qpb_link *) diagonal_links.index[v]+hyper_dir);
+	  sun_uequ(u, dl_ptr);
+	  sun_mul_au(dl_ptr, a, u);
+	}      
     }
 
 #ifdef OPENMP
@@ -146,7 +163,7 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
       {
 	int v = blk_to_ext[lv];
 	qpb_link *dl_ptr = ((qpb_link *)diagonal_links.index[v]);
-	qpb_sun_project(dl_ptr, N_HYPERCUBE_NEIGH);
+	//qpb_sun_project(dl_ptr, N_HYPERCUBE_NEIGH);
 	//qpb_sun_cheap_project(dl_ptr, N_HYPERCUBE_NEIGH);
       }
 
