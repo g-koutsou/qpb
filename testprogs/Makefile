@@ -13,7 +13,7 @@ else
 	MAKE += --no-print-directory
 endif
 
-DIRS = ape_3d source_rms op
+DIRS = stout_3d ape_3d source_rms op
 
 all: 
 	-$(C)for d in $(DIRS); do ($(MAKE) -C $$d); done

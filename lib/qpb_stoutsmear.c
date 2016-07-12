@@ -369,13 +369,13 @@ qpb_stoutsmear_3d_niter(qpb_gauge_field out, qpb_gauge_field in, qpb_double rho,
       qpb_comm_halo_gauge_field(U[i%2]);
       qpb_double plaquette = qpb_plaquette(U[i%2]);
       qpb_double p3d = qpb_plaquette_3d(U[i%2]);
-      print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", i, plaquette, p3d);
+      //print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", i, plaquette, p3d);
       qpb_stoutsmear_3d(U[(i+1)%2], U[i%2], rho);
     }
   qpb_comm_halo_gauge_field(U[niter%2]);
   qpb_double plaquette = qpb_plaquette(U[niter%2]);
   qpb_double p3d = qpb_plaquette_3d(U[niter%2]);
-  print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", niter, plaquette, p3d);
+  //print(" %4d plaquette (3D) = %10.8f (%10.8f)\n", niter, plaquette, p3d);
 
   qpb_gauge_field_copy(out, U[niter%2]);
   qpb_gauge_field_finalize(aux);
