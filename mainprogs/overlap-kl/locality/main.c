@@ -6,6 +6,8 @@ enum {
   CONF_RAW_64,
 } conf_format;
 
+enum qpb_operators which_dslash_op;
+
 void
 save_scalar(char fname[], qpb_spinor_field psi)
 {
@@ -509,7 +511,7 @@ main(int argc, char *argv[])
   for(int i=0; i<n_vec; i++)
     {
       qpb_spinor_field Deta = temp_vecs[0];
-      qpb_overlap_apply(Deta, eta[i], solver_arg_links, clover_term, rho, mass, 
+      qpb_overlap_kl(Deta, eta[i], solver_arg_links, clover_term, rho, mass, 
 			c_sw, kl_class, kl_iters, epsilon, max_iters);
       char outfile[QPB_MAX_STRING];
       sprintf(outfile, "%s.%02d", outfile_prefix, i);

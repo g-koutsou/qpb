@@ -6,7 +6,8 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_sort_vector.h>
-     
+
+enum qpb_operators which_dslash_op;
 
 void
 tridiag_eigenv(double *eig, double *a, double *b, int n)

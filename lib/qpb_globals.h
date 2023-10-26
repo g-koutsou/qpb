@@ -2,23 +2,27 @@
 #define _QPB_GLOBALS_H 1
 #include <qpb_operators.h>
 
-qpb_problem_params problem_params;
-unsigned int *skin_to_ext[2*ND];
-unsigned int *nneigh[2*ND];
-unsigned int *blk_to_ext;
-unsigned short int am_master;
-unsigned short int **permutations[ND+1];
-enum qpb_operators which_dslash_op;
+extern qpb_problem_params problem_params;
+extern unsigned int *skin_to_ext[2*ND];
+extern unsigned int *nneigh[2*ND];
+extern unsigned int *blk_to_ext;
+extern unsigned short int am_master;
+extern unsigned short int **permutations[ND+1];
+extern enum qpb_operators which_dslash_op;
 
-struct {
+typedef struct {
   unsigned short int dirs[N_DIR_COMB_2][2];
   unsigned short int index[ND][ND];
-} dir_comb_2;
+} dir_comb_2_t;
 
-struct {
+extern dir_comb_2_t dir_comb_2;
+
+typedef struct {
   unsigned short int hops[N_HYPERCUBE_NEIGH][ND];
   unsigned long int index[ND][ND][ND][ND];
-} hypercube_neigh;
+} hypercube_neigh_t;
+
+extern hypercube_neigh_t hypercube_neigh;
 
 #define print(FMT, ...) if(am_master) printf(FMT, ##__VA_ARGS__); fflush(stdout)
 #define error(FMT, ...) if(am_master) fprintf(stderr, FMT, ##__VA_ARGS__); fflush(stderr)
@@ -42,7 +46,7 @@ struct {
   + x[1] * L[3] * L[2]				\
   + x[0] * L[3] * L[2] * L[1]
 
-qpb_random_state rng_state;
+extern qpb_random_state rng_state;
 
 #define DEBUG_HERE()							\
   int pid = getpid();							\

@@ -3,6 +3,8 @@
 #include <qpb_types.h>
 #include <qpb_globals.h>
 
+qpb_random_state rng_state;
+
 void
 qpb_rng_init(unsigned int seed)
 {

@@ -32,7 +32,6 @@ SOURCES = qpb_init\
 	qpb_alloc\
 	qpb_parser\
 	qpb_msg_passing_init\
-	qpb_init\
 	qpb_comm_halo_gauge_field\
 	qpb_comm_halo_diagonal_links\
 	qpb_apesmear\

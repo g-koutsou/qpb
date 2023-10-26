@@ -41,6 +41,8 @@ enum {
   STOCH_SOURCE_UNIFORM
 } stochastic_source;
 
+enum qpb_operators which_dslash_op;
+
 void
 usage(char *argv[])
 {

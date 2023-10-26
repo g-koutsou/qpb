@@ -9,6 +9,22 @@
 #include <qpb_gamma_matrices.h>
 #include <mpi.h>
 
+unsigned short int am_master;
+qpb_problem_params problem_params;
+unsigned int *nneigh[2*ND];
+unsigned short int **permutations[ND+1];
+unsigned int *skin_to_ext[2*ND];
+unsigned int *blk_to_ext;
+
+dir_comb_2_t dir_comb_2;
+hypercube_neigh_t hypercube_neigh;
+
+qpb_complex qpb_gamma_x[NS][NS];
+qpb_complex qpb_gamma_y[NS][NS];
+qpb_complex qpb_gamma_z[NS][NS];
+qpb_complex qpb_gamma_t[NS][NS];
+qpb_complex qpb_gamma_5[NS][NS];
+
 /* 
    Initializes the global struct problem_params
    and globals nneigh and blk_to_ext.
@@ -242,7 +258,6 @@ qpb_init(int g_dim[ND], int procs_3d[ND-1])
       }
 
   problem_params.b_vol = problem_params.ext_vol - problem_params.l_vol;
-
   if(problem_params.proc_id == QPB_MASTER_PROC)
     am_master = 1;
   else

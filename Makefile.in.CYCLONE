@@ -1,0 +1,6 @@
+AR=ar
+RANLIB=ranlib
+CC=mpicc
+CFLAGS=-O3 -D__inline__="static inline" -DINLINE="static inline" -I./ -I${HOME}/qpb-build/install/include/ -fopenmp -DOPENMP -DHAVE_LONG_DOUBLE
+LDFLAGS=-L${HOME}/qpb-build/install/lib
+LIBS=-lgsl -lgslcblas -llime -lxml2 -lm

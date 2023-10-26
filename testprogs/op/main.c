@@ -2,6 +2,8 @@
 #include <qpb_dslash_wrappers.h>
 #include <qpb_comm_halo_spinor_field.h>
 
+enum qpb_operators which_dslash_op;
+
 enum {
   CONF_ILDG,
   CONF_RAW_32,

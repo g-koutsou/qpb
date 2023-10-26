@@ -6,6 +6,8 @@ enum {
   CONF_RAW_64,
 } conf_format;
 
+enum qpb_operators which_dslash_op;
+
 void
 usage(char *argv[])
 {
