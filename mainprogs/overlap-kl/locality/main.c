@@ -511,8 +511,7 @@ main(int argc, char *argv[])
   for(int i=0; i<n_vec; i++)
     {
       qpb_spinor_field Deta = temp_vecs[0];
-      qpb_overlap_kl(Deta, eta[i], solver_arg_links, clover_term, rho, mass, 
-			c_sw, kl_class, kl_iters, epsilon, max_iters);
+      qpb_overlap_kl(Deta, eta[i], kl_class, kl_iters, epsilon, max_iters);
       char outfile[QPB_MAX_STRING];
       sprintf(outfile, "%s.%02d", outfile_prefix, i);
       save_scalar(outfile, Deta);
