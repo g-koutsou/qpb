@@ -1,3 +1,7 @@
+/* Calculating the action of the overlap operator on a vector.
+The script is divided into 3 parts: matrix-vector functions,
+  scalar functions and eigenvalues functions. */
+
 #include <string.h>
 #include <qpb_types.h>
 #include <qpb_errors.h>
@@ -107,7 +111,7 @@ qpb_overlap_Chebyshev_init(void *gauge, qpb_clover_term clover, qpb_double rho, 
       {
         qpb_double xk = cos(M_PI*inverse_N*(k+0.5));
         discrete_xk[k] = xk;
-        discrete_r_values[k] = Chebyshev_r(xk);
+        scalar_r_func(xk);
       }
 
       // Calculate the expansion coefficients
@@ -197,6 +201,22 @@ D_op(qpb_spinor_field y, qpb_spinor_field x)
 }
 
 
+INLINE void
+H_op(qpb_spinor_field y, qpb_spinor_field x)
+{
+  void *dslash_args[4];
+
+  dslash_args[0] = ov_params.gauge_ptr;
+  dslash_args[1] = &ov_params.m_bare;
+  dslash_args[2] = &ov_params.clover;
+  dslash_args[3] = &ov_params.c_sw;
+
+  ov_params.g5_dslash_op(y, x, dslash_args);
+
+  return;
+}
+
+
 void
 qpb_massive_overlap_Chebyshev(qpb_spinor_field y, qpb_spinor_field x)
 {
@@ -220,12 +240,11 @@ qpb_massive_overlap_Chebyshev(qpb_spinor_field y, qpb_spinor_field x)
 void
 qpb_massless_overlap_Chebyshev(qpb_spinor_field y, qpb_spinor_field x)
 {
-  /* Implements: Dov(x) = x + γ5 sign(H(x)). */
+  /* It implements: Dov(x) = x + γ5 sign(H(x)). */
 
   qpb_spinor_field z = ov_temp_vecs[1];
 
-  qpb_Chebyshev_sign_function_of_H(z, x);
-  qpb_spinor_gamma5(z, z);
+  qpb_gamma5_sign_function_of_H(z, x);
   qpb_spinor_xpy(y, x, z);
 
   return;
@@ -233,9 +252,9 @@ qpb_massless_overlap_Chebyshev(qpb_spinor_field y, qpb_spinor_field x)
 
 
 void
-qpb_Chebyshev_sign_function_of_H(qpb_spinor_field y, qpb_spinor_field x)
+qpb_gamma5_sign_function_of_H(qpb_spinor_field y, qpb_spinor_field x)
 {
-  /* Implements: sign(H(x)) = H(Sum_{n=0}^N c_n T_n(x)). */
+  /* Implements: sign(H(x)) = H(Sum_{n=0}^{N-1} c_n T_n(x)). */
 
   qpb_spinor_field Tn = ov_temp_vecs[2];
   qpb_spinor_field sum = ov_temp_vecs[3];
@@ -247,7 +266,7 @@ qpb_Chebyshev_sign_function_of_H(qpb_spinor_field y, qpb_spinor_field x)
     qpb_spinor_axpy(sum, Chebyshev_coeff[n], Tn, sum);
   }
 
-  qpb_overlap_H(y, sum);
+  D_op(y, sum);
 
   return;
 }
@@ -256,9 +275,10 @@ qpb_Chebyshev_sign_function_of_H(qpb_spinor_field y, qpb_spinor_field x)
 void
 qpb_Chebyshev_polynomial_term_without_caching(qpb_spinor_field y, qpb_spinor_field x, int n)
 {
-  /* Implements: T_{n=0}(X) = x, T_{n=1}(X) = X, 
-        T_n(X) = 2*X(T_{n-1}(X)) - T_{n-2}(X)
-    NOTE: Without storing an calculated results. */
+  /* Implementation of the recursive relation for the calculation of the matrix Chebyshev polynomial terms of the 1st kind:
+        T_n(x) = 2*x*T_{n-1}(x) - T_{n-2}(x),
+  with T_{n=0}(X(x)) = x, T_{n=1}(X(x)) = X.
+  NOTE: Without storing an calculated results. ONLY FOR TESTING PURPOSES, it's very slow. */
 
   qpb_spinor_field temp = ov_temp_vecs[4];
   qpb_spinor_field Tnm1 = ov_temp_vecs[5];
@@ -286,12 +306,13 @@ qpb_Chebyshev_polynomial_term_without_caching(qpb_spinor_field y, qpb_spinor_fie
 void
 qpb_Chebyshev_polynomial_term(qpb_spinor_field y, qpb_spinor_field x, int n)
 {
-  /* Implements: T_{n=0}(X) = x, T_{n=1}(X) = X, 
-        T_n(X) = 2*X(T_{n-1}(X)) - T_{n-2}(X)
-     NOTE: The Chebyshev polynomial terms are calculated
-     inside the weighted sum in increasing order,
-     therefore no need to check if the last two previous degrees 
-     have already been calculated. */ 
+  /* Implementation of the recursive relation for the calculation of the matrix Chebyshev polynomial terms of the 1st kind:
+        T_n(x) = 2*x*T_{n-1}(x) - T_{n-2}(x),
+  or given that the already calculated results are cashed in the two variables Tn and Tnm1, with T_{n=0}(X(x)) = x, T_{n=1}(X(x)) = X.
+  NOTE: The Chebyshev polynomial terms are calculated
+  inside the weighted sum in increasing order,
+  therefore no need to check if the last two previous degrees 
+  have already been calculated. */ 
 
   if (n == 0)
   {
@@ -334,7 +355,8 @@ qpb_Chebyshev_polynomial_term(qpb_spinor_field y, qpb_spinor_field x, int n)
 void
 qpb_overlap_X(qpb_spinor_field y, qpb_spinor_field x)
 {
-  /* Implements: X = [2*H(H(x)) - (β^2+α^2)x]/(β^2-α^2). */
+  /* It implements: X = ( 2*H(H(x)) - (β^2+α^2)*x )/(β^2-α^2), with:
+    H(x) = γ5((D - ρ))(x) . */
 
   qpb_spinor_field z = ov_temp_vecs[10];
 
@@ -345,8 +367,8 @@ qpb_overlap_X(qpb_spinor_field y, qpb_spinor_field x)
   qpb_complex a = {2*prefactor, 0.0};
   qpb_complex b = {-prefactor*(beta*beta + alpha*alpha), 0.0};
   
-  qpb_overlap_H(y, x);
-  qpb_overlap_H(z, y);
+  H_op(y, x);
+  H_op(z, y);
   
   qpb_spinor_axpby(y, a, z, b, x);
 
@@ -354,43 +376,16 @@ qpb_overlap_X(qpb_spinor_field y, qpb_spinor_field x)
 }
 
 
-void
-qpb_overlap_H(qpb_spinor_field y, qpb_spinor_field x)
-{
-  /* Implements: H = γ5(Kernel(x)). */
-
-  // qpb_overlap_kernel(y, x);
-  D_op(y, x); // D operator has its mass term already shifted by -1.
-  qpb_spinor_gamma5(y, y);
-
-  return;
-}
-
-
-void
-qpb_overlap_kernel(qpb_spinor_field y, qpb_spinor_field x)
-{
-  /* Implements explicit construction of kernel: Kernel(x) = D(x) - (1+s)x. */
-
-  qpb_spinor_field z = ov_temp_vecs[11];
-  qpb_spinor_field w = ov_temp_vecs[12];
-
-  qpb_double s = 0.;
-
-  qpb_complex factor = {-(1.+s), 0.0};
-
-  D_op(z, x); // Check mass term, no additional shifts!
-  qpb_spinor_ax(w, factor, x);
-  qpb_spinor_xmy(y, z, w);
-
-  return;
-}
-
-/* SCALAR CHEBYSHEV POLYNOMIAL TERMS FUNCTIONS */
+/* -------------- SCALAR CHEBYSHEV POLYNOMIAL TERMS FUNCTIONS -------------- */
 
 qpb_complex
 expansion_Chebyshev_coeff_n(int n)
 {
+  /* It calculates the expansion coefficient c_n of the truncated series expansion of Chebyshev polynomials approximating the sign function of H = γ5*Kernel(x). The expression for the coefficient c_n is itself a truncated series:
+                  c_n = sum_{k=0}^{N-1} T_n(x_k) r(x_k),
+  for x_k = cos[ π/N*(k + 1/2) ]. It assumed that x_k and r(x_k) values, for k = 1, ..., N, have been already calculated and stored inside the 'discrete_xk' and 'discrete_r_values' arrays correspondingly, to avoid repeating their calculation.
+   */
+  
   qpb_double inverse_N = 1./(qpb_double) Chebyshev_Tn_numb_vecs;
 
   qpb_double prefactor = inverse_N;
@@ -411,8 +406,12 @@ expansion_Chebyshev_coeff_n(int n)
 
 
 qpb_double
-Chebyshev_r(qpb_double x)
+scalar_r_func(qpb_double x)
 {
+  /* It calculates r(x) function, defined as:
+        r(x) = [ (beta^2 + alpha^2)/2 + x*(beta^2 - alpha^2)/2 ]^(-1/2).
+  */
+
   qpb_double alpha = ov_params.min_eigv;
   qpb_double beta = ov_params.max_eigv;
 
@@ -425,18 +424,18 @@ Chebyshev_r(qpb_double x)
 qpb_double
 scalar_Chebyshev_polynomial_term(qpb_double x, int n)
 {
-  qpb_double Tn;
+  /* Implementation of the recursive relation for the calculation of the Chebyshev polynomial terms of the 1st kind:
+        T_{n+1}(x) = 2*x*T_n(x) - T_{n-1}(x),
+  with T_{n=0}(x) = 1 and T_{n=1}(x) = x, WITHOUT cashing previously calculated results. */
 
-  if (n == 0)
+  qpb_double Tn = 1.;
+
+  if (n != 0)
   {
-    Tn = 1.;
-  }
-  else
-  {
-    qpb_double temp;
     qpb_double Tnm1 = 1.;
-    Tn = x;
+    qpb_double temp;
 
+    Tn = x;
     for (int i = 1; i < n; ++i)
     {
       temp = Tn;
@@ -448,36 +447,16 @@ scalar_Chebyshev_polynomial_term(qpb_double x, int n)
   return Tn;
 }
 
-// qpb_double
-// scalar_Chebyshev_polynomial_term_with_caching(qpb_double x, int n)
-// {
-//   qpb_double Tn;
-
-//   if (n == 0)
-//   {
-//     Tn = 1.;
-//   }
-//   else
-//   {
-//     qpb_double temp;
-//     qpb_double Tnm1 = 1.;
-//     Tn = x;
-
-//     for (int i = 1; i < n; ++i)
-//     {
-//       temp = Tn;
-//       Tn = 2*x*Tn - Tnm1;
-//       Tnm1 = temp;
-//     }
-//   }
-
-//   return Tn;
-// }
-
 
 qpb_double
 scalar_Chebyshev_polynomial_term_with_caching(int k, int n)
 {
+  /* Implementation of the recursive relation for the calculation of the Chebyshev polynomial terms of the 1st kind specifically for x = x_k,. k = 1, ..., N:
+        T_n(x_k) = 2*x_k*T_{n-1}(x_k) - T_{n-2}(x_k),
+  or given that the already calculated results are cashed in the two arrays T[n-1,k] and T[n-2,k]:
+          T_n(x_k) = 2*x_k*T[n-1,k] - T[n-2,k],
+  with T_{n=0,k} = 1 and T_{n=1,k} = x_k, for all k. */
+
   qpb_double Tn;
 
   if (n == 0)
@@ -506,7 +485,8 @@ scalar_Chebyshev_polynomial_term_with_caching(int k, int n)
   return Tn;
 }
 
-/* EXTREME EIGENVALUES FUNCTIONS */
+
+/* --------------------- EXTREME EIGENVALUES FUNCTIONS --------------------- */
 
 void
 tridiag_eigenv(double *eig, double *a, double *b, int n)
@@ -542,13 +522,13 @@ tridiag_eigenv(double *eig, double *a, double *b, int n)
 void
 qpb_extreme_eigenvalues_of_H_squared(qpb_double *min_eigv, qpb_double *max_eigv, qpb_double epsilon, int max_iters)
 {
+  /* It calculates the extreme eigenvalues of the eigenvalue spectrum of H^2 = H†H, H ≡ γ5*Kernel(x), with: Kernel(x) = D(x) - ρ*x. */
+
   qpb_lanczos_init();
 
-  qpb_double s=0.;
   qpb_clover_term clover_term = ov_params.clover;
   qpb_double c_sw = ov_params.c_sw;
-  qpb_double mass = -1;//ov_params.mass;
-  // qpb_double mass = 0.;//ov_params.mass;
+  qpb_double mass = ov_params.m_bare; // m_bare = rho, typically rho = -1
   qpb_double kappa = 1./(2*mass+8.);
   void *solver_arg_links = ov_params.gauge_ptr;
   
