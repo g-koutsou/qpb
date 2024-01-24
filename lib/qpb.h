@@ -71,4 +71,6 @@
 #include <qpb_mesons_2pt_stoch.h>
 #include <qpb_baryons_2pt.h>
 #include <qpb_multiq_2pt.h>
+#include <qpb_overlap_Chebyshev_defs.h>
+#include <qpb_overlap_Chebyshev.h>
 #endif /* _QPB_H */
