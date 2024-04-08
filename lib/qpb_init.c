@@ -9,7 +9,6 @@
 #include <qpb_gamma_matrices.h>
 #include <mpi.h>
 
-unsigned short int am_master;
 qpb_problem_params problem_params;
 unsigned int *nneigh[2*ND];
 unsigned short int **permutations[ND+1];

@@ -5,11 +5,12 @@
 #include <qpb_errors.h>
 #include <mpi.h>
 
+unsigned short am_master = 1; /* Everyone is the master, until MPI_Comm_ank is called */
+
 void
 qpb_msg_passing_init(int *argc, char **argv[])
 {
   int err = MPI_Init(argc, argv);
-  int am_master = 1; /* Everyone is the master, until MPI_Comm_ank is called */
   if(err != MPI_SUCCESS)
     {
       fprintf(stderr, "MPI_Init() returned in error\n");
