@@ -1,0 +1,9 @@
+AR=ar
+RANLIB=ranlib
+CC=mpicc
+DEBUGFLAGS=-ggdb -DDEBUG
+PROFFLAGS=-pg
+CFLAGS=-O3 -Winline -Qunused-arguments -std=c99 -DHAVE_LONG_DOUBLE -DINLINE="static inline" -D__inline__="static inline" -I./ -I/opt/homebrew/include -I$(HOME)/Local/install/include
+LDFLAGS=-L/opt/homebrew/lib -L$(HOME)/Local/install/lib
+LIBS=-llime -lgsl -lgslcblas -lxml2 -lm
+

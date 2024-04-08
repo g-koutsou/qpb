@@ -14,8 +14,8 @@ typedef struct {
   qpb_double rho;
   qpb_double c_sw;
   qpb_clover_term clover;
-  void (* dslash_op)();
-  void (* g5_dslash_op)();
+  void (* dslash_op)(qpb_spinor_field, qpb_spinor_field, void **);
+  void (* g5_dslash_op)(qpb_spinor_field, qpb_spinor_field, void **);
   qpb_double mass;
 } qpb_overlap_params;
 #endif /* _QPB_KL_DEFS_H */
