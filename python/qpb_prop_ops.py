@@ -59,8 +59,8 @@ body = "/* BEGIN python generated segment */\n"
 
 for NC in [1, 3]:
     body += "#if NC == %d\n" % NC
-    pr = sy.zeros((NS,NS))
-    pi = sy.zeros((NS,NS))
+    pr = sy.zeros(NS,NS)
+    pi = sy.zeros(NS,NS)
     p = []
     for c0 in range(NC):
         for c1 in range(NC):
@@ -146,13 +146,13 @@ for NC in [1, 3]:
                 body += "\n"
         body += "\n  return;\n}\n\n"
 
-    pr = sy.zeros((NS*NC,NS*NC))
-    pi = sy.zeros((NS*NC,NS*NC))
+    pr = sy.zeros(NS*NC,NS*NC)
+    pi = sy.zeros(NS*NC,NS*NC)
 
-    qr = sy.zeros((NS*NC,NS*NC))
-    qi = sy.zeros((NS*NC,NS*NC))
+    qr = sy.zeros(NS*NC,NS*NC)
+    qi = sy.zeros(NS*NC,NS*NC)
 
-    x = sy.zeros((NS*NC,NS*NC))
+    x = sy.zeros(NS*NC,NS*NC)
     for c0 in range(NC):
         for c1 in range(NC):
             for s0 in range(NS):
@@ -167,7 +167,7 @@ for NC in [1, 3]:
     ### G^\dagger
     #
     p = sy.Matrix(NS*NC, NS*NC, lambda i, j: pr[j+i*NS*NC] + pi[j+i*NS*NC]*I)
-    x = sy.zeros((NS*NC,NS*NC))
+    x = sy.zeros(NS*NC,NS*NC)
 
 
     body += "INLINE void\n"
@@ -186,7 +186,7 @@ for NC in [1, 3]:
 
     p = sy.Matrix(NS*NC, NS*NC, lambda i, j: pr[j+i*NS*NC] + pi[j+i*NS*NC]*I)
     q = sy.Matrix(NS*NC, NS*NC, lambda i, j: qr[j+i*NS*NC] + qi[j+i*NS*NC]*I) 
-    x = sy.zeros((NS*NC,NS*NC))
+    x = sy.zeros(NS*NC,NS*NC)
     body += "INLINE void\n"
     body += "prop_G_G(qpb_complex C[NC*NS][NC*NS], qpb_complex A[NC*NS][NC*NS], qpb_complex B[NC*NS][NC*NS])\n{\n"
     for csp0 in range(NC*NS):
@@ -211,4 +211,4 @@ for NC in [1, 3]:
     body += "#endif /* NC == %d */\n" % NC
 
 body += "/* END python generated segment */\n"
-print tmpl.replace("XXXBODYXXX", body)
+print(tmpl.replace("XXXBODYXXX", body))

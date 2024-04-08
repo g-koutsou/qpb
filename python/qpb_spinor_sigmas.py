@@ -44,8 +44,8 @@ body = "/* BEGIN python generated segment */\n"
 
 for NC in [1, 3]:
     body += "#if NC == %d\n" % NC
-    pr = sy.zeros((NS,NC))
-    pi = sy.zeros((NS,NC))
+    pr = sy.zeros(NS,NC)
+    pi = sy.zeros(NS,NC)
     for i in range(NS):
         for j in range(NC):
             cs = j + i*NC
@@ -78,4 +78,4 @@ for NC in [1, 3]:
     body += "#endif /* NC == %d */\n" % NC
 body += "/* END python generated segment */\n"
 
-print tmpl.replace("XXXBODYXXX", body)
+print(tmpl.replace("XXXBODYXXX", body))

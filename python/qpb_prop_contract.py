@@ -23,10 +23,10 @@ eps = [dict(idx = (0,1,2), sign = +1),
 body = "/* BEGIN python generated segment */\n"
 body += "#if NC == %d\n" % NC
 
-pr = sy.zeros((NS*NC,NS*NC))
-pi = sy.zeros((NS*NC,NS*NC))
-qr = sy.zeros((NS*NC,NS*NC))
-qi = sy.zeros((NS*NC,NS*NC))
+pr = sy.zeros(NS*NC,NS*NC)
+pi = sy.zeros(NS*NC,NS*NC)
+qr = sy.zeros(NS*NC,NS*NC)
+qi = sy.zeros(NS*NC,NS*NC)
 for c0 in range(NC):
     for c1 in range(NC):
         for s0 in range(NS):
@@ -82,4 +82,4 @@ for x0 in range(NS):
 body += "#endif /* NC == %d */\n" % NC
 body += "/* END python generated segment */\n"
 
-print tmpl.replace("XXXBODYXXX", body)
+print(tmpl.replace("XXXBODYXXX", body))

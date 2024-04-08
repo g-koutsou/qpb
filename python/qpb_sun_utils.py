@@ -15,11 +15,11 @@ body = "/* BEGIN python generated segment */\n"
 
 for NC in [1, 3]:
     body += "#if NC == %d\n" % NC
-    xr = sy.zeros((NC, NC))
-    xi = sy.zeros((NC, NC))
+    xr = sy.zeros(NC, NC)
+    xi = sy.zeros(NC, NC)
 
-    yr = sy.zeros((NC, NC))
-    yi = sy.zeros((NC, NC))
+    yr = sy.zeros(NC, NC)
+    yi = sy.zeros(NC, NC)
 
     ar = sy.Symbol('a.re', real=True)
     ai = sy.Symbol('a.im', real=True)
@@ -162,6 +162,6 @@ for NC in [1, 3]:
     body += "#endif /* NC == %d */\n" % NC
 body += "/* END python generated segment */\n"
 
-print tmpl.replace("XXXBODYXXX", body)
+print(tmpl.replace("XXXBODYXXX", body))
 
 

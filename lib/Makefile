@@ -134,11 +134,11 @@ libqpb.a: ${addsuffix .h, $(PYTARGETS)} ${addsuffix .o, $(SOURCES)}
 # Assumes missing .h and .c files should be python-generated
 %.h: ../python/%.py
 	$(E) PY $<
-	$(C)python2 $< > $@
+	$(C)python3 $< > $@
 
 %.c: ../python/%.py
 	$(E) PY $<
-	$(C)python2 $< > $@
+	$(C)python3 $< > $@
 
 pyclean:
 	$(E) PYCLEAN
