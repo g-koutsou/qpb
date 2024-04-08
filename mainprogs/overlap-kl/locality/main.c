@@ -293,6 +293,28 @@ main(int argc, char *argv[])
       exit(QPB_PARSER_ERROR);
     };
 
+  /* If Brillouin is selected, parse for whether to project diagonal
+     links to SU(N). Default is to not project. In arXiv:1012.3615,
+     diagonal links were projected */
+  int project_diagonal_links = 0;
+  if(which_dslash_op == QPB_DSLASH_BRILLOUIN) {
+    char *ret = qpb_parse_optional("Project diagonal links");
+    if(ret != NULL) {
+      sscanf(ret, "%s", aux_string);
+      int raise = 0;
+      if(strcmp(aux_string, "yes") == 0)
+	project_diagonal_links = 1;
+      else if(strcmp(aux_string, "no") == 0)
+	project_diagonal_links = 0;
+      else {
+	error("%s: option should be yes or no\n", "Project diagonal links");
+	exit(QPB_PARSER_ERROR);      
+      }
+    } else {
+      print(" Will not SU(N)-project diagonal links by default\n");
+    }
+  }
+  
   qpb_double rho;
   if(sscanf(qpb_parse("rho"), "%lf", &rho)!=1)
     {
@@ -413,6 +435,14 @@ main(int argc, char *argv[])
     {
     case QPB_DSLASH_BRILLOUIN:
       print(" Dslash operator is Brillouin\n");
+      if(project_diagonal_links)
+	{
+	  print(" Will SU(N)-project diagonal links\n");
+	}
+      else
+	{
+	  print(" Will not SU(N)-project diagonal links\n");
+	}
       break;
     case QPB_DSLASH_STANDARD:
       print(" Dslash operator is Standard\n");
@@ -494,7 +524,7 @@ main(int argc, char *argv[])
     {
     case QPB_DSLASH_BRILLOUIN:
       diagonal_links = qpb_diagonal_links_init();
-      qpb_diagonal_links_get(diagonal_links, apegauge);
+      qpb_diagonal_links_get(diagonal_links, apegauge, project_diagonal_links);
       solver_arg_links = &diagonal_links;
       break;
     case QPB_DSLASH_STANDARD:

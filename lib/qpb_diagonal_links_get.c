@@ -46,7 +46,7 @@
 */
 
 void
-qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_gauge)
+qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_gauge, int project)
 {
   int lvol = problem_params.l_vol;
   /* 
@@ -156,17 +156,21 @@ qpb_diagonal_links_get(qpb_diagonal_links diagonal_links, qpb_gauge_field fwd_ga
 	}      
     }
 
+  /*
+   * If project is not zero, will project the constructed diagonal links to SU(N)
+   */
+  if(project) {
 #ifdef OPENMP
 #pragma omp parallel for
 #endif
-  for(int lv=0; lv<lvol; lv++)
+    for(int lv=0; lv<lvol; lv++)
       {
 	int v = blk_to_ext[lv];
 	qpb_link *dl_ptr = ((qpb_link *)diagonal_links.index[v]);
-	//qpb_sun_project(dl_ptr, N_HYPERCUBE_NEIGH);
+	qpb_sun_project(dl_ptr, N_HYPERCUBE_NEIGH);
 	//qpb_sun_cheap_project(dl_ptr, N_HYPERCUBE_NEIGH);
       }
-
+  }
   qpb_gauge_field_finalize(gauge[1]);
 
   qpb_comm_halo_diagonal_links(diagonal_links);
