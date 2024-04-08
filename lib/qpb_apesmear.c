@@ -69,8 +69,8 @@ qpb_apesmear(qpb_gauge_field out, qpb_gauge_field in, qpb_double alpha)
 	sun_mul_au(w, scale, u1);	
 	sun_upequ(w, one_minus_alpha);	
 	
-	qpb_sun_project((qpb_link *)w, 1);
-	//qpb_sun_cheap_project((qpb_link *)w, 1);
+	//qpb_sun_project((qpb_link *)w, 1);
+	qpb_sun_cheap_project((qpb_link *)w, 1);
       }
 
   for(int lv=0; lv<lvol; lv++)
