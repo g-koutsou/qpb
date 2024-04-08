@@ -3,6 +3,7 @@
 
 char *trim(char *, int);
 char *qpb_parse(char *);
+char *qpb_parse_optional(char *);
 void qpb_init_parser(char *);
 void qpb_finalize_parser();
 

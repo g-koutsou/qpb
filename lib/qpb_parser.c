@@ -197,3 +197,29 @@ qpb_parse(char *token)
   
   return out;
 }
+
+/*
+ * Do not exit if token not found, just return NULL
+ */
+char *
+qpb_parse_optional(char *token)
+{
+  int found = 0;
+  char *out = NULL;
+  for(int i=0; i<parser.N; i++)
+    {
+      if(strcmp(parser.tokens[i],token)==0)
+	{
+	  out = parser.values[i];
+	  found++;
+	}
+    }
+
+  if(found>1)
+    {
+      fprintf(stderr," \"%s\": multiple entries found in input params\n",token);
+      exit(QPB_PARSER_ERROR);
+    }
+  
+  return out;
+}
