@@ -52,7 +52,7 @@ qpb_congrad(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_complex_double alpha = {1, 0}, omega = {1, 0};
   qpb_complex_double beta, gamma;
   qpb_double mass = 1./(2.*kappa) - 4.;
-  void (* dslash_func)() = NULL;
+  void (* dslash_func)(qpb_spinor_field, qpb_spinor_field, void **) = NULL;
 
   /* set boundary condition in time
      !!! currently not implemented for diagonal links !!! */

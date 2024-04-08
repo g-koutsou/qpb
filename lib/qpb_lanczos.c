@@ -45,7 +45,7 @@ qpb_lanczos(qpb_double *alpha, qpb_double *beta, void *gauge, qpb_clover_term cl
   qpb_spinor_field u0 = lanczos_temp_vecs[2];
   qpb_spinor_field u1 = lanczos_temp_vecs[3];
   qpb_double mass = 1./(2.*kappa) - 4.;
-  void (* dslash_func)() = NULL;
+  void (* dslash_func)(qpb_spinor_field, qpb_spinor_field, void **) = NULL;
 
   void *dslash_args[] = 
     {

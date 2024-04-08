@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sympy as sy
-import scipy as sp
+import numpy as np
 import os
 
 filename = __file__
@@ -66,8 +66,8 @@ dirac_denom = -432
 #           [0, 0, 0], [ 0,  0,  0], [0, 0, 0]]
 # dirac_denom = -2
 
-laplacian = sp.array(laplacian).reshape([3, 3, 3, 3])
-dirac = sp.array(dirac).reshape([3, 3, 3, 3])
+laplacian = np.array(laplacian).reshape([3, 3, 3, 3])
+dirac = np.array(dirac).reshape([3, 3, 3, 3])
 
 ### define dirac for y, z, t
 dirac = [dirac]*4
@@ -80,22 +80,22 @@ for i in range(ND):
     gamma[i] = sy.Symbol("g%s" % ["t", "z", "y", "x"][i])
 
 ### utility functions
-R = lambda x: tuple(map(lambda i: [1, 0, 2][i], x))
+R = lambda x: tuple(list(map(lambda i: [1, 0, 2][i], x)))
 def coeffs(s):
     if s.coeff(sy.Symbol("I")) is None:
         I = 0
     else:
         I = float(s.coeff(sy.Symbol("I")))
 
-    if filter(None, map(s.coeff, gamma)) == []:
+    if list(filter(None, map(s.coeff, gamma))) == []:
         c = 0
     else:
-        c = abs(float(filter(None, map(s.coeff, gamma))[0]))
+        c = abs(float(list(filter(None, map(s.coeff, gamma)))[0]))
 
     return tuple([I, c])
 
-signs = lambda s: map(lambda x: sp.sign(x) if x is not None else 0,
-                      map(s.coeff, [sy.Symbol("I")] + gamma))
+signs = lambda s: list(map(lambda x: np.sign(x) if x is not None else 0,
+                           list(map(s.coeff, [sy.Symbol("I")] + gamma))))
 
     
 v = []
@@ -151,7 +151,7 @@ for x in v:
     body += "\n"
     
     # mirror site
-    y = map(lambda x: x%2+1 if x!=0 else 0, x)
+    y = list(map(lambda x: x%2+1 if x!=0 else 0, x))
     s = sy.Rational(laplacian[R(y)], laplacian_denom)*sy.Symbol("I")
     for i in range(ND):
         s += sy.Rational(dirac[i][R(y)], dirac_denom)*gamma[i]
@@ -179,4 +179,4 @@ for x in v:
     body += "  spinor_sun_dag_peq_mul(out, link, sp2);\n"
     body += "\n"
 body += "/* END python generated segment */\n"
-print tmpl.replace("XXXBODYXXX", body)
+print(tmpl.replace("XXXBODYXXX", body))

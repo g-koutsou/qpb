@@ -55,7 +55,8 @@ qpb_bicgg5(qpb_spinor_field x, qpb_spinor_field b, void * gauge,
   qpb_double res_norm, b_norm;
   qpb_complex_double delta0, delta1, gamma, omega;
   qpb_double mass = 1./(2.*kappa) - 4.;
-  void (* dslash_func)() = NULL;
+  void (* dslash_func)(qpb_spinor_field, qpb_spinor_field, void **) = NULL;
+  
 
   /* set boundary condition in time
      !!! currently not implemented for diagonal links !!! */
