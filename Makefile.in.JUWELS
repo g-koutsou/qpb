@@ -1,0 +1,13 @@
+AR = ar
+RANLIB = ranlib
+CC = mpicc
+CFLAGS = -O3 -D__inline__="static inline" -DINLINE="static inline" -I./ -I${HOME}/install/include -fopenmp -DOPENMP -DHAVE_LONG_DOUBLE
+DSLASH_CFLAGS := $(CFLAGS) -O1
+LDFLAGS = -L${HOME}/install/lib -L$(GSL_ROOT)/lib
+LIBS = -lgsl -lgslcblas -llime -lxml2 -lm
+
+## To use FFTW for fourier transforms. Not defining this will use an explicit FT (a volume sum for each momentum).
+#CFLAGS+=-DQPB_FT_FFTW -I$(FFTW_ROOT)/include/
+#LDFLAGS+=-L$(FFTW_ROOT)/lib/
+#LIBS+=-lfftw3
+
